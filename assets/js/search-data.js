@@ -400,11 +400,11 @@ ninja.data = [{
             window.location.href = "/blog/2015/formatting-and-links/";
           
         },
-      },{id: "books-the-godfather",
-          title: 'The Godfather',
+      },{id: "books-해커와-화가-hackers-amp-painters",
+          title: '해커와 화가 (Hackers &amp;amp; Painters)',
           description: "",
           section: "Books",handler: () => {
-              window.location.href = "/books/the_godfather/";
+              window.location.href = "/books/hackers_and_painters/";
             },},{id: "news-loooong-news",
           title: 'loooong news',
           description: "",
