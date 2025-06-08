@@ -10,7 +10,9 @@ profile:
   image_circular: false # crops the image to make it circular
   more_info: >
     <p>Gwangju, South Korea</p>
-    <p>Cebu, Philippines</p>
+    <p>2010.06.10 - 2025.08.29</p>
+    <p>Fort Erie, Ontario, Canada</p>
+    <p>2025.08.29 - 2028.??.??</p>
 
 selected_papers: False # includes a list of papers marked as "selected={true}"
 social: False # includes social icons at the bottom of the page
