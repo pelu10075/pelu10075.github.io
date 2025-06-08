@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: Fly beyond hobbies. Stay curious.
+subtitle: Fly beyond hobbies — and keep your curiosity alive.
 
 profile:
   align: right
