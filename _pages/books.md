@@ -11,4 +11,4 @@ collection: books
 >
 > -- 프랜시스 베이컨 (Francis Bacon)
 
-## Books that I am reading, have read, or will read
+## 내가 읽거나, 읽고있고, 읽을 책들.
