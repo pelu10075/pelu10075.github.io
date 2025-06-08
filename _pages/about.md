@@ -30,29 +30,17 @@ latest_posts:
 
 본 블로그에서는 다음과 같은 주제를 중심으로 다룰 예정입니다:
 
-인공지능 (Artificial Intelligence)
+선형대수학 (Linear Algebra)
 
-통신 공학 (Communication Engineering)
+미분적분학 (Calculus)
 
-컴퓨터 과학 및 공학 (Computer Science & Engineering)
+확률과 통계 (Probability and Statistics)
 
-제어 공학 (Control Engineering)
+그래프 이론 (Graph Theory)
 
-분산 시스템 (Distributed Systems)
+알고리즘 (Algorithms)
 
-전기/전자 공학 (Electrical and Electronic Engineering)
-
-정보 보안 및 암호학 (Information Security and Cryptography)
-
-물리학 (Physics)
-
-화학 (Chemistry)
-
-양자 정보 과학 (Quantum Information Science)
-
-로보틱스 (Robotics)
-
-소프트웨어 공학 (Software Engineering)
+프로그래밍 언어 (Programming Language)
 
 아직 많은 것을 배우고 있는 과정에 있지만, 꾸준한 학습과 성찰을 통해 위의 분야들에 대한 이해를 심화시키고자 합니다. 이 블로그가 저와 비슷한 관심사를 가진 분들과 지식과 통찰을 나누는 뜻깊은 공간이 되기를 바랍니다.
 
