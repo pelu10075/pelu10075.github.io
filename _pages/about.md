@@ -29,17 +29,29 @@ latest_posts:
 본 블로그는 컴퓨터 프로그래밍에 대한 깊은 흥미를 바탕으로, 제 학문적 여정과 관심 분야에 대한 탐구 과정을 기록하고 공유하기 위한 목적으로 개설되었습니다. 이 공간을 통해 다양한 이공계 주제에 대한 학습과 사유의 흔적을 체계적으로 정리하고자 합니다.
 
 본 블로그에서는 다음과 같은 주제를 중심으로 다룰 예정입니다:
+
 인공지능 (Artificial Intelligence)
+
 통신 공학 (Communication Engineering)
+
 컴퓨터 과학 및 공학 (Computer Science & Engineering)
+
 제어 공학 (Control Engineering)
+
 분산 시스템 (Distributed Systems)
+
 전기/전자 공학 (Electrical and Electronic Engineering)
+
 정보 보안 및 암호학 (Information Security and Cryptography)
+
 물리학 (Physics)
+
 화학 (Chemistry)
+
 양자 정보 과학 (Quantum Information Science)
+
 로보틱스 (Robotics)
+
 소프트웨어 공학 (Software Engineering)
 
 아직 많은 것을 배우고 있는 과정에 있지만, 꾸준한 학습과 성찰을 통해 위의 분야들에 대한 이해를 심화시키고자 합니다. 이 블로그가 저와 비슷한 관심사를 가진 분들과 지식과 통찰을 나누는 뜻깊은 공간이 되기를 바랍니다.
