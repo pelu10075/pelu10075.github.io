@@ -1,9 +1,9 @@
 window.MathJax = {
   tex: {
-    tags: "ams",
+    tags: 'ams',
     inlineMath: [
-      ["$", "$"],
-      ["\\(", "\\)"],
+      ['$', '$'],
+      ['\\(', '\\)'],
     ],
   },
   options: {
@@ -11,7 +11,7 @@ window.MathJax = {
       addCss: [
         200,
         function (doc) {
-          const style = document.createElement("style");
+          const style = document.createElement('style');
           style.innerHTML = `
           .mjx-container {
             color: inherit;
@@ -19,7 +19,7 @@ window.MathJax = {
         `;
           document.head.appendChild(style);
         },
-        "",
+        '',
       ],
     },
   },

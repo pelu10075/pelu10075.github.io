@@ -7,7 +7,7 @@ on:
       - main
       - master
     paths:
-      - "*.md"
+      - '*.md'
   workflow_dispatch:
 
 permissions:
