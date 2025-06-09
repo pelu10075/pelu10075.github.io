@@ -2,8 +2,8 @@
   typeof exports === 'object' && typeof module !== 'undefined'
     ? factory(exports, require('fs'))
     : typeof define === 'function' && define.amd
-      ? define(['exports', 'fs'], factory)
-      : ((global = global || self), factory((global.dl = {}), global.fs));
+    ? define(['exports', 'fs'], factory)
+    : ((global = global || self), factory((global.dl = {}), global.fs));
 })(this, function (exports, fs) {
   'use strict';
 
@@ -948,7 +948,9 @@
   }
   function doi_string(ent, new_line) {
     if ('doi' in ent) {
-      return `${new_line ? '<br>' : ''} <a href="https://doi.org/${ent.doi}" style="text-decoration:inherit;">DOI: ${ent.doi}</a>`;
+      return `${new_line ? '<br>' : ''} <a href="https://doi.org/${
+        ent.doi
+      }" style="text-decoration:inherit;">DOI: ${ent.doi}</a>`;
     } else {
       return '';
     }
@@ -1529,8 +1531,8 @@
                   target = IS_GLOBAL
                     ? global
                     : IS_STATIC
-                      ? global[name]
-                      : (global[name] || {})[PROTOTYPE],
+                    ? global[name]
+                    : (global[name] || {})[PROTOTYPE],
                   key,
                   own,
                   out;
@@ -1546,32 +1548,32 @@
                     IS_GLOBAL && typeof target[key] != 'function'
                       ? source[key]
                       : // bind timers to global for call from export context
-                        IS_BIND && own
-                        ? ctx(out, global)
-                        : // wrap global constructors for prevent change them in library
-                          IS_WRAP && target[key] == out
-                          ? (function (C) {
-                              var F = function (a, b, c) {
-                                if (this instanceof C) {
-                                  switch (arguments.length) {
-                                    case 0:
-                                      return new C();
-                                    case 1:
-                                      return new C(a);
-                                    case 2:
-                                      return new C(a, b);
-                                  }
-                                  return new C(a, b, c);
-                                }
-                                return C.apply(this, arguments);
-                              };
-                              F[PROTOTYPE] = C[PROTOTYPE];
-                              return F;
-                              // make static versions for prototype methods
-                            })(out)
-                          : IS_PROTO && typeof out == 'function'
-                            ? ctx(Function.call, out)
-                            : out;
+                      IS_BIND && own
+                      ? ctx(out, global)
+                      : // wrap global constructors for prevent change them in library
+                      IS_WRAP && target[key] == out
+                      ? (function (C) {
+                          var F = function (a, b, c) {
+                            if (this instanceof C) {
+                              switch (arguments.length) {
+                                case 0:
+                                  return new C();
+                                case 1:
+                                  return new C(a);
+                                case 2:
+                                  return new C(a, b);
+                              }
+                              return new C(a, b, c);
+                            }
+                            return C.apply(this, arguments);
+                          };
+                          F[PROTOTYPE] = C[PROTOTYPE];
+                          return F;
+                          // make static versions for prototype methods
+                        })(out)
+                      : IS_PROTO && typeof out == 'function'
+                      ? ctx(Function.call, out)
+                      : out;
                   // export proto methods to core.%CONSTRUCTOR%.methods.%NAME%
                   if (IS_PROTO) {
                     (exports.virtual || (exports.virtual = {}))[key] = out;
@@ -1617,8 +1619,8 @@
                 typeof window != 'undefined' && window.Math == Math
                   ? window
                   : typeof self != 'undefined' && self.Math == Math
-                    ? self
-                    : Function('return this')());
+                  ? self
+                  : Function('return this')());
               if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
             },
             {},
@@ -2263,7 +2265,8 @@
                 return obj && obj.__esModule ? obj : { default: obj };
               }
 
-              var BASESIZE = 6; /**
+              var BASESIZE = 6;
+              /**
                * This file contains information about the options that the Parser carries
                * around with it while parsing. Data is held in an `Options` object, and when
                * recursing, a new `Options` object can be created with the `.with*` and
@@ -3899,7 +3902,8 @@
                 this.errorColor = _utils2.default.deflt(options.errorColor, '#cc0000');
                 this.macros = options.macros || {};
                 this.colorIsTextColor = _utils2.default.deflt(options.colorIsTextColor, false);
-              }; /**
+              };
+              /**
                * This is a module for storing settings passed into KaTeX. It correctly handles
                * default settings.
                */
@@ -12629,7 +12633,8 @@
                 var parser = new _Parser2.default(toParse, settings);
 
                 return parser.parse();
-              }; /**
+              };
+              /**
                * Provides a single function for parsing an expression using a Parser
                * TODO(emily): Remove this
                */
@@ -14372,9 +14377,15 @@
     if (data.publishedDate) {
       appendHead(`
     <!--  https://schema.org/Article -->
-    <meta property="description"       itemprop="description"   content="${escapeHtml_1(data.description)}" />
-    <meta property="article:published" itemprop="datePublished" content="${data.publishedISODateOnly}" />
-    <meta property="article:created"   itemprop="dateCreated"   content="${data.publishedISODateOnly}" />
+    <meta property="description"       itemprop="description"   content="${escapeHtml_1(
+      data.description
+    )}" />
+    <meta property="article:published" itemprop="datePublished" content="${
+      data.publishedISODateOnly
+    }" />
+    <meta property="article:created"   itemprop="dateCreated"   content="${
+      data.publishedISODateOnly
+    }" />
     `);
     }
 
@@ -14388,7 +14399,9 @@
       appendHtml(
         head,
         `
-    <meta property="article:author" content="${escapeHtml_1(a.firstName)} ${escapeHtml_1(a.lastName)}" />`
+    <meta property="article:author" content="${escapeHtml_1(a.firstName)} ${escapeHtml_1(
+          a.lastName
+        )}" />`
       );
     });
 
@@ -15040,7 +15053,9 @@ distill-header .nav a {
         html += `<a href="${frontMatter.githubCompareUpdatesUrl}">View all changes</a> to this article since it was first published.`;
       }
       html += `
-    If you see mistakes or want to suggest changes, please <a href="${frontMatter.githubUrl + '/issues/new'}">create an issue on GitHub</a>. </p>
+    If you see mistakes or want to suggest changes, please <a href="${
+      frontMatter.githubUrl + '/issues/new'
+    }">create an issue on GitHub</a>. </p>
     `;
     }
 
@@ -15056,7 +15071,9 @@ distill-header .nav a {
       html += `
     <h3 id="citation">Citation</h3>
     <p>For attribution in academic contexts, please cite this work as</p>
-    <pre class="citation short">${frontMatter.concatenatedAuthors}, "${frontMatter.title}", Distill, ${frontMatter.publishedYear}.</pre>
+    <pre class="citation short">${frontMatter.concatenatedAuthors}, "${
+        frontMatter.title
+      }", Distill, ${frontMatter.publishedYear}.</pre>
     <p>BibTeX citation</p>
     <pre class="citation long">${serializeFrontmatterToBibtex(frontMatter)}</pre>
     `;
