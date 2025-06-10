@@ -37,7 +37,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/teaching/";
           },
-        },{id: "post-about-eng",
+        },{id: "post-선형대수학이란",
+        
+          title: "선형대수학이란?",
+        
+        description: "선형대수학의 서론",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/%EC%84%A0%ED%98%95%EB%8C%80%EC%88%98%ED%95%99%EC%9D%B4%EB%9E%80/";
+          
+        },
+      },{id: "post-about-eng",
         
           title: "about-eng",
         
