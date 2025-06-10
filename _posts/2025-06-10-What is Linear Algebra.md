@@ -1,7 +1,7 @@
 ---
 layout: post
 title: What is Linear Algebra?
-date: 2025-06-11 00:10:00
+date: 2025-06-10 14:10:00
 description: Introduction to Linear Algebra
 tags: LinearAlgebra EN
 categories: Study
