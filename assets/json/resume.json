@@ -31,7 +31,7 @@
       "name": "Backend Develop",
       "level": "Student",
       "icon": "fa-solid fa-hashtag",
-      "keywords": ["Python Frameworks", "RDB", "JWT, OAuth 2.0", "Version Operate", "Quantum Communication", "Quantum Teleportation"]
+      "keywords": ["Python Frameworks", "RDB", "JWT, OAuth 2.0", "Version Operate"]
     }
   ],
   "languages": [
