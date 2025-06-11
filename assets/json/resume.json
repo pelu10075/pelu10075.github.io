@@ -31,14 +31,7 @@
       "name": "Backend Develop",
       "level": "Student",
       "icon": "fa-solid fa-hashtag",
-      "keywords": [
-        "Python Frameworks",
-        "RDB",
-        "JWT, OAuth 2.0",
-        "Version Operate",
-        "Quantum Communication",
-        "Quantum Teleportation"
-      ]
+      "keywords": ["Python Frameworks", "RDB", "JWT, OAuth 2.0", "Version Operate", "Quantum Communication", "Quantum Teleportation"]
     }
   ],
   "languages": [
@@ -73,29 +66,17 @@
     {
       "name": "Backend Develop",
       "icon": "fa-solid fa-tag",
-      "keywords": [
-        "FastAPI",
-        "Flask",
-        "Node.js"
-      ]
+      "keywords": ["FastAPI", "Flask", "Node.js"]
     },
     {
       "name": "Computer Science",
       "icon": "fa-solid fa-tag",
-      "keywords": [
-        "Operating Systems",
-        "Computer Architecture"
-      ]
+      "keywords": ["Operating Systems", "Computer Architecture"]
     },
     {
       "name": "Programming Language",
       "icon": "fa-solid fa-tag",
-      "keywords": [
-        "Python",
-        "C++ (Learning)",
-        "JS (Learning)",
-        "Assembly (Learning)"
-      ]
+      "keywords": ["Python", "C++ (Learning)", "JS (Learning)", "Assembly (Learning)"]
     }
   ]
 }
