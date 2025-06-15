@@ -37,7 +37,29 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/PD/";
           },
-        },{id: "post-선형대수학이란",
+        },{id: "post-선형대수학에서-주로-쓰이는-용어",
+        
+          title: "선형대수학에서 주로 쓰이는 용어",
+        
+        description: "선형대수학을 배우기 앞서 알아야 할 용어",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/%EC%84%A0%ED%98%95%EB%8C%80%EC%88%98%ED%95%99%EC%97%90%EC%84%9C_%EC%A3%BC%EB%A1%9C_%EC%93%B0%EC%9D%B4%EB%8A%94_%EC%9A%A9%EC%96%B4/";
+          
+        },
+      },{id: "post-common-terminology-in-linear-algebra",
+        
+          title: "Common Terminology in Linear Algebra",
+        
+        description: "Basic Terminology to Know Before Learning Linear Algebra",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/Common_Terminology_in_Linear_Algebra/";
+          
+        },
+      },{id: "post-선형대수학이란",
         
           title: "선형대수학이란?",
         
