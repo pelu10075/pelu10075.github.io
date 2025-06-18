@@ -37,7 +37,29 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/PD/";
           },
-        },{id: "post-선형대수학에서-주로-쓰이는-용어",
+        },{id: "post-벡터와-행렬",
+        
+          title: "벡터와 행렬",
+        
+        description: "벡터와 행렬이란 무엇이며, 왜 중요한가?",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/%EB%B2%A1%ED%84%B0%EC%99%80_%ED%96%89%EB%A0%AC/";
+          
+        },
+      },{id: "post-vectors-and-matrices",
+        
+          title: "Vectors and Matrices",
+        
+        description: "What are vectors and matrices, and why do they matter?",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/Vectors_and_Matrices/";
+          
+        },
+      },{id: "post-선형대수학에서-주로-쓰이는-용어",
         
           title: "선형대수학에서 주로 쓰이는 용어",
         
