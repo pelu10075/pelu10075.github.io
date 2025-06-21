@@ -1,0 +1,71 @@
+<!DOCTYPE html> <html lang="kr"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title> 선형 변환 | Flu’s Logbook </title> <meta name="author" content="Minseong Park"> <meta name="description" content="벡터를 변환하는 함수와 생성에 대해"> <link rel="stylesheet" href="/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5"> <link defer rel="stylesheet" href="/assets/css/scholar-icons.css?1f21a7dd38558fc180bb6625e0ca4e0a"> <link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons|Noto+Sans+KR:300,400,500,700&amp;display=swap"> <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:300,400,700&amp;display=swap" rel="stylesheet"> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%EF%BD%9B&lt;/text&gt;&lt;/svg&gt;"> <link rel="stylesheet" href="/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e"> <link rel="canonical" href="https://pelu10075.github.io/blog/2025/%EC%84%A0%ED%98%95_%EB%B3%80%ED%99%98/"> <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5060362607670811" crossorigin="anonymous"></script> <script src="/assets/js/theme.js?f86c9381ecd2cc2b47a0001ff015eb7a"></script> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark"> <script>
+    initTheme();
+  </script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> Flu’s Logbook </a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog </a> </li> <li class="nav-item "> <a class="nav-link" href="/books/">bookshelf </a> </li> <li class="nav-item "> <a class="nav-link" href="/projects/">projects </a> </li> <li class="nav-item "> <a class="nav-link" href="/PD/">PD </a> </li> <li class="nav-item"> <button id="search-toggle" title="Search" onclick="openSearchModal()"> <span class="nav-link">ctrl k <i class="ti ti-search"></i></span> </button> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="ti ti-sun-moon" id="light-toggle-system"></i> <i class="ti ti-moon-filled" id="light-toggle-dark"></i> <i class="ti ti-sun-filled" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5" role="main"> <div class="post"> <header class="post-header"> <h1 class="post-title">선형 변환</h1> <p class="post-meta"> Created on June 21, 2025 </p> <p class="post-tags"> <a href="/blog/2025"> <i class="fa-solid fa-calendar fa-sm"></i> 2025 </a>   ·   <a href="/blog/tag/linearalgebra"> <i class="fa-solid fa-hashtag fa-sm"></i> LinearAlgebra</a>   <a href="/blog/tag/kr"> <i class="fa-solid fa-hashtag fa-sm"></i> KR</a>   ·   <a href="/blog/category/study"> <i class="fa-solid fa-tag fa-sm"></i> Study</a> </p> </header> <article class="post-content"> <div id="markdown-content"> <h2 id="선형-변환--벡터를-바꾸는-함수">선형 변환 — 벡터를 바꾸는 함수</h2> <p>지난 포스트에선 행렬이 벡터를 변형할 수 있다는 이야기를 하였다.</p> <p>이번 글에서는 ‘변형’이 무슨 의미인지, 그리고 왜 선형(linear)인지 설명하겠다.</p> <hr> <h2 id="선형-변환이란-무엇인가">선형 변환이란 무엇인가?</h2> <p>선형 변환(linear transformation)은 벡터를 입력으로 받아 또 다른 벡터를 출력하는 함수다. 하지만 아무 벡터 변환이나 선형 변환이 되는 것은 아니다. 반드시 두 가지 조건을 만족해야 한다.</p> <p>어떤 변환 T가 선형 변환이 되려면, 임의의 벡터 u, v와 스칼라(실수) c에 대해 다음 조건이 성립해야 한다.</p> <ul> <li>덧셈 보존: T(u + v) = T(u) + T(v)</li> <li>스칼라 곱 보존: T(c · u) = c · T(u)</li> </ul> <p>이 두 조건은 “선형성(linearity)”을 의미한다. 쉽게 말하면, 벡터들을 먼저 더한 뒤 변환한 것과 각각 변환한 뒤 더한 것이 같아야 하고, 벡터에 먼저 스칼라를 곱한 후 변환한 것과, 변환 후 스칼라를 곱한 것이 같아야 한다.</p> <hr> <h3 id="선형-변환--행렬-곱">선형 변환 = 행렬 곱</h3> <p>선형 변환은 항상 어떤 행렬 곱으로 표현할 수 있다. 즉, T(x) = A·x 형태로 나타낼 수 있으며, 이 행렬 A가 변환의 본질이다.</p> <p>따라서 선형 변환을 제대로 이해하려면, 행렬 곱의 계산 방법을 알아야 한다.</p> <hr> <h3 id="행렬-곱-계산-방법">행렬 곱 계산 방법</h3> <p>행렬 A가 다음과 같다고 하자.</p> \[A = \begin{bmatrix} a &amp; b \\ c &amp; d \end{bmatrix}\] <p>벡터 x가 다음과 같을 때,</p> \[X = \begin{bmatrix} x \\ y \end{bmatrix}\] <p>곱셈 결과는 이렇게 나온다.</p> \[A×X = \begin{bmatrix} a·x + b·y \\ c·x + d·y \end{bmatrix}\] <p>이 계산은 컴퓨터 그래픽, 물리 시뮬레이션, 딥러닝 모델에서 매 순간 수행되는 핵심 연산이다.</p> <hr> <h3 id="선형-변환의-기하학적-의미">선형 변환의 기하학적 의미</h3> <p>행렬 A는 벡터를 회전하거나, 크기를 바꾸거나, 기울이거나, 납작하게 만든다. 예를 들어, 다음 행렬은 모든 벡터를 x축으로 납작하게 누른다.</p> \[A = \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; 0 \end{bmatrix}\] <p>어떤 벡터를 곱해도 결과는 y성분이 0인 벡터가 된다. 이는 모든 벡터가 x축 위로 눌린 것이다.</p> <p>이처럼 행렬은 공간에 작용하며, 벡터들이 놓일 수 있는 범위를 통째로 바꾼다.</p> <hr> <h2 id="생성span이란">생성(Span)이란?</h2> <p>Span(스팬)은 어떤 벡터 집합이 생성할 수 있는 모든 선형 결합의 집합을 말한다.</p> <p>이렇게 설명하면 이해하기 힘드니, 예를 들자면, 다음 두 벡터가 있다고 하자.</p> <pre><code class="language-plotly">{
+  "data": [
+    {
+      "type": "scatter",
+      "mode": "lines+markers+text",
+      "x": [0, 1],
+      "y": [0, 0],
+      "line": { "color": "red", "width": 3 },
+      "marker": { "size": 6 },
+      "text": ["", "v₁ = [1, 0]"],
+      "textposition": "top right",
+      "name": "v₁"
+    },
+    {
+      "type": "scatter",
+      "mode": "lines+markers+text",
+      "x": [0, 0],
+      "y": [0, 1],
+      "line": { "color": "blue", "width": 3 },
+      "marker": { "size": 6 },
+      "text": ["", "v₂ = [0, 1]"],
+      "textposition": "top left",
+      "name": "v₂"
+    }
+  ],
+  "layout": {
+    "title": { "text": "Unit Vectors v₁ and v₂" },
+    "xaxis": { "range": [-1, 2], "zeroline": true, "title": "x" },
+    "yaxis": { "range": [-1, 2], "zeroline": true, "title": "y" },
+    "showlegend": false,
+    "width": 500,
+    "height": 500
+  }
+}
+</code></pre> <p>이 둘의 Span은 2차원 평면 전체다. 왜냐하면 모든 벡터는 v₁과 v₂를 적절히 곱하고 더해서 만들 수 있기 때문이다.</p> <p>반대로 다음처럼 한 방향에만 있는 벡터 두 개:</p> <pre><code class="language-plotly">{
+  "data": [
+    {
+      "type": "scatter",
+      "mode": "lines+markers+text",
+      "x": [0, 1],
+      "y": [0, 0],
+      "line": { "color": "red", "width": 3 },
+      "marker": { "size": 6 },
+      "text": ["", "v₁ = [1, 0]"],
+      "textposition": "top right",
+      "name": "v₁"
+    },
+    {
+      "type": "scatter",
+      "mode": "lines+markers+text",
+      "x": [0, 2],
+      "y": [0, 0],
+      "line": { "color": "blue", "width": 3 },
+      "marker": { "size": 6 },
+      "text": ["", "v₂ = [2, 0]"],
+      "textposition": "bottom right",
+      "name": "v₂"
+    }
+  ],
+  "layout": {
+    "title": { "text": "Vectors v₁ and v₂ on the Plane" },
+    "xaxis": { "range": [-1, 3], "zeroline": true, "title": "x" },
+    "yaxis": { "range": [-1, 1], "zeroline": true, "title": "y" },
+    "showlegend": false
+  }
+}
+</code></pre> <p>이들의 Span은 x축 위의 직선 하나뿐이다. 같은 방향의 벡터끼리는 더해봤자 더 넓은 공간을 만들 수 없다.</p> <p>즉, 벡터들의 Span이란 그 벡터들이 <strong>닿을 수 있는 모든 위치</strong>의 집합이다. 이 개념은 선형 독립, 차원, 기저 등과 밀접하게 연결된다.</p> <hr> <h3 id="왜-span과-선형-변환이-연결되는가">왜 Span과 선형 변환이 연결되는가?</h3> <p>어떤 행렬 A에 대해 A·x를 구한다고 했을 때, 결국 A는 자기 열벡터들의 Span 속으로 입력 벡터를 ‘보내는’ 역할을 한다.</p> <p>즉, 행렬의 선형 변환 결과는 행렬 열벡터들의 Span 안에 항상 존재한다. 이 사실은 해를 갖는 연립방정식, 기저, 영공간(null space) 등을 이해할 때 핵심이 된다.</p> <hr> <h2 id="요약">요약</h2> <ul> <li> <p>선형 변환은 덧셈과 스칼라 곱을 보존하는 변환이며, 항상 행렬 곱으로 나타낼 수 있다.</p> </li> <li> <p>행렬 곱은 공간을 회전, 변형, 축소, 투영하는 역할을 한다.</p> </li> <li> <p>Span은 벡터들이 만들어낼 수 있는 모든 선형 결합의 집합이다.</p> </li> <li> <p>선형 변환 결과는 항상 행렬의 열벡터들의 Span 안에 위치한다.</p> </li> </ul> <hr> <p>선형 변환에 대해 이야기 해보기 위해 여러 예제를 만들어 보았으나, 블로그의 특성상 선형 변환이 적용되는 예시를 보여주기 어려웠다. <strong>3b1b</strong>의 영상을 보고 직관적으로 이해하는 편이 학습에 도움이 될 것이라 생각한다. 다음 글에서는 선형 변환에서 중요한 개념인 <strong>고유값(eigenvalue)</strong>과 <strong>고유벡터(eigenvector)</strong>에 대해 다룬다. 특정 벡터는 선형 변환을 거쳐도 방향이 바뀌지 않고 크기만 달라지는데, 그런 벡터가 무엇이며 왜 중요한지 살펴보겠다.</p> </div> </article> <br> <hr> <br> <ul class="list-disc pl-8"></ul> <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2> <p class="mb-2">Here are some more articles you might like to read next:</p> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2025/Linear_Transformation/">Linear Transformation</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2025/%EB%B2%A1%ED%84%B0%EC%99%80_%ED%96%89%EB%A0%AC/">벡터와 행렬</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2025/Vectors_and_Matrices/">Vectors and Matrices</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2025/%EC%84%A0%ED%98%95%EB%8C%80%EC%88%98%ED%95%99%EC%97%90%EC%84%9C_%EC%A3%BC%EB%A1%9C_%EC%93%B0%EC%9D%B4%EB%8A%94_%EC%9A%A9%EC%96%B4/">선형대수학에서 주로 쓰이는 용어</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2025/Common_Terminology_in_Linear_Algebra/">Common Terminology in Linear Algebra</a> </li> </div> </div> <footer class="fixed-bottom" role="contentinfo"> <div class="container mt-0"> © Copyright 2025 Minseong Park. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Photos from <a href="https://unsplash.com" target="_blank" rel="external nofollow noopener">Unsplash</a>. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script src="/assets/js/bootstrap.bundle.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script> <script defer src="/assets/js/masonry.js?a0db7e5d5c70cc3252b3138b0c91dcaf" type="text/javascript"></script> <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha256-0q+JdOlScWOHcunpUk21uab1jW7C1deBQARHtKMcaB4=" crossorigin="anonymous"></script> <script defer src="/assets/js/chartjs-setup.js?183c5859923724fb1cb3c67593848e71" type="text/javascript"></script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script> <script defer src="/assets/js/zoom.js?85ddb88934d28b74e78031fd54cf8308"></script> <script src="/assets/js/no_defer.js?2781658a0a2b13ed609542042a859126"></script> <script defer src="/assets/js/common.js?e0514a05c5c95ac1a93a8dfd5249b92e"></script> <script defer src="/assets/js/copy_code.js?c8a01c11a92744d44b093fc3bda915df" type="text/javascript"></script> <script defer src="/assets/js/jupyter_new_tab.js?d9f17b6adc2311cbabd747f4538bb15f"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script> <script src="/assets/js/mathjax-setup.js?a5bb4e6a542c546dd929b24b8b236dfd"></script> <script defer src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6" crossorigin="anonymous"></script> <script defer src="/assets/js/progress-bar.js?2f30e0e6801ea8f5036fa66e1ab0a71a" type="text/javascript"></script> <script src="/assets/js/vanilla-back-to-top.min.js?f40d453793ff4f64e238e420181a1d17"></script> <script>
+    addBackToTop();
+  </script> <script type="module" src="/assets/js/search/ninja-keys.min.js?a3446f084dcaecc5f75aa1757d087dcf"></script> <ninja-keys hidebreadcrumbs noautoloadmdicons placeholder="Type to start searching"></ninja-keys> <script src="/assets/js/search-setup.js?6c304f7b1992d4b60f7a07956e52f04a"></script> <script src="/assets/js/search-data.js"></script> <script src="/assets/js/shortcut-key.js?6f508d74becd347268a7f822bca7309d"></script> </body> </html>

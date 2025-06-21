@@ -37,7 +37,29 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/PD/";
           },
-        },{id: "post-벡터와-행렬",
+        },{id: "post-선형-변환",
+        
+          title: "선형 변환",
+        
+        description: "벡터를 변환하는 함수와 생성에 대해",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/%EC%84%A0%ED%98%95_%EB%B3%80%ED%99%98/";
+          
+        },
+      },{id: "post-linear-transformation",
+        
+          title: "Linear Transformation",
+        
+        description: "Functions that transform vectors and the idea of span",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/Linear_Transformation/";
+          
+        },
+      },{id: "post-벡터와-행렬",
         
           title: "벡터와 행렬",
         
