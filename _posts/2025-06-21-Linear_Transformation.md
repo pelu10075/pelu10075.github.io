@@ -7,7 +7,7 @@ tags: LinearAlgebra EN
 categories: Study
 featured: false
 chart:
-  chartjs: true
+  plotly: true
 ---
 
 ## Linear Transformation — A Function That Changes Vectors
