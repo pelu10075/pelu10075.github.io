@@ -1,0 +1,104 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+function formatDate(d: Date) {
+	return new Intl.DateTimeFormat('ko-KR', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+	}).format(d);
+}
+---
+
+<BaseLayout title="블로그" description="기술 글과 메모">
+	<div class="page-head">
+		<h1>블로그</h1>
+		<p class="lead">마크다운으로 작성한 글 목록입니다. 새 글은 <code>src/content/blog/</code>에 추가하세요.</p>
+	</div>
+	<ul class="post-list">
+		{
+			posts.map((post) => (
+				<li>
+					<a href={`/blog/${post.id}/`} class="post-card">
+						<span class="date">{formatDate(post.data.pubDate)}</span>
+						<h2>{post.data.title}</h2>
+						<p>{post.data.description}</p>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</BaseLayout>
+
+<style>
+	.page-head {
+		max-width: var(--max);
+		margin-bottom: 2.5rem;
+	}
+
+	h1 {
+		font-size: clamp(2rem, 4vw, 2.75rem);
+		margin: 0 0 0.75rem;
+	}
+
+	.lead {
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 1.05rem;
+	}
+
+	.post-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		max-width: var(--max);
+	}
+
+	.post-card {
+		display: block;
+		padding: 1.25rem 1.35rem;
+		border-radius: var(--radius);
+		border: 1px solid var(--border);
+		background: var(--bg-elevated);
+		text-decoration: none;
+		color: inherit;
+		transition:
+			border-color 0.15s ease,
+			transform 0.15s ease;
+	}
+
+	.post-card:hover {
+		border-color: rgba(126, 184, 218, 0.35);
+		transform: translateY(-2px);
+	}
+
+	.post-card .date {
+		display: block;
+		font-size: 0.8rem;
+		color: var(--text-muted);
+		margin-bottom: 0.35rem;
+		font-family: var(--font-display);
+		font-weight: 600;
+	}
+
+	.post-card h2 {
+		margin: 0 0 0.5rem;
+		font-size: 1.2rem;
+		color: var(--text);
+	}
+
+	.post-card p {
+		margin: 0;
+		font-size: 0.95rem;
+		color: var(--text-muted);
+		line-height: 1.5;
+	}
+</style>

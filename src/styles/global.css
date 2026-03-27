@@ -1,0 +1,86 @@
+:root {
+	--bg: #0a0e14;
+	--bg-elevated: #121820;
+	--text: #e8e4dc;
+	--text-muted: #9aa3ad;
+	--accent: #7eb8da;
+	--accent-warm: #d4a574;
+	--border: rgba(232, 228, 220, 0.12);
+	--font-display: 'Syne', system-ui, sans-serif;
+	--font-body: 'Literata', Georgia, serif;
+	--radius: 12px;
+	--max: 720px;
+	--max-wide: 960px;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	font-family: var(--font-body);
+	font-size: 1.05rem;
+	line-height: 1.65;
+	color: var(--text);
+	background: var(--bg);
+	background-image:
+		radial-gradient(ellipse 100% 80% at 50% -30%, rgba(126, 184, 218, 0.12), transparent),
+		radial-gradient(ellipse 60% 50% at 100% 0%, rgba(212, 165, 116, 0.06), transparent);
+}
+
+a {
+	color: var(--accent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	transition: color 0.15s ease;
+}
+
+a:hover {
+	color: var(--accent-warm);
+}
+
+h1,
+h2,
+h3 {
+	font-family: var(--font-display);
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+}
+
+code {
+	font-family: ui-monospace, 'Cascadia Code', monospace;
+	font-size: 0.92em;
+	background: var(--bg-elevated);
+	padding: 0.15em 0.4em;
+	border-radius: 6px;
+	border: 1px solid var(--border);
+}
+
+pre {
+	padding: 1rem 1.15rem;
+	border-radius: var(--radius);
+	background: var(--bg-elevated);
+	border: 1px solid var(--border);
+	overflow-x: auto;
+}
+
+pre code {
+	background: none;
+	border: none;
+	padding: 0;
+}
+
+.prose img {
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--radius);
+}

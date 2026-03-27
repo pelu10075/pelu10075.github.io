@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+	title="Edward Park · 포트폴리오"
+	description="개발자 포트폴리오 — 프로젝트 소개와 기술 블로그"
+>
+	<section class="hero">
+		<p class="eyebrow">안녕하세요</p>
+		<h1>코드와 글로 생각을 정리하는<br />개발자입니다.</h1>
+		<p class="intro">
+			이 사이트는 <strong>Astro</strong>로 만들었고, <strong>GitHub Pages</strong>에 호스팅합니다. 프로젝트와
+			메모는 <a href="/blog/">블로그</a>에서 확인할 수 있어요. 아래 내용은 예시이니 본인 정보와 링크로 바꿔
+			쓰시면 됩니다.
+		</p>
+	</section>
+
+	<section class="section" id="projects">
+		<h2>프로젝트</h2>
+		<ul class="cards">
+			<li class="card">
+				<h3>이 포트폴리오 사이트</h3>
+				<p>정적 사이트 생성(Astro), 마크다운 블로그, GitHub Actions 배포.</p>
+				<span class="tech">Astro · TypeScript · GitHub Pages</span>
+			</li>
+			<li class="card">
+				<h3>다음 프로젝트 제목</h3>
+				<p>한 줄 설명을 적고, GitHub·데모 링크를 걸어보세요.</p>
+				<span class="tech">스택 · 키워드</span>
+			</li>
+		</ul>
+	</section>
+
+	<section class="section" id="about">
+		<h2>소개</h2>
+		<p>
+			관심 분야, 사용하는 언어·프레임워크, 협업 경험 등을 이 문단에 적어 두면 좋습니다. 이력서나 LinkedIn과
+			톤을 맞추어도 되고, 짧은 자기소개만 넣어도 됩니다.
+		</p>
+	</section>
+
+	<section class="section contact" id="contact">
+		<h2>연락</h2>
+		<p>
+			<a href="https://github.com/pelu10075" rel="noopener noreferrer">GitHub</a>
+			<!-- 이메일은 스팸을 줄이려면 이미지로 넣거나, 폼 서비스를 쓰는 방법도 있습니다. -->
+		</p>
+	</section>
+</BaseLayout>
+
+<style>
+	.hero {
+		max-width: var(--max);
+		padding-bottom: 3rem;
+	}
+
+	.eyebrow {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 0.85rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--accent-warm);
+		margin: 0 0 0.75rem;
+	}
+
+	.hero h1 {
+		font-size: clamp(2rem, 5vw, 3rem);
+		margin: 0 0 1.25rem;
+		line-height: 1.15;
+	}
+
+	.intro {
+		margin: 0;
+		font-size: 1.1rem;
+		color: var(--text-muted);
+		line-height: 1.7;
+		max-width: 38rem;
+	}
+
+	.intro strong {
+		color: var(--text);
+	}
+
+	.section {
+		max-width: var(--max);
+		padding: 2.5rem 0;
+		border-top: 1px solid var(--border);
+	}
+
+	.section h2 {
+		font-size: 1.35rem;
+		margin: 0 0 1.25rem;
+		color: var(--accent);
+	}
+
+	.section p {
+		margin: 0;
+		color: var(--text-muted);
+		line-height: 1.7;
+	}
+
+	.cards {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 1rem;
+	}
+
+	@media (min-width: 640px) {
+		.cards {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	.card {
+		padding: 1.25rem 1.35rem;
+		border-radius: var(--radius);
+		border: 1px solid var(--border);
+		background: var(--bg-elevated);
+	}
+
+	.card h3 {
+		font-family: var(--font-display);
+		font-size: 1.05rem;
+		margin: 0 0 0.5rem;
+	}
+
+	.card p {
+		font-size: 0.95rem;
+		margin: 0 0 0.75rem;
+	}
+
+	.tech {
+		font-size: 0.8rem;
+		color: var(--accent-warm);
+		font-family: var(--font-display);
+		font-weight: 600;
+	}
+
+	.contact a {
+		font-weight: 600;
+	}
+</style>
