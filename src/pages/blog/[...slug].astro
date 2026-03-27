@@ -22,7 +22,7 @@ function formatDate(d: Date) {
 }
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description}>
+<BaseLayout title={`${post.data.title} | Blog`} description={post.data.description}>
 	<article class="prose">
 		<p class="meta">
 			<time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
@@ -54,49 +54,83 @@ function formatDate(d: Date) {
 	}
 
 	.meta {
-		font-size: 0.9rem;
-		color: var(--text-muted);
-		margin: 0 0 0.5rem;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: var(--text-dim);
+		margin: 0 0 0.75rem;
+		letter-spacing: 0.04em;
 	}
 
 	.tags {
-		color: var(--text-muted);
+		color: var(--text-dim);
 	}
 
 	h1 {
 		font-size: clamp(1.85rem, 3.5vw, 2.35rem);
 		margin: 0 0 1rem;
+		letter-spacing: -0.02em;
 	}
 
 	.deck {
-		font-size: 1.1rem;
+		font-size: 1.05rem;
 		color: var(--text-muted);
 		margin: 0 0 2rem;
-		line-height: 1.55;
+		line-height: 1.65;
+		font-weight: 300;
 	}
 
 	.content :global(h2) {
-		font-size: 1.35rem;
+		font-size: 1.25rem;
 		margin: 2rem 0 0.75rem;
+		font-weight: 600;
 	}
 
 	.content :global(p) {
 		margin: 0 0 1rem;
+		color: var(--text-muted);
+		font-weight: 300;
+		line-height: 1.85;
+	}
+
+	.content :global(strong) {
+		color: var(--text);
+		font-weight: 500;
 	}
 
 	.content :global(ul),
 	.content :global(ol) {
 		margin: 0 0 1rem;
 		padding-left: 1.35rem;
+		color: var(--text-muted);
 	}
 
 	.content :global(li) {
 		margin-bottom: 0.35rem;
 	}
 
+	.content :global(a) {
+		color: var(--accent);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.content :global(a:hover) {
+		color: var(--text-muted);
+	}
+
 	.back {
 		margin-top: 3rem;
 		padding-top: 1.5rem;
 		border-top: 1px solid var(--border);
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+	}
+
+	.back a {
+		color: var(--text-muted);
+	}
+
+	.back a:hover {
+		color: var(--accent);
 	}
 </style>

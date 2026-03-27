@@ -1,146 +1,994 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const blogPosts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
+
+function formatBlogDate(d: Date) {
+	return new Intl.DateTimeFormat('en-CA', {
+		year: 'numeric',
+		month: 'short',
+		day: 'numeric',
+	}).format(d);
+}
 ---
 
 <BaseLayout
-	title="Edward Park · 포트폴리오"
-	description="개발자 포트폴리오 — 프로젝트 소개와 기술 블로그"
+	title="Min-Seong Park | Portfolio"
+	description="Software developer & algorithm enthusiast — FEIA, targeting UWaterloo."
+	fullWidth
 >
-	<section class="hero">
-		<p class="eyebrow">안녕하세요</p>
-		<h1>코드와 글로 생각을 정리하는<br />개발자입니다.</h1>
-		<p class="intro">
-			이 사이트는 <strong>Astro</strong>로 만들었고, <strong>GitHub Pages</strong>에 호스팅합니다. 프로젝트와
-			메모는 <a href="/blog/">블로그</a>에서 확인할 수 있어요. 아래 내용은 예시이니 본인 정보와 링크로 바꿔
-			쓰시면 됩니다.
-		</p>
+	<section id="hero" class="hero" aria-label="Introduction">
+		<div class="hero-grid" aria-hidden="true"></div>
+		<div class="hero-inner">
+			<div class="hero-tag">Software Developer & Algorithm Enthusiast</div>
+			<h1 class="hero-name">Min-Seong Park</h1>
+			<div class="hero-name-kr">박민성</div>
+			<p class="hero-desc">
+				Grade 10 at <strong>FEIA</strong>, building towards <strong>University of Waterloo Engineering</strong>.
+				I write clean systems in Python &amp; C++, design backends with FastAPI, and sharpen my edge through
+				competitive programming.
+			</p>
+			<div class="hero-btns">
+				<a
+					href="https://github.com/pelu10075"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="btn btn-primary"
+				>
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+						><path
+							d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+						></path></svg
+					>
+					GitHub
+				</a>
+				<a href="#contact" class="btn btn-secondary">Contact Me</a>
+			</div>
+		</div>
+		<div class="hero-scroll" aria-hidden="true">Scroll</div>
 	</section>
 
-	<section class="section" id="projects">
-		<h2>프로젝트</h2>
-		<ul class="cards">
-			<li class="card">
-				<h3>이 포트폴리오 사이트</h3>
-				<p>정적 사이트 생성(Astro), 마크다운 블로그, GitHub Actions 배포.</p>
-				<span class="tech">Astro · TypeScript · GitHub Pages</span>
-			</li>
-			<li class="card">
-				<h3>다음 프로젝트 제목</h3>
-				<p>한 줄 설명을 적고, GitHub·데모 링크를 걸어보세요.</p>
-				<span class="tech">스택 · 키워드</span>
-			</li>
-		</ul>
+	<section id="about" class="band">
+		<div class="section-inner">
+			<div class="section-label" data-num="01">About</div>
+			<h2 class="section-title reveal">Who I Am</h2>
+			<div class="about-grid">
+				<div class="about-text reveal reveal-delay-1">
+					<p>
+						I'm a <strong>Grade 10 student at FEIA</strong> (Foreign Engineering & International Academy),
+						passionate about computer science and software engineering from a young age.
+					</p>
+					<p>
+						My goal is to pursue <strong>Computer Engineering at the University of Waterloo</strong> — one of
+						the world's top programs for hands-on, co-op-driven engineering education.
+					</p>
+					<p>
+						I explore <strong>algorithms and data structures</strong> through competitive programming, build
+						lightweight <strong>REST APIs</strong> with FastAPI, and implement low-level systems in <strong
+							>C++</strong
+						>. I'm particularly drawn to cryptography and security.
+					</p>
+				</div>
+				<div class="about-stats reveal reveal-delay-2">
+					<div class="stat-card"><div class="stat-num">10th</div><div class="stat-label">Grade — FEIA</div></div>
+					<div class="stat-card"><div class="stat-num">4+</div><div class="stat-label">GitHub Repos</div></div>
+					<div class="stat-card"><div class="stat-num">C++</div><div class="stat-label">Primary Lang</div></div>
+					<div class="stat-card"><div class="stat-num">UW</div><div class="stat-label">Target University</div></div>
+				</div>
+			</div>
+		</div>
 	</section>
 
-	<section class="section" id="about">
-		<h2>소개</h2>
-		<p>
-			관심 분야, 사용하는 언어·프레임워크, 협업 경험 등을 이 문단에 적어 두면 좋습니다. 이력서나 LinkedIn과
-			톤을 맞추어도 되고, 짧은 자기소개만 넣어도 됩니다.
-		</p>
+	<section id="skills">
+		<div class="section-inner">
+			<div class="section-label" data-num="02">Skills</div>
+			<h2 class="section-title reveal">Tech Stack</h2>
+			<div class="skills-grid">
+				<div class="skill-card reveal reveal-delay-1">
+					<div class="skill-icon">py</div>
+					<div class="skill-name">Python</div>
+					<div class="skill-desc">Scripting, automation, data processing, and rapid prototyping.</div>
+					<div class="skill-tags">
+						<span class="tag">scripting</span>
+						<span class="tag">automation</span>
+						<span class="tag">data</span>
+					</div>
+				</div>
+				<div class="skill-card reveal reveal-delay-2">
+					<div class="skill-icon">c++</div>
+					<div class="skill-name">C++</div>
+					<div class="skill-desc">Systems programming, competitive problem solving, memory-level control.</div>
+					<div class="skill-tags">
+						<span class="tag">systems</span>
+						<span class="tag">STL</span>
+						<span class="tag">competitive</span>
+					</div>
+				</div>
+				<div class="skill-card reveal reveal-delay-3">
+					<div class="skill-icon">∑</div>
+					<div class="skill-name">Algorithms</div>
+					<div class="skill-desc">Graph theory, dynamic programming, sorting, and complexity analysis.</div>
+					<div class="skill-tags">
+						<span class="tag">DP</span>
+						<span class="tag">graphs</span>
+						<span class="tag">BFS/DFS</span>
+						<span class="tag">greedy</span>
+					</div>
+				</div>
+				<div class="skill-card reveal reveal-delay-4">
+					<div class="skill-icon">api</div>
+					<div class="skill-name">FastAPI</div>
+					<div class="skill-desc">RESTful backend services with async Python and auto-generated docs.</div>
+					<div class="skill-tags">
+						<span class="tag">REST</span>
+						<span class="tag">async</span>
+						<span class="tag">OpenAPI</span>
+					</div>
+				</div>
+				<div class="skill-card reveal reveal-delay-1">
+					<div class="skill-icon">🔐</div>
+					<div class="skill-name">Cryptography</div>
+					<div class="skill-desc">Classical and modern ciphers — including a full DES implementation.</div>
+					<div class="skill-tags">
+						<span class="tag">DES</span>
+						<span class="tag">AES</span>
+						<span class="tag">block ciphers</span>
+					</div>
+				</div>
+				<div class="skill-card reveal reveal-delay-2">
+					<div class="skill-icon">⚙</div>
+					<div class="skill-name">Tooling</div>
+					<div class="skill-desc">Git version control, GitHub workflows, and command-line development.</div>
+					<div class="skill-tags">
+						<span class="tag">Git</span>
+						<span class="tag">GitHub</span>
+						<span class="tag">CLI</span>
+					</div>
+				</div>
+			</div>
+		</div>
 	</section>
 
-	<section class="section contact" id="contact">
-		<h2>연락</h2>
-		<p>
-			<a href="https://github.com/pelu10075" rel="noopener noreferrer">GitHub</a>
-			<!-- 이메일은 스팸을 줄이려면 이미지로 넣거나, 폼 서비스를 쓰는 방법도 있습니다. -->
-		</p>
+	<section id="projects" class="band">
+		<div class="section-inner">
+			<div class="section-label" data-num="03">Projects</div>
+			<h2 class="section-title reveal">What I've Built</h2>
+			<div class="projects-grid">
+				<div class="project-card reveal reveal-delay-1">
+					<div class="project-num">01</div>
+					<div class="project-title">
+						DES Implementation
+						<span class="project-arrow">↗</span>
+					</div>
+					<div class="project-desc">
+						A from-scratch implementation of the Data Encryption Standard (DES) in Python/C++. Key scheduling,
+						Feistel rounds, and S-box substitutions with a focus on correctness and readability.
+					</div>
+					<div class="project-footer">
+						<a href="https://github.com/pelu10075/DES" target="_blank" rel="noopener noreferrer" class="project-link">
+							<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+								><path
+									d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+								></path></svg
+							>
+							View Source
+						</a>
+						<span class="tag">Cryptography</span>
+						<span class="tag">Python</span>
+					</div>
+				</div>
+				<div class="project-card reveal reveal-delay-2">
+					<div class="project-num">02</div>
+					<div class="project-title">
+						munseong_api
+						<span class="project-arrow">↗</span>
+					</div>
+					<div class="project-desc">
+						A personal REST API backend built with FastAPI — async endpoints, structured routing, and
+						auto-generated OpenAPI documentation.
+					</div>
+					<div class="project-footer">
+						<a
+							href="https://github.com/pelu10075/munseong_api"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="project-link"
+						>
+							<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+								><path
+									d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+								></path></svg
+							>
+							View Source
+						</a>
+						<span class="tag">FastAPI</span>
+						<span class="tag">Python</span>
+						<span class="tag">Backend</span>
+					</div>
+				</div>
+				<div class="project-card reveal reveal-delay-3">
+					<div class="project-num">03</div>
+					<div class="project-title">
+						MMSCP Project
+						<span class="project-arrow">↗</span>
+					</div>
+					<div class="project-desc">
+						A multi-module project demonstrating structured software design and algorithmic problem solving in
+						C++ or Python.
+					</div>
+					<div class="project-footer">
+						<a
+							href="https://github.com/pelu10075/MMSCP_Project"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="project-link"
+						>
+							<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+								><path
+									d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+								></path></svg
+							>
+							View Source
+						</a>
+						<span class="tag">C++</span>
+						<span class="tag">Algorithms</span>
+					</div>
+				</div>
+				<div class="project-card reveal reveal-delay-4">
+					<div class="project-num">04</div>
+					<div class="project-title">
+						Portfolio Site
+						<span class="project-arrow">↗</span>
+					</div>
+					<div class="project-desc">
+						This portfolio — fast, minimal, responsive. Built with Astro and hosted on GitHub Pages.
+					</div>
+					<div class="project-footer">
+						<a
+							href="https://github.com/pelu10075/pelu10075.github.io"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="project-link"
+						>
+							<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+								><path
+									d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+								></path></svg
+							>
+							View Source
+						</a>
+						<span class="tag">Astro</span>
+						<span class="tag">GitHub Pages</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="competitive">
+		<div class="section-inner">
+			<div class="section-label" data-num="04">Competitive Programming</div>
+			<h2 class="section-title reveal">Algorithm Grind</h2>
+			<div class="cp-layout">
+				<div class="cp-text reveal reveal-delay-1">
+					<p>
+						Competitive programming is how I push the limits of algorithmic thinking. Through platforms like <strong
+							>Baekjoon</strong
+						>, I tackle problems from graph traversal and dynamic programming to number theory and trees.
+					</p>
+					<p>
+						Consistent problem solving builds the mental model needed to design efficient, correct software.
+					</p>
+					<div class="cp-actions">
+						<a href="https://solved.ac/profile/edward_10" target="_blank" rel="noopener noreferrer" class="cp-link">
+							View solved.ac Profile ↗
+						</a>
+					</div>
+				</div>
+				<div class="cp-badge-wrap reveal reveal-delay-2">
+					<img
+						src="https://mazassumnida.wtf/api/v2/generate_badge?boj=edward_10"
+						alt="edward_10's solved.ac stats"
+						width="320"
+						height="160"
+						loading="lazy"
+					/>
+					<div class="cp-badge-foot">
+						<a href="https://solved.ac/profile/edward_10" target="_blank" rel="noopener noreferrer" class="cp-link">
+							@edward_10
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="blog" class="band blog-band">
+		<div class="section-inner">
+			<div class="section-label" data-num="05">Writing</div>
+			<h2 class="section-title reveal">Blog</h2>
+			<div class="blog-preview-list">
+				{
+					blogPosts.length === 0 ? (
+						<div class="blog-empty">
+							<a href="/blog/">No posts yet — visit the blog →</a>
+						</div>
+					) : (
+						blogPosts.map((post) => (
+							<a href={`/blog/${post.id}/`} class="blog-preview-card">
+								<div class="blog-preview-meta">
+									{formatBlogDate(post.data.pubDate)}
+									{post.data.tags?.[0] && ` · ${post.data.tags[0]}`}
+								</div>
+								<div class="blog-preview-title">{post.data.title}</div>
+								<div class="blog-preview-excerpt">{post.data.description}</div>
+							</a>
+						))
+					)
+				}
+			</div>
+			<div class="blog-more">
+				<a href="/blog/" class="btn btn-secondary">All Posts →</a>
+			</div>
+		</div>
+	</section>
+
+	<section id="contact" class="band">
+		<div class="section-inner">
+			<div class="section-label" data-num="06">Contact</div>
+			<div class="contact-inner">
+				<div class="contact-heading reveal">
+					Let's connect.<br />
+					<span>I'm always open to opportunities,<br />collaborations, and new ideas.</span>
+				</div>
+				<div class="contact-links reveal reveal-delay-1">
+					<a href="mailto:peullutv4@gmail.com" class="contact-link">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"
+							><path
+								d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+							></path></svg
+						>
+						peullutv4@gmail.com
+					</a>
+					<a href="https://github.com/pelu10075" target="_blank" rel="noopener noreferrer" class="contact-link">
+						<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+							><path
+								d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+							></path></svg
+						>
+						github.com/pelu10075
+					</a>
+					<a href="https://solved.ac/profile/edward_10" target="_blank" rel="noopener noreferrer" class="contact-link">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"
+							><circle cx="12" cy="12" r="3"></circle><path
+								d="M20.188 10.934c.2.643.312 1.354.312 2.066s-.112 1.423-.312 2.066M3.812 13.066A9 9 0 013.5 11M12 3.5a8.5 8.5 0 018.5 8.5M12 3.5A8.5 8.5 0 003.5 12"
+							></path></svg
+						>
+						solved.ac/@edward_10
+					</a>
+				</div>
+			</div>
+		</div>
 	</section>
 </BaseLayout>
 
 <style>
 	.hero {
-		max-width: var(--max);
-		padding-bottom: 3rem;
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		padding: 0 2.5rem;
+		position: relative;
+		overflow: hidden;
 	}
 
-	.eyebrow {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 0.85rem;
-		letter-spacing: 0.12em;
+	.hero-grid {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(var(--border) 1px, transparent 1px),
+			linear-gradient(90deg, var(--border) 1px, transparent 1px);
+		background-size: 60px 60px;
+		opacity: 0.3;
+		mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+	}
+
+	.hero-inner {
+		position: relative;
+		max-width: 900px;
+	}
+
+	.hero-tag {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text-dim);
+		letter-spacing: 0.2em;
 		text-transform: uppercase;
-		color: var(--accent-warm);
-		margin: 0 0 0.75rem;
+		margin-bottom: 1.5rem;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
 	}
 
-	.hero h1 {
-		font-size: clamp(2rem, 5vw, 3rem);
-		margin: 0 0 1.25rem;
-		line-height: 1.15;
+	.hero-tag::before {
+		content: '';
+		width: 32px;
+		height: 1px;
+		background: var(--text-dim);
 	}
 
-	.intro {
-		margin: 0;
-		font-size: 1.1rem;
+	.hero-name {
+		font-size: clamp(3rem, 8vw, 6.5rem);
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: -0.03em;
+		margin: 0 0 0.25rem;
+	}
+
+	.hero-name-kr {
+		font-size: clamp(1.2rem, 3vw, 2rem);
+		font-weight: 300;
 		color: var(--text-muted);
-		line-height: 1.7;
-		max-width: 38rem;
+		letter-spacing: 0.1em;
+		margin-bottom: 2rem;
 	}
 
-	.intro strong {
+	.hero-desc {
+		font-size: clamp(1rem, 2vw, 1.2rem);
+		color: var(--text-muted);
+		max-width: 540px;
+		margin: 0 0 3rem;
+		font-weight: 300;
+		line-height: 1.8;
+	}
+
+	.hero-desc strong {
 		color: var(--text);
+		font-weight: 500;
 	}
 
-	.section {
-		max-width: var(--max);
-		padding: 2.5rem 0;
-		border-top: 1px solid var(--border);
+	.hero-btns {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
 	}
 
-	.section h2 {
-		font-size: 1.35rem;
-		margin: 0 0 1.25rem;
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		letter-spacing: 0.05em;
+		text-decoration: none;
+		border-radius: 4px;
+		transition: all 0.2s;
+		cursor: pointer;
+		border: 1px solid transparent;
+	}
+
+	.btn-primary {
+		background: var(--accent);
+		color: var(--bg);
+		border-color: var(--accent);
+	}
+
+	.btn-primary:hover {
+		background: transparent;
 		color: var(--accent);
 	}
 
-	.section p {
-		margin: 0;
+	.btn-secondary {
+		background: transparent;
 		color: var(--text-muted);
-		line-height: 1.7;
+		border-color: var(--border);
 	}
 
-	.cards {
-		list-style: none;
-		margin: 0;
-		padding: 0;
+	.btn-secondary:hover {
+		border-color: var(--text-muted);
+		color: var(--text);
+	}
+
+	.hero-scroll {
+		position: absolute;
+		bottom: 3rem;
+		left: 2.5rem;
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-dim);
+		letter-spacing: 0.15em;
+		writing-mode: vertical-rl;
+		text-orientation: mixed;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.hero-scroll::after {
+		content: '';
+		width: 1px;
+		height: 40px;
+		background: linear-gradient(to bottom, var(--text-dim), transparent);
+	}
+
+	.band {
+		background: var(--bg2);
+	}
+
+	section:not(.hero) {
+		padding: 6rem 2.5rem;
+	}
+
+	.section-inner {
+		max-width: 960px;
+		margin: 0 auto;
+	}
+
+	.section-label {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-dim);
+		letter-spacing: 0.25em;
+		text-transform: uppercase;
+		margin-bottom: 0.75rem;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.section-label::before {
+		content: attr(data-num);
+		color: var(--text-dim);
+	}
+
+	.section-title {
+		font-size: clamp(2rem, 5vw, 3.2rem);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		margin: 0 0 3rem;
+		line-height: 1.1;
+	}
+
+	.about-grid {
 		display: grid;
-		gap: 1rem;
+		grid-template-columns: 1fr 1fr;
+		gap: 4rem;
+		align-items: start;
 	}
 
-	@media (min-width: 640px) {
-		.cards {
-			grid-template-columns: 1fr 1fr;
+	.about-text p {
+		color: var(--text-muted);
+		font-size: 1.05rem;
+		line-height: 1.9;
+		margin: 0 0 1.25rem;
+		font-weight: 300;
+	}
+
+	.about-text strong {
+		color: var(--text);
+		font-weight: 500;
+	}
+
+	.about-stats {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1px;
+		background: var(--border);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		overflow: hidden;
+	}
+
+	.stat-card {
+		background: var(--bg2);
+		padding: 1.75rem;
+	}
+
+	.stat-num {
+		font-family: var(--font-mono);
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--accent);
+		margin-bottom: 0.25rem;
+	}
+
+	.stat-label {
+		font-size: 0.8rem;
+		color: var(--text-dim);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+
+	.skills-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: 1px;
+		background: var(--border);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		overflow: hidden;
+	}
+
+	.skill-card {
+		background: var(--bg);
+		padding: 2rem 1.75rem;
+		transition: background 0.2s;
+	}
+
+	.skill-card:hover {
+		background: var(--bg3);
+	}
+
+	.skill-icon {
+		font-family: var(--font-mono);
+		font-size: 1.5rem;
+		margin-bottom: 1rem;
+		color: var(--text-muted);
+	}
+
+	.skill-name {
+		font-size: 1.05rem;
+		font-weight: 600;
+		margin-bottom: 0.5rem;
+	}
+
+	.skill-desc {
+		font-size: 0.85rem;
+		color: var(--text-dim);
+		line-height: 1.6;
+		margin-bottom: 1rem;
+	}
+
+	.skill-tags,
+	.project-footer {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+
+	.tag {
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		padding: 0.2rem 0.5rem;
+		border: 1px solid var(--border);
+		border-radius: 3px;
+		color: var(--text-dim);
+		letter-spacing: 0.05em;
+	}
+
+	.projects-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 1px;
+		background: var(--border);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		overflow: hidden;
+	}
+
+	.project-card {
+		background: var(--bg2);
+		padding: 2rem;
+		display: flex;
+		flex-direction: column;
+		transition: background 0.2s;
+		position: relative;
+	}
+
+	.project-card:hover {
+		background: var(--bg3);
+	}
+
+	.project-card:hover .project-arrow {
+		opacity: 1;
+		transform: translate(2px, -2px);
+	}
+
+	.project-num {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-dim);
+		margin-bottom: 1.5rem;
+	}
+
+	.project-title {
+		font-size: 1.15rem;
+		font-weight: 600;
+		margin-bottom: 0.75rem;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 0.5rem;
+	}
+
+	.project-arrow {
+		font-size: 1rem;
+		color: var(--text-dim);
+		flex-shrink: 0;
+		opacity: 0;
+		transition: all 0.2s;
+	}
+
+	.project-desc {
+		font-size: 0.88rem;
+		color: var(--text-dim);
+		line-height: 1.7;
+		flex: 1;
+		margin-bottom: 1.5rem;
+	}
+
+	.project-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-muted);
+		text-decoration: none;
+		padding: 0.3rem 0.6rem;
+		border: 1px solid var(--border);
+		border-radius: 3px;
+		transition: all 0.2s;
+		letter-spacing: 0.05em;
+	}
+
+	.project-link:hover {
+		border-color: var(--text-muted);
+		color: var(--text);
+	}
+
+	.cp-layout {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 3rem;
+		align-items: start;
+	}
+
+	.cp-text p {
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1.9;
+		margin: 0 0 1rem;
+		font-weight: 300;
+	}
+
+	.cp-actions {
+		margin-top: 1.5rem;
+	}
+
+	.cp-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: var(--text-muted);
+		text-decoration: none;
+		padding: 0.5rem 1rem;
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		transition: all 0.2s;
+	}
+
+	.cp-link:hover {
+		border-color: var(--text-muted);
+		color: var(--text);
+	}
+
+	.cp-badge-wrap {
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		overflow: hidden;
+		background: var(--bg3);
+		padding: 1.5rem;
+		text-align: center;
+	}
+
+	.cp-badge-wrap img {
+		max-width: 100%;
+		display: block;
+		margin: 0 auto;
+	}
+
+	.cp-badge-foot {
+		margin-top: 1rem;
+	}
+
+	.blog-preview-list {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+		background: var(--border);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		overflow: hidden;
+	}
+
+	.blog-preview-card {
+		display: block;
+		background: var(--bg2);
+		padding: 1.75rem 2rem;
+		text-decoration: none;
+		color: inherit;
+		transition: background 0.2s;
+	}
+
+	.blog-preview-card:hover {
+		background: var(--bg3);
+	}
+
+	.blog-preview-meta {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-dim);
+		margin-bottom: 0.5rem;
+		letter-spacing: 0.1em;
+	}
+
+	.blog-preview-title {
+		font-size: 1.05rem;
+		font-weight: 600;
+		color: var(--text);
+		margin-bottom: 0.4rem;
+	}
+
+	.blog-preview-excerpt {
+		font-size: 0.85rem;
+		color: var(--text-dim);
+		line-height: 1.6;
+	}
+
+	.blog-empty {
+		background: var(--bg2);
+		padding: 2rem;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+	}
+
+	.blog-empty a {
+		color: var(--text-muted);
+	}
+
+	.blog-empty a:hover {
+		color: var(--text);
+	}
+
+	.blog-more {
+		margin-top: 2rem;
+	}
+
+	.contact-inner {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 2rem;
+	}
+
+	.contact-heading {
+		font-size: clamp(1.8rem, 4vw, 3rem);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.15;
+	}
+
+	.contact-heading span {
+		color: var(--text-dim);
+		font-weight: 300;
+	}
+
+	.contact-links {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.contact-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
+		color: var(--text-muted);
+		text-decoration: none;
+		padding: 0.75rem 1.25rem;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		transition: all 0.2s;
+		letter-spacing: 0.05em;
+	}
+
+	.contact-link:hover {
+		border-color: var(--text);
+		color: var(--text);
+		background: var(--bg3);
+	}
+
+	.contact-link svg {
+		width: 16px;
+		height: 16px;
+		flex-shrink: 0;
+	}
+
+	.reveal {
+		opacity: 0;
+		transform: translateY(28px);
+		transition:
+			opacity 0.7s ease,
+			transform 0.7s ease;
+	}
+
+	.reveal.visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.reveal-delay-1 {
+		transition-delay: 0.1s;
+	}
+	.reveal-delay-2 {
+		transition-delay: 0.2s;
+	}
+	.reveal-delay-3 {
+		transition-delay: 0.3s;
+	}
+	.reveal-delay-4 {
+		transition-delay: 0.4s;
+	}
+
+	@media (max-width: 768px) {
+		.hero {
+			padding: 0 1.5rem;
+		}
+
+		section:not(.hero) {
+			padding: 4rem 1.5rem;
+		}
+
+		.about-grid {
+			grid-template-columns: 1fr;
+			gap: 2.5rem;
+		}
+
+		.cp-layout {
+			grid-template-columns: 1fr;
+		}
+
+		.hero-scroll {
+			display: none;
 		}
 	}
-
-	.card {
-		padding: 1.25rem 1.35rem;
-		border-radius: var(--radius);
-		border: 1px solid var(--border);
-		background: var(--bg-elevated);
-	}
-
-	.card h3 {
-		font-family: var(--font-display);
-		font-size: 1.05rem;
-		margin: 0 0 0.5rem;
-	}
-
-	.card p {
-		font-size: 0.95rem;
-		margin: 0 0 0.75rem;
-	}
-
-	.tech {
-		font-size: 0.8rem;
-		color: var(--accent-warm);
-		font-family: var(--font-display);
-		font-weight: 600;
-	}
-
-	.contact a {
-		font-weight: 600;
-	}
 </style>
+
+<script>
+	function initHome() {
+		const heroInner = document.querySelector('.hero-inner');
+		if (heroInner instanceof HTMLElement) {
+			heroInner.style.opacity = '0';
+			heroInner.style.transform = 'translateY(20px)';
+			requestAnimationFrame(() => {
+				setTimeout(() => {
+					heroInner.style.transition = 'opacity 0.9s ease, transform 0.9s ease';
+					heroInner.style.opacity = '1';
+					heroInner.style.transform = 'translateY(0)';
+				}, 100);
+			});
+		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((e) => {
+					if (e.isIntersecting) e.target.classList.add('visible');
+				});
+			},
+			{ threshold: 0.1 },
+		);
+		document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+	}
+
+	initHome();
+	document.addEventListener('astro:page-load', initHome);
+</script>

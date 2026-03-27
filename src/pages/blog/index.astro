@@ -15,24 +15,23 @@ function formatDate(d: Date) {
 }
 ---
 
-<BaseLayout title="블로그" description="기술 글과 메모">
+<BaseLayout title="Blog | Min-Seong Park" description="기술 글과 메모">
 	<div class="page-head">
-		<h1>블로그</h1>
-		<p class="lead">마크다운으로 작성한 글 목록입니다. 새 글은 <code>src/content/blog/</code>에 추가하세요.</p>
+		<p class="section-label">Writing</p>
+		<h1 class="page-title">Blog</h1>
+		<p class="lead">마크다운 글은 <code>src/content/blog/</code>에 추가합니다.</p>
 	</div>
-	<ul class="post-list">
+	<div class="post-grid">
 		{
 			posts.map((post) => (
-				<li>
-					<a href={`/blog/${post.id}/`} class="post-card">
-						<span class="date">{formatDate(post.data.pubDate)}</span>
-						<h2>{post.data.title}</h2>
-						<p>{post.data.description}</p>
-					</a>
-				</li>
+				<a href={`/blog/${post.id}/`} class="post-card">
+					<span class="date">{formatDate(post.data.pubDate)}</span>
+					<h2>{post.data.title}</h2>
+					<p>{post.data.description}</p>
+				</a>
 			))
 		}
-	</ul>
+	</div>
 </BaseLayout>
 
 <style>
@@ -41,64 +40,73 @@ function formatDate(d: Date) {
 		margin-bottom: 2.5rem;
 	}
 
-	h1 {
+	.section-label {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-dim);
+		letter-spacing: 0.25em;
+		text-transform: uppercase;
+		margin: 0 0 0.75rem;
+	}
+
+	.page-title {
 		font-size: clamp(2rem, 4vw, 2.75rem);
 		margin: 0 0 0.75rem;
+		letter-spacing: -0.02em;
 	}
 
 	.lead {
 		margin: 0;
 		color: var(--text-muted);
-		font-size: 1.05rem;
+		font-size: 1rem;
+		font-weight: 300;
+		line-height: 1.7;
 	}
 
-	.post-list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
+	.post-grid {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		max-width: var(--max);
+		gap: 1px;
+		background: var(--border);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		overflow: hidden;
+		max-width: var(--max-wide);
 	}
 
 	.post-card {
 		display: block;
-		padding: 1.25rem 1.35rem;
-		border-radius: var(--radius);
-		border: 1px solid var(--border);
-		background: var(--bg-elevated);
+		padding: 1.75rem 2rem;
+		background: var(--bg2);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			border-color 0.15s ease,
-			transform 0.15s ease;
+		transition: background 0.2s;
 	}
 
 	.post-card:hover {
-		border-color: rgba(126, 184, 218, 0.35);
-		transform: translateY(-2px);
+		background: var(--bg3);
 	}
 
 	.post-card .date {
 		display: block;
-		font-size: 0.8rem;
-		color: var(--text-muted);
-		margin-bottom: 0.35rem;
-		font-family: var(--font-display);
-		font-weight: 600;
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-dim);
+		margin-bottom: 0.5rem;
+		letter-spacing: 0.08em;
 	}
 
 	.post-card h2 {
 		margin: 0 0 0.5rem;
-		font-size: 1.2rem;
+		font-size: 1.1rem;
+		font-weight: 600;
 		color: var(--text);
 	}
 
 	.post-card p {
 		margin: 0;
-		font-size: 0.95rem;
-		color: var(--text-muted);
-		line-height: 1.5;
+		font-size: 0.88rem;
+		color: var(--text-dim);
+		line-height: 1.65;
 	}
 </style>

@@ -5,9 +5,11 @@ import '../styles/global.css';
 interface Props {
 	title: string;
 	description?: string;
+	/** 홈: 전체 너비 섹션 (패딩 없음) */
+	fullWidth?: boolean;
 }
 
-const { title, description = '포트폴리오 & 기술 블로그' } = Astro.props;
+const { title, description = 'Portfolio & blog', fullWidth = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -24,39 +26,57 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Syne:wght@600;700;800&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
 			rel="stylesheet"
 		/>
 	</head>
 	<body>
 		<Header />
-		<main>
+		<main class:list={['main', { 'main--full': fullWidth }]}>
 			<slot />
 		</main>
 		<footer class="site-footer">
-			<p>© {new Date().getFullYear()} · GitHub Pages</p>
+			<p>© {new Date().getFullYear()} Min-Seong Park. Astro + GitHub Pages.</p>
+			<p>Aspiring UWaterloo Engineer · FEIA Class of 2028</p>
 		</footer>
 	</body>
 </html>
 
 <style>
-	main {
+	.main {
 		max-width: var(--max-wide);
 		margin: 0 auto;
-		padding: 2.5rem 1.5rem 4rem;
+		padding: 5.5rem 1.5rem 4rem;
+	}
+
+	.main--full {
+		max-width: none;
+		margin: 0;
+		padding: 0;
 	}
 
 	.site-footer {
-		max-width: var(--max-wide);
-		margin: 0 auto;
-		padding: 2rem 1.5rem 3rem;
+		padding: 2rem 2.5rem;
 		border-top: 1px solid var(--border);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 0.5rem;
 	}
 
 	.site-footer p {
 		margin: 0;
-		font-size: 0.85rem;
-		color: var(--text-muted);
-		text-align: center;
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--text-dim);
+		letter-spacing: 0.05em;
+	}
+
+	@media (max-width: 768px) {
+		.site-footer {
+			flex-direction: column;
+			text-align: center;
+		}
 	}
 </style>

@@ -1,72 +1,204 @@
 ---
 const path = Astro.url.pathname;
+const isHome = path === '/' || path === '';
 const isBlog = path.startsWith('/blog');
 ---
 
-<header class="site-header">
-	<div class="inner">
-		<a href="/" class="brand">pelu10075</a>
-		<nav aria-label="주요 메뉴">
-			<a href="/" class:list={{ active: path === '/' }}>포트폴리오</a>
-			<a href="/blog/" class:list={{ active: isBlog }}>블로그</a>
-		</nav>
-	</div>
-</header>
+<nav class="site-nav" id="navbar" data-home={isHome ? 'true' : 'false'}>
+	<a href="/" class="nav-logo" aria-label="Home"
+		><span>//</span> msp</a
+	>
+
+	<ul class="nav-links" id="navLinks" role="navigation" aria-label="Primary">
+		{
+			isHome ? (
+				<>
+					<li>
+						<a href="#about">About</a>
+					</li>
+					<li>
+						<a href="#skills">Skills</a>
+					</li>
+					<li>
+						<a href="#projects">Projects</a>
+					</li>
+					<li>
+						<a href="#competitive">CP</a>
+					</li>
+					<li>
+						<a href="#contact">Contact</a>
+					</li>
+					<li>
+						<a href="/blog/">Blog</a>
+					</li>
+				</>
+			) : (
+				<>
+					<li>
+						<a href="/">Portfolio</a>
+					</li>
+					<li>
+						<a href="/blog/" class:list={{ active: isBlog }}>Blog</a>
+					</li>
+				</>
+			)
+		}
+	</ul>
+
+	<button type="button" class="nav-toggle" id="navToggle" aria-label="메뉴 열기" aria-expanded="false">
+		<span></span><span></span><span></span>
+	</button>
+</nav>
 
 <style>
-	.site-header {
-		position: sticky;
+	.site-nav {
+		position: fixed;
 		top: 0;
-		z-index: 10;
-		backdrop-filter: blur(12px);
-		background: rgba(10, 14, 20, 0.85);
-		border-bottom: 1px solid var(--border);
-	}
-
-	.inner {
-		max-width: var(--max-wide);
-		margin: 0 auto;
-		padding: 1rem 1.5rem;
+		left: 0;
+		right: 0;
+		z-index: 100;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 1rem;
+		padding: 1.25rem 2.5rem;
+		background: rgba(10, 10, 10, 0.85);
+		backdrop-filter: blur(12px);
+		border-bottom: 1px solid transparent;
+		transition: border-color 0.3s;
 	}
 
-	.brand {
-		font-family: var(--font-display);
-		font-weight: 800;
-		font-size: 1.15rem;
-		letter-spacing: -0.03em;
-		color: var(--text);
+	.site-nav.is-scrolled {
+		border-color: var(--border);
+	}
+
+	.nav-logo {
+		font-family: var(--font-mono);
+		font-size: 0.9rem;
+		color: var(--text-muted);
+		letter-spacing: 0.1em;
 		text-decoration: none;
 	}
 
-	.brand:hover {
-		color: var(--accent-warm);
+	.nav-logo span {
+		color: var(--accent);
 	}
 
-	nav {
+	.nav-links {
 		display: flex;
-		gap: 1.25rem;
+		gap: 2rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		align-items: center;
 	}
 
-	nav a {
-		font-family: var(--font-display);
-		font-size: 0.9rem;
-		font-weight: 600;
+	.nav-links a {
+		font-size: 0.8rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
+		transition: color 0.2s;
 	}
 
-	nav a:hover,
-	nav a.active {
-		color: var(--text);
+	.nav-links a:hover,
+	.nav-links a.active {
+		color: var(--accent);
 	}
 
-	nav a.active {
-		text-decoration: underline;
-		text-decoration-color: var(--accent-warm);
-		text-underline-offset: 6px;
+	.nav-toggle {
+		display: none;
+		flex-direction: column;
+		gap: 5px;
+		cursor: pointer;
+		background: none;
+		border: none;
+		padding: 0.25rem;
+	}
+
+	.nav-toggle span {
+		width: 22px;
+		height: 1px;
+		background: var(--text);
+		display: block;
+		transition: 0.3s;
+	}
+
+	@media (max-width: 768px) {
+		.site-nav {
+			padding: 1rem 1.5rem;
+		}
+
+		.nav-links {
+			display: none;
+			flex-direction: column;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			background: var(--bg);
+			padding: 1.5rem;
+			border-bottom: 1px solid var(--border);
+			gap: 1.25rem;
+			align-items: flex-start;
+		}
+
+		.nav-links.is-open {
+			display: flex;
+		}
+
+		.nav-toggle {
+			display: flex;
+		}
 	}
 </style>
+
+<script>
+	function initNav() {
+		const navbar = document.getElementById('navbar');
+		const navLinks = document.getElementById('navLinks');
+		const navToggle = document.getElementById('navToggle');
+		const isHome = navbar?.dataset.home === 'true';
+
+		function setScrolled() {
+			if (!navbar) return;
+			navbar.classList.toggle('is-scrolled', window.scrollY > 30);
+		}
+
+		function updateActive() {
+			if (!isHome || !navbar || !navLinks) return;
+			const links = navLinks.querySelectorAll('a[href^="#"]');
+			let current = '';
+			document.querySelectorAll('section[id]').forEach((s) => {
+				const el = s;
+				if (window.scrollY >= el.offsetTop - 120) current = el.id;
+			});
+			links.forEach((a) => {
+				const href = a.getAttribute('href');
+				a.classList.toggle('active', href === '#' + current);
+			});
+		}
+
+		setScrolled();
+		window.addEventListener('scroll', () => {
+			setScrolled();
+			updateActive();
+		});
+		updateActive();
+
+		navToggle?.addEventListener('click', () => {
+			const open = navLinks?.classList.toggle('is-open');
+			navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+		});
+
+		navLinks?.querySelectorAll('a').forEach((a) => {
+			a.addEventListener('click', () => {
+				navLinks.classList.remove('is-open');
+				navToggle?.setAttribute('aria-expanded', 'false');
+			});
+		});
+	}
+
+	initNav();
+	document.addEventListener('astro:page-load', initNav);
+</script>
