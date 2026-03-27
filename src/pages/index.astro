@@ -23,13 +23,20 @@ function formatBlogDate(d: Date) {
 	<section id="hero" class="hero" aria-label="Introduction">
 		<div class="hero-grid" aria-hidden="true"></div>
 		<div class="hero-inner">
-			<div class="hero-tag">Software Developer & Algorithm Enthusiast</div>
+			<div class="hero-tag">
+				<span class="i18n i18n--en">Software Developer & Algorithm Enthusiast</span>
+				<span class="i18n i18n--ko">소프트웨어 개발자 · 알고리즘 애호가</span>
+			</div>
 			<h1 class="hero-name">Min-Seong Park</h1>
 			<div class="hero-name-kr">박민성</div>
-			<p class="hero-desc">
+			<p class="hero-desc i18n i18n--en">
 				Grade 10 at <strong>FEIA</strong>, building towards <strong>University of Waterloo Engineering</strong>.
 				I write clean systems in Python &amp; C++, design backends with FastAPI, and sharpen my edge through
 				competitive programming.
+			</p>
+			<p class="hero-desc i18n i18n--ko">
+				<strong>FEIA</strong> 고등학교 10학년이며 <strong>워털루 대학교 공학</strong>을 목표로 합니다. Python과
+				C++로 안정적인 시스템을 작성하고, FastAPI로 백엔드를 설계하며, 경쟁 프로그래밍으로 문제 해결력을 키웁니다.
 			</p>
 			<div class="hero-btns">
 				<a
@@ -45,38 +52,80 @@ function formatBlogDate(d: Date) {
 					>
 					GitHub
 				</a>
-				<a href="#contact" class="btn btn-secondary">Contact Me</a>
+				<a href="#contact" class="btn btn-secondary">
+					<span class="i18n i18n--en">Contact Me</span>
+					<span class="i18n i18n--ko">연락하기</span>
+				</a>
 			</div>
 		</div>
-		<div class="hero-scroll" aria-hidden="true">Scroll</div>
+		<div class="hero-scroll" aria-hidden="true">
+			<span class="i18n i18n--en">Scroll</span>
+			<span class="i18n i18n--ko">스크롤</span>
+		</div>
 	</section>
 
 	<section id="about" class="band">
 		<div class="section-inner">
-			<div class="section-label" data-num="01">About</div>
-			<h2 class="section-title reveal">Who I Am</h2>
+			<div class="section-label" data-num="01">
+				<span class="i18n i18n--en">About</span>
+				<span class="i18n i18n--ko">소개</span>
+			</div>
+			<h2 class="section-title reveal">
+				<span class="i18n i18n--en">Who I Am</span>
+				<span class="i18n i18n--ko">나는 누구인가</span>
+			</h2>
 			<div class="about-grid">
 				<div class="about-text reveal reveal-delay-1">
-					<p>
+					<p class="i18n i18n--en">
 						I'm a <strong>Grade 10 student at FEIA</strong> (Foreign Engineering & International Academy),
 						passionate about computer science and software engineering from a young age.
 					</p>
-					<p>
+					<p class="i18n i18n--ko">
+						저는 <strong>FEIA</strong>(Foreign Engineering &amp; International Academy)에 재학 중인 <strong
+							>고등학교 10학년</strong
+						>으로, 어릴 때부터 컴퓨터 과학과 소프트웨어 공학에 관심이 많습니다.
+					</p>
+					<p class="i18n i18n--en">
 						My goal is to pursue <strong>Computer Engineering at the University of Waterloo</strong> — one of
 						the world's top programs for hands-on, co-op-driven engineering education.
 					</p>
-					<p>
+					<p class="i18n i18n--ko">
+						목표는 <strong>워털루 대학교 컴퓨터공학</strong>입니다. 현장 중심·코업으로 유명한 세계적인 공학
+						프로그램입니다.
+					</p>
+					<p class="i18n i18n--en">
 						I explore <strong>algorithms and data structures</strong> through competitive programming, build
 						lightweight <strong>REST APIs</strong> with FastAPI, and implement low-level systems in <strong
 							>C++</strong
 						>. I'm particularly drawn to cryptography and security.
 					</p>
+					<p class="i18n i18n--ko">
+						경쟁 프로그래밍으로 <strong>알고리즘과 자료구조</strong>를 익히고, FastAPI로 가벼운 <strong
+							>REST API</strong
+						>를 만들며, <strong>C++</strong>로 저수준 시스템을 구현합니다. 암호와 보안에 특히 끌립니다.
+					</p>
 				</div>
 				<div class="about-stats reveal reveal-delay-2">
-					<div class="stat-card"><div class="stat-num">10th</div><div class="stat-label">Grade — FEIA</div></div>
-					<div class="stat-card"><div class="stat-num">4+</div><div class="stat-label">GitHub Repos</div></div>
-					<div class="stat-card"><div class="stat-num">C++</div><div class="stat-label">Primary Lang</div></div>
-					<div class="stat-card"><div class="stat-num">UW</div><div class="stat-label">Target University</div></div>
+					<div class="stat-card">
+						<div class="stat-num">10th</div>
+						<div class="stat-label i18n i18n--en">Grade — FEIA</div>
+						<div class="stat-label i18n i18n--ko">학년 — FEIA</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-num">4+</div>
+						<div class="stat-label i18n i18n--en">GitHub Repos</div>
+						<div class="stat-label i18n i18n--ko">GitHub 저장소</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-num">C++</div>
+						<div class="stat-label i18n i18n--en">Primary Lang</div>
+						<div class="stat-label i18n i18n--ko">주요 언어</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-num">UW</div>
+						<div class="stat-label i18n i18n--en">Target University</div>
+						<div class="stat-label i18n i18n--ko">목표 대학</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -84,13 +133,20 @@ function formatBlogDate(d: Date) {
 
 	<section id="skills">
 		<div class="section-inner">
-			<div class="section-label" data-num="02">Skills</div>
-			<h2 class="section-title reveal">Tech Stack</h2>
+			<div class="section-label" data-num="02">
+				<span class="i18n i18n--en">Skills</span>
+				<span class="i18n i18n--ko">기술</span>
+			</div>
+			<h2 class="section-title reveal">
+				<span class="i18n i18n--en">Tech Stack</span>
+				<span class="i18n i18n--ko">기술 스택</span>
+			</h2>
 			<div class="skills-grid">
 				<div class="skill-card reveal reveal-delay-1">
 					<div class="skill-icon">py</div>
 					<div class="skill-name">Python</div>
-					<div class="skill-desc">Scripting, automation, data processing, and rapid prototyping.</div>
+					<div class="skill-desc i18n i18n--en">Scripting, automation, data processing, and rapid prototyping.</div>
+					<div class="skill-desc i18n i18n--ko">스크립트, 자동화, 데이터 처리, 빠른 프로토타이핑.</div>
 					<div class="skill-tags">
 						<span class="tag">scripting</span>
 						<span class="tag">automation</span>
@@ -100,7 +156,8 @@ function formatBlogDate(d: Date) {
 				<div class="skill-card reveal reveal-delay-2">
 					<div class="skill-icon">c++</div>
 					<div class="skill-name">C++</div>
-					<div class="skill-desc">Systems programming, competitive problem solving, memory-level control.</div>
+					<div class="skill-desc i18n i18n--en">Systems programming, competitive problem solving, memory-level control.</div>
+					<div class="skill-desc i18n i18n--ko">시스템 프로그래밍, 경쟁 프로그래밍, 메모리 수준 제어.</div>
 					<div class="skill-tags">
 						<span class="tag">systems</span>
 						<span class="tag">STL</span>
@@ -110,7 +167,8 @@ function formatBlogDate(d: Date) {
 				<div class="skill-card reveal reveal-delay-3">
 					<div class="skill-icon">∑</div>
 					<div class="skill-name">Algorithms</div>
-					<div class="skill-desc">Graph theory, dynamic programming, sorting, and complexity analysis.</div>
+					<div class="skill-desc i18n i18n--en">Graph theory, dynamic programming, sorting, and complexity analysis.</div>
+					<div class="skill-desc i18n i18n--ko">그래프 이론, 동적 계획법, 정렬, 복잡도 분석.</div>
 					<div class="skill-tags">
 						<span class="tag">DP</span>
 						<span class="tag">graphs</span>
@@ -121,7 +179,8 @@ function formatBlogDate(d: Date) {
 				<div class="skill-card reveal reveal-delay-4">
 					<div class="skill-icon">api</div>
 					<div class="skill-name">FastAPI</div>
-					<div class="skill-desc">RESTful backend services with async Python and auto-generated docs.</div>
+					<div class="skill-desc i18n i18n--en">RESTful backend services with async Python and auto-generated docs.</div>
+					<div class="skill-desc i18n i18n--ko">비동기 Python 기반 REST 백엔드와 자동 생성 문서.</div>
 					<div class="skill-tags">
 						<span class="tag">REST</span>
 						<span class="tag">async</span>
@@ -131,7 +190,8 @@ function formatBlogDate(d: Date) {
 				<div class="skill-card reveal reveal-delay-1">
 					<div class="skill-icon">🔐</div>
 					<div class="skill-name">Cryptography</div>
-					<div class="skill-desc">Classical and modern ciphers — including a full DES implementation.</div>
+					<div class="skill-desc i18n i18n--en">Classical and modern ciphers — including a full DES implementation.</div>
+					<div class="skill-desc i18n i18n--ko">고전·현대 암호 — DES 전체 구현 포함.</div>
 					<div class="skill-tags">
 						<span class="tag">DES</span>
 						<span class="tag">AES</span>
@@ -141,7 +201,8 @@ function formatBlogDate(d: Date) {
 				<div class="skill-card reveal reveal-delay-2">
 					<div class="skill-icon">⚙</div>
 					<div class="skill-name">Tooling</div>
-					<div class="skill-desc">Git version control, GitHub workflows, and command-line development.</div>
+					<div class="skill-desc i18n i18n--en">Git version control, GitHub workflows, and command-line development.</div>
+					<div class="skill-desc i18n i18n--ko">Git, GitHub 워크플로, CLI 개발.</div>
 					<div class="skill-tags">
 						<span class="tag">Git</span>
 						<span class="tag">GitHub</span>
@@ -154,18 +215,31 @@ function formatBlogDate(d: Date) {
 
 	<section id="projects" class="band">
 		<div class="section-inner">
-			<div class="section-label" data-num="03">Projects</div>
-			<h2 class="section-title reveal">What I've Built</h2>
+			<div class="section-label" data-num="03">
+				<span class="i18n i18n--en">Projects</span>
+				<span class="i18n i18n--ko">프로젝트</span>
+			</div>
+			<h2 class="section-title reveal">
+				<span class="i18n i18n--en">What I've Built</span>
+				<span class="i18n i18n--ko">만들어 온 것들</span>
+			</h2>
 			<div class="projects-grid">
 				<div class="project-card reveal reveal-delay-1">
 					<div class="project-num">01</div>
 					<div class="project-title">
-						DES Implementation
+						<span class="project-title-text">
+							<span class="i18n i18n--en">DES Implementation</span>
+							<span class="i18n i18n--ko">DES 구현</span>
+						</span>
 						<span class="project-arrow">↗</span>
 					</div>
-					<div class="project-desc">
+					<div class="project-desc i18n i18n--en">
 						A from-scratch implementation of the Data Encryption Standard (DES) in Python/C++. Key scheduling,
 						Feistel rounds, and S-box substitutions with a focus on correctness and readability.
+					</div>
+					<div class="project-desc i18n i18n--ko">
+						Python/C++로 DES(Data Encryption Standard)를 처음부터 구현했습니다. 키 스케줄, Feistel 라운드, S-box
+						대체에 중점을 두었습니다.
 					</div>
 					<div class="project-footer">
 						<a href="https://github.com/pelu10075/DES" target="_blank" rel="noopener noreferrer" class="project-link">
@@ -174,7 +248,8 @@ function formatBlogDate(d: Date) {
 									d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
 								></path></svg
 							>
-							View Source
+							<span class="i18n i18n--en">View Source</span>
+							<span class="i18n i18n--ko">소스 보기</span>
 						</a>
 						<span class="tag">Cryptography</span>
 						<span class="tag">Python</span>
@@ -183,12 +258,15 @@ function formatBlogDate(d: Date) {
 				<div class="project-card reveal reveal-delay-2">
 					<div class="project-num">02</div>
 					<div class="project-title">
-						munseong_api
+						<span class="project-title-text">munseong_api</span>
 						<span class="project-arrow">↗</span>
 					</div>
-					<div class="project-desc">
+					<div class="project-desc i18n i18n--en">
 						A personal REST API backend built with FastAPI — async endpoints, structured routing, and
 						auto-generated OpenAPI documentation.
+					</div>
+					<div class="project-desc i18n i18n--ko">
+						FastAPI로 만든 개인 REST API 백엔드 — 비동기 엔드포인트, 구조화된 라우팅, 자동 OpenAPI 문서.
 					</div>
 					<div class="project-footer">
 						<a
@@ -202,7 +280,8 @@ function formatBlogDate(d: Date) {
 									d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
 								></path></svg
 							>
-							View Source
+							<span class="i18n i18n--en">View Source</span>
+							<span class="i18n i18n--ko">소스 보기</span>
 						</a>
 						<span class="tag">FastAPI</span>
 						<span class="tag">Python</span>
@@ -212,12 +291,18 @@ function formatBlogDate(d: Date) {
 				<div class="project-card reveal reveal-delay-3">
 					<div class="project-num">03</div>
 					<div class="project-title">
-						MMSCP Project
+						<span class="project-title-text">
+							<span class="i18n i18n--en">MMSCP Project</span>
+							<span class="i18n i18n--ko">MMSCP 프로젝트</span>
+						</span>
 						<span class="project-arrow">↗</span>
 					</div>
-					<div class="project-desc">
+					<div class="project-desc i18n i18n--en">
 						A multi-module project demonstrating structured software design and algorithmic problem solving in
 						C++ or Python.
+					</div>
+					<div class="project-desc i18n i18n--ko">
+						C++ 또는 Python으로 구조적 설계와 알고리즘 문제 해결을 보여 주는 다중 모듈 프로젝트입니다.
 					</div>
 					<div class="project-footer">
 						<a
@@ -231,7 +316,8 @@ function formatBlogDate(d: Date) {
 									d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
 								></path></svg
 							>
-							View Source
+							<span class="i18n i18n--en">View Source</span>
+							<span class="i18n i18n--ko">소스 보기</span>
 						</a>
 						<span class="tag">C++</span>
 						<span class="tag">Algorithms</span>
@@ -240,11 +326,17 @@ function formatBlogDate(d: Date) {
 				<div class="project-card reveal reveal-delay-4">
 					<div class="project-num">04</div>
 					<div class="project-title">
-						Portfolio Site
+						<span class="project-title-text">
+							<span class="i18n i18n--en">Portfolio Site</span>
+							<span class="i18n i18n--ko">포트폴리오 사이트</span>
+						</span>
 						<span class="project-arrow">↗</span>
 					</div>
-					<div class="project-desc">
+					<div class="project-desc i18n i18n--en">
 						This portfolio — fast, minimal, responsive. Built with Astro and hosted on GitHub Pages.
+					</div>
+					<div class="project-desc i18n i18n--ko">
+						이 포트폴리오 — 빠르고 미니멀하며 반응형입니다. Astro로 제작, GitHub Pages에 호스팅.
 					</div>
 					<div class="project-footer">
 						<a
@@ -258,7 +350,8 @@ function formatBlogDate(d: Date) {
 									d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
 								></path></svg
 							>
-							View Source
+							<span class="i18n i18n--en">View Source</span>
+							<span class="i18n i18n--ko">소스 보기</span>
 						</a>
 						<span class="tag">Astro</span>
 						<span class="tag">GitHub Pages</span>
@@ -270,21 +363,35 @@ function formatBlogDate(d: Date) {
 
 	<section id="competitive">
 		<div class="section-inner">
-			<div class="section-label" data-num="04">Competitive Programming</div>
-			<h2 class="section-title reveal">Algorithm Grind</h2>
+			<div class="section-label" data-num="04">
+				<span class="i18n i18n--en">Competitive Programming</span>
+				<span class="i18n i18n--ko">경쟁 프로그래밍</span>
+			</div>
+			<h2 class="section-title reveal">
+				<span class="i18n i18n--en">Algorithm Grind</span>
+				<span class="i18n i18n--ko">알고리즘 그라인드</span>
+			</h2>
 			<div class="cp-layout">
 				<div class="cp-text reveal reveal-delay-1">
-					<p>
+					<p class="i18n i18n--en">
 						Competitive programming is how I push the limits of algorithmic thinking. Through platforms like <strong
 							>Baekjoon</strong
 						>, I tackle problems from graph traversal and dynamic programming to number theory and trees.
 					</p>
-					<p>
+					<p class="i18n i18n--ko">
+						경쟁 프로그래밍은 알고리즘적 사고의 한계를 밀어 올리는 방법입니다. <strong>백준</strong> 같은 플랫폼에서
+						그래프 탐색·DP부터 정수론·트리 문제까지 다룹니다.
+					</p>
+					<p class="i18n i18n--en">
 						Consistent problem solving builds the mental model needed to design efficient, correct software.
+					</p>
+					<p class="i18n i18n--ko">
+						꾸준한 문제 풀이는 효율적이고 올바른 소프트웨어를 설계하는 데 필요한 사고 모델을 만듭니다.
 					</p>
 					<div class="cp-actions">
 						<a href="https://solved.ac/profile/edward_10" target="_blank" rel="noopener noreferrer" class="cp-link">
-							View solved.ac Profile ↗
+							<span class="i18n i18n--en">View solved.ac Profile ↗</span>
+							<span class="i18n i18n--ko">solved.ac 프로필 보기 ↗</span>
 						</a>
 					</div>
 				</div>
@@ -308,13 +415,22 @@ function formatBlogDate(d: Date) {
 
 	<section id="blog" class="band blog-band">
 		<div class="section-inner">
-			<div class="section-label" data-num="05">Writing</div>
-			<h2 class="section-title reveal">Blog</h2>
+			<div class="section-label" data-num="05">
+				<span class="i18n i18n--en">Writing</span>
+				<span class="i18n i18n--ko">글</span>
+			</div>
+			<h2 class="section-title reveal">
+				<span class="i18n i18n--en">Blog</span>
+				<span class="i18n i18n--ko">블로그</span>
+			</h2>
 			<div class="blog-preview-list">
 				{
 					blogPosts.length === 0 ? (
 						<div class="blog-empty">
-							<a href="/blog/">No posts yet — visit the blog →</a>
+							<a href="/blog/">
+								<span class="i18n i18n--en">No posts yet — visit the blog →</span>
+								<span class="i18n i18n--ko">아직 글이 없습니다 — 블로그로 이동 →</span>
+							</a>
 						</div>
 					) : (
 						blogPosts.map((post) => (
@@ -331,18 +447,29 @@ function formatBlogDate(d: Date) {
 				}
 			</div>
 			<div class="blog-more">
-				<a href="/blog/" class="btn btn-secondary">All Posts →</a>
+				<a href="/blog/" class="btn btn-secondary">
+					<span class="i18n i18n--en">All Posts →</span>
+					<span class="i18n i18n--ko">전체 글 →</span>
+				</a>
 			</div>
 		</div>
 	</section>
 
 	<section id="contact" class="band">
 		<div class="section-inner">
-			<div class="section-label" data-num="06">Contact</div>
+			<div class="section-label" data-num="06">
+				<span class="i18n i18n--en">Contact</span>
+				<span class="i18n i18n--ko">연락</span>
+			</div>
 			<div class="contact-inner">
 				<div class="contact-heading reveal">
-					Let's connect.<br />
-					<span>I'm always open to opportunities,<br />collaborations, and new ideas.</span>
+					<span class="i18n i18n--en">Let's connect.</span>
+					<span class="i18n i18n--ko">연락 주세요.</span>
+					<br />
+					<span class="i18n i18n--en"
+						>I'm always open to opportunities,<br />collaborations, and new ideas.</span
+					>
+					<span class="i18n i18n--ko">기회와 협업, 새로운 아이디어는<br />언제나 환영합니다.</span>
 				</div>
 				<div class="contact-links reveal reveal-delay-1">
 					<a href="mailto:peullutv4@gmail.com" class="contact-link">

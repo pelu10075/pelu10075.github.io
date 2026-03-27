@@ -1,0 +1,15 @@
+/* Bilingual UI: html[data-site-lang="en" | "ko"] set by inline script + SiteLanguage */
+
+html[data-site-lang='en'] .i18n--ko {
+	display: none !important;
+}
+
+html[data-site-lang='ko'] .i18n--en {
+	display: none !important;
+}
+
+/* project title row: keep flex layout when one line is hidden */
+.project-title-text {
+	flex: 1;
+	min-width: 0;
+}

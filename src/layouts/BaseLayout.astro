@@ -1,6 +1,8 @@
 ---
 import Header from '../components/Header.astro';
+import SiteLanguage from '../components/SiteLanguage.astro';
 import '../styles/global.css';
+import '../styles/i18n.css';
 
 interface Props {
 	title: string;
@@ -11,12 +13,24 @@ interface Props {
 
 const { title, description = 'Portfolio & blog', fullWidth = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
-<html lang="ko">
+<html lang="en" data-site-lang="en">
 	<head>
 		<meta charset="utf-8" />
+		<script is:inline>
+			(function () {
+				try {
+					var s = localStorage.getItem('site-lang');
+					if (s === 'ko' || s === 'en') {
+						document.documentElement.setAttribute('data-site-lang', s);
+						document.documentElement.setAttribute('lang', s === 'ko' ? 'ko' : 'en');
+					}
+				} catch (e) {}
+			})();
+		</script>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
@@ -36,9 +50,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 			<slot />
 		</main>
 		<footer class="site-footer">
-			<p>© {new Date().getFullYear()} Min-Seong Park. Astro + GitHub Pages.</p>
-			<p>Aspiring UWaterloo Engineer · FEIA Class of 2028</p>
+			<p class="i18n i18n--en">© {year} Min-Seong Park. Astro + GitHub Pages.</p>
+			<p class="i18n i18n--ko">© {year} 박민성. Astro + GitHub Pages.</p>
+			<p class="i18n i18n--en">Aspiring UWaterloo Engineer · FEIA Class of 2028</p>
+			<p class="i18n i18n--ko">UWaterloo 공학도를 지향 · FEIA 2028 졸업 예정</p>
 		</footer>
+		<SiteLanguage />
 	</body>
 </html>
 

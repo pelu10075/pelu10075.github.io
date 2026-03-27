@@ -17,9 +17,16 @@ function formatDate(d: Date) {
 
 <BaseLayout title="Blog | Min-Seong Park" description="기술 글과 메모">
 	<div class="page-head">
-		<p class="section-label">Writing</p>
-		<h1 class="page-title">Blog</h1>
-		<p class="lead">마크다운 글은 <code>src/content/blog/</code>에 추가합니다.</p>
+		<p class="section-label">
+			<span class="i18n i18n--en">Writing</span>
+			<span class="i18n i18n--ko">글</span>
+		</p>
+		<h1 class="page-title">
+			<span class="i18n i18n--en">Blog</span>
+			<span class="i18n i18n--ko">블로그</span>
+		</h1>
+		<p class="lead i18n i18n--en">Add Markdown posts under <code>src/content/blog/</code>.</p>
+		<p class="lead i18n i18n--ko">마크다운 글은 <code>src/content/blog/</code>에 추가합니다.</p>
 	</div>
 	<div class="post-grid">
 		{

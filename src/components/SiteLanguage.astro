@@ -1,0 +1,40 @@
+---
+---
+
+<script>
+	function syncLangButtons() {
+		const lang = document.documentElement.getAttribute('data-site-lang') || 'en';
+		document.querySelectorAll('.lang-btn').forEach((b) => {
+			const l = b.getAttribute('data-lang');
+			const on = l === lang;
+			b.setAttribute('aria-pressed', on ? 'true' : 'false');
+			b.classList.toggle('is-active', on);
+		});
+	}
+
+	function setSiteLang(lang) {
+		if (lang !== 'en' && lang !== 'ko') return;
+		document.documentElement.setAttribute('data-site-lang', lang);
+		document.documentElement.setAttribute('lang', lang === 'ko' ? 'ko' : 'en');
+		try {
+			localStorage.setItem('site-lang', lang);
+		} catch {
+			/* ignore */
+		}
+		syncLangButtons();
+	}
+
+	if (!document.documentElement.dataset.langClickBound) {
+		document.documentElement.dataset.langClickBound = '1';
+		document.addEventListener('click', (e) => {
+			const t = e.target && e.target.closest && e.target.closest('.lang-btn');
+			if (t) {
+				const l = t.getAttribute('data-lang');
+				if (l) setSiteLang(l);
+			}
+		});
+	}
+
+	syncLangButtons();
+	document.addEventListener('astro:page-load', syncLangButtons);
+</script>

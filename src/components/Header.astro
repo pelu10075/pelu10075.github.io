@@ -5,47 +5,71 @@ const isBlog = path.startsWith('/blog');
 ---
 
 <nav class="site-nav" id="navbar" data-home={isHome ? 'true' : 'false'}>
-	<a href="/" class="nav-logo" aria-label="Home"
-		><span>//</span> msp</a
-	>
+	<a href="/" class="nav-logo" aria-label="Home"><span>//</span> msp</a>
 
 	<ul class="nav-links" id="navLinks" role="navigation" aria-label="Primary">
 		{
 			isHome ? (
 				<>
 					<li>
-						<a href="#about">About</a>
+						<a href="#about">
+							<span class="i18n i18n--en">About</span>
+							<span class="i18n i18n--ko">소개</span>
+						</a>
 					</li>
 					<li>
-						<a href="#skills">Skills</a>
+						<a href="#skills">
+							<span class="i18n i18n--en">Skills</span>
+							<span class="i18n i18n--ko">기술</span>
+						</a>
 					</li>
 					<li>
-						<a href="#projects">Projects</a>
+						<a href="#projects">
+							<span class="i18n i18n--en">Projects</span>
+							<span class="i18n i18n--ko">프로젝트</span>
+						</a>
 					</li>
 					<li>
 						<a href="#competitive">CP</a>
 					</li>
 					<li>
-						<a href="#contact">Contact</a>
+						<a href="#contact">
+							<span class="i18n i18n--en">Contact</span>
+							<span class="i18n i18n--ko">연락</span>
+						</a>
 					</li>
 					<li>
-						<a href="/blog/">Blog</a>
+						<a href="/blog/">
+							<span class="i18n i18n--en">Blog</span>
+							<span class="i18n i18n--ko">블로그</span>
+						</a>
 					</li>
 				</>
 			) : (
 				<>
 					<li>
-						<a href="/">Portfolio</a>
+						<a href="/">
+							<span class="i18n i18n--en">Portfolio</span>
+							<span class="i18n i18n--ko">포트폴리오</span>
+						</a>
 					</li>
 					<li>
-						<a href="/blog/" class:list={{ active: isBlog }}>Blog</a>
+						<a href="/blog/" class:list={{ active: isBlog }}>
+							<span class="i18n i18n--en">Blog</span>
+							<span class="i18n i18n--ko">블로그</span>
+						</a>
 					</li>
 				</>
 			)
 		}
 	</ul>
 
-	<button type="button" class="nav-toggle" id="navToggle" aria-label="메뉴 열기" aria-expanded="false">
+	<div class="lang-switch" role="group" aria-label="Language">
+		<button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+		<button type="button" class="lang-btn" data-lang="ko" aria-pressed="false">KO</button>
+	</div>
+
+	<button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-label="Menu">
 		<span></span><span></span><span></span>
 	</button>
 </nav>
@@ -59,12 +83,14 @@ const isBlog = path.startsWith('/blog');
 		z-index: 100;
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		justify-content: flex-start;
+		gap: 1.25rem;
 		padding: 1.25rem 2.5rem;
 		background: rgba(10, 10, 10, 0.85);
 		backdrop-filter: blur(12px);
 		border-bottom: 1px solid transparent;
 		transition: border-color 0.3s;
+		flex-wrap: wrap;
 	}
 
 	.site-nav.is-scrolled {
@@ -77,6 +103,7 @@ const isBlog = path.startsWith('/blog');
 		color: var(--text-muted);
 		letter-spacing: 0.1em;
 		text-decoration: none;
+		margin-right: auto;
 	}
 
 	.nav-logo span {
@@ -106,6 +133,37 @@ const isBlog = path.startsWith('/blog');
 		color: var(--accent);
 	}
 
+	.lang-switch {
+		display: flex;
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		overflow: hidden;
+		flex-shrink: 0;
+	}
+
+	.lang-btn {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		letter-spacing: 0.08em;
+		padding: 0.4rem 0.55rem;
+		border: none;
+		background: transparent;
+		color: var(--text-dim);
+		cursor: pointer;
+		transition:
+			background 0.15s,
+			color 0.15s;
+	}
+
+	.lang-btn:hover {
+		color: var(--text-muted);
+	}
+
+	.lang-btn.is-active {
+		background: var(--bg3);
+		color: var(--accent);
+	}
+
 	.nav-toggle {
 		display: none;
 		flex-direction: column;
@@ -129,22 +187,29 @@ const isBlog = path.startsWith('/blog');
 			padding: 1rem 1.5rem;
 		}
 
+		.nav-logo {
+			margin-right: 0;
+		}
+
 		.nav-links {
 			display: none;
 			flex-direction: column;
-			position: absolute;
-			top: 100%;
-			left: 0;
-			right: 0;
-			background: var(--bg);
-			padding: 1.5rem;
-			border-bottom: 1px solid var(--border);
+			width: 100%;
+			order: 5;
+			padding: 1rem 0 0;
+			border-top: 1px solid var(--border);
+			margin-top: 0.5rem;
+			padding-top: 1.25rem;
 			gap: 1.25rem;
 			align-items: flex-start;
 		}
 
 		.nav-links.is-open {
 			display: flex;
+		}
+
+		.lang-switch {
+			margin-left: auto;
 		}
 
 		.nav-toggle {
