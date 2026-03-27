@@ -41,8 +41,9 @@ git remote add origin https://github.com/pelu10075/pelu10075.github.io.git
 git push -u origin main
 ```
 
-3. 저장소 **Settings → Pages** 에서 **Build and deployment** 의 Source를 **GitHub Actions** 로 선택합니다.
-4. `main`에 푸시할 때마다 `.github/workflows/deploy.yml` 이 사이트를 빌드해 `https://pelu10075.github.io` 에 반영합니다.
+3. 저장소 **Settings → Pages** 에서 **Build and deployment** 의 Source를 **GitHub Actions** 로 선택합니다. (**Deploy from a branch** 나 Jekyll 기본 워크플로가 아니어야 합니다.)
+4. **Actions** 탭에서 **Deploy to GitHub Pages** 워크플로만 사용합니다. `Build with Jekyll` / `jekyll-build-pages` 가 돌면 Pages 소스가 잘못된 것입니다. Settings → Pages에서 다시 **GitHub Actions** 를 고르고, 필요하면 잘못된 워크플로를 비활성화합니다.
+5. `main`에 푸시할 때마다 `.github/workflows/deploy.yml` 이 `npm run build` 로 `dist/` 를 올려 `https://pelu10075.github.io` 에 반영합니다.
 
 ## 빌드만 확인
 
