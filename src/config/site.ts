@@ -168,6 +168,26 @@ export const competitive = {
 		profileUrl: 'https://solved.ac/profile/edward_10',
 		handle: '@edward_10',
 	},
+	/** Codeforces — 표시 데이터는 빌드 시 API로 채움 */
+	codeforces: {
+		profileUrl: 'https://codeforces.com/profile/edward_10',
+		linkLabel: { en: 'View Codeforces Profile ↗', ko: 'Codeforces 프로필 보기 ↗' } satisfies LocaleText,
+		labels: {
+			rating: { en: 'Rating', ko: '레이팅' } satisfies LocaleText,
+			maxRating: { en: 'Max', ko: '최고' } satisfies LocaleText,
+			rank: { en: 'Rank', ko: '등급' } satisfies LocaleText,
+			unrated: { en: 'Unrated', ko: '비레이팅' } satisfies LocaleText,
+		},
+	},
+} as const;
+
+/** 외부 API (GitHub / Codeforces) — 빌드 시 조회 */
+export const integrations = {
+	githubLogin: 'pelu10075',
+	codeforcesHandle: 'edward_10',
+	/** true: 프로젝트 카드 = GitHub 공개 레포(설명·링크). 실패 시 projectsSection.items */
+	projectsFromGitHub: true,
+	githubReposLimit: 12,
 } as const;
 
 export const blogSection = {

@@ -13,7 +13,15 @@ import {
 	contactSection,
 	revealDelays,
 	projectTitleSpans,
+	integrations,
 } from '../config/site';
+import type { ProjectEntry } from '../config/site';
+import {
+	fetchGitHubUser,
+	fetchGitHubRepos,
+	fetchCodeforcesUser,
+	type GitHubRepo,
+} from '../lib/profileApis';
 
 const blogPosts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
@@ -29,6 +37,56 @@ function formatBlogDate(d: Date) {
 
 const ghIconPath =
 	'M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z';
+
+const [ghUser, ghRepos, cfUser] = await Promise.all([
+	fetchGitHubUser(integrations.githubLogin),
+	fetchGitHubRepos(integrations.githubLogin, integrations.githubReposLimit),
+	fetchCodeforcesUser(integrations.codeforcesHandle),
+]);
+
+const githubProfileUrl = ghUser?.html_url ?? hero.githubUrl;
+
+function reposToProjects(repos: GitHubRepo[]): ProjectEntry[] {
+	return repos.map((repo) => {
+		const desc = repo.description?.trim();
+		const fallbackEn = 'No description.';
+		const fallbackKo = '설명이 없습니다.';
+		const tags = [repo.language, ...repo.topics.slice(0, 3)].filter(Boolean) as string[];
+		return {
+			title: repo.name,
+			description: {
+				en: desc || fallbackEn,
+				ko: desc || fallbackKo,
+			},
+			sourceUrl: repo.html_url,
+			tags: tags.length ? tags.slice(0, 4) : ['GitHub'],
+		};
+	});
+}
+
+let projectItems: ProjectEntry[] = [...projectsSection.items];
+if (integrations.projectsFromGitHub && ghRepos.length > 0) {
+	projectItems = reposToProjects(ghRepos);
+}
+
+const aboutStats = about.stats.map((s) => {
+	const isRepoStat = s.label.en === 'GitHub Repos' || s.label.ko === 'GitHub 저장소';
+	if (isRepoStat && ghUser) {
+		return { ...s, value: String(ghUser.public_repos) };
+	}
+	return s;
+});
+
+const contactLinksResolved = contactSection.links.map((link) => {
+	if (link.icon === 'github' && ghUser) {
+		return {
+			...link,
+			href: ghUser.html_url,
+			label: ghUser.html_url.replace(/^https?:\/\//, ''),
+		};
+	}
+	return link;
+});
 ---
 
 <BaseLayout title={siteMeta.title} description={siteMeta.description} fullWidth>
@@ -44,7 +102,7 @@ const ghIconPath =
 			<p class="hero-desc i18n i18n--en" set:html={hero.introHtml.en} />
 			<p class="hero-desc i18n i18n--ko" set:html={hero.introHtml.ko} />
 			<div class="hero-btns">
-				<a href={hero.githubUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+				<a href={githubProfileUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
 						><path d={ghIconPath}></path></svg
 					>
@@ -85,7 +143,7 @@ const ghIconPath =
 				</div>
 				<div class="about-stats reveal reveal-delay-2">
 					{
-						about.stats.map((s) => (
+						aboutStats.map((s) => (
 							<div class="stat-card">
 								<div class="stat-num">{s.value}</div>
 								<div class="stat-label i18n i18n--en">{s.label.en}</div>
@@ -140,7 +198,7 @@ const ghIconPath =
 			</h2>
 			<div class="projects-grid">
 				{
-					projectsSection.items.map((proj, i) => {
+					projectItems.map((proj, i) => {
 						const num = String(i + 1).padStart(2, '0');
 						const delay = revealDelays[i % 4];
 						const pt = projectTitleSpans(proj.title);
@@ -200,7 +258,7 @@ const ghIconPath =
 							</>
 						))
 					}
-					<div class="cp-actions">
+					<div class="cp-actions cp-actions-row">
 						<a
 							href={competitive.badge.profileUrl}
 							target="_blank"
@@ -210,24 +268,86 @@ const ghIconPath =
 							<span class="i18n i18n--en">{competitive.profileLinkLabel.en}</span>
 							<span class="i18n i18n--ko">{competitive.profileLinkLabel.ko}</span>
 						</a>
-					</div>
-				</div>
-				<div class="cp-badge-wrap reveal reveal-delay-2">
-					<img
-						src={competitive.badge.imageUrl}
-						alt={competitive.badge.alt}
-						width="320"
-						height="160"
-						loading="lazy"
-					/>
-					<div class="cp-badge-foot">
 						<a
-							href={competitive.badge.profileUrl}
+							href={competitive.codeforces.profileUrl}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="cp-link"
 						>
-							{competitive.badge.handle}
+							<span class="i18n i18n--en">{competitive.codeforces.linkLabel.en}</span>
+							<span class="i18n i18n--ko">{competitive.codeforces.linkLabel.ko}</span>
+						</a>
+					</div>
+				</div>
+				<div class="cp-badges-column reveal reveal-delay-2">
+					<div class="cp-badge-wrap">
+						<img
+							src={competitive.badge.imageUrl}
+							alt={competitive.badge.alt}
+							width="320"
+							height="160"
+							loading="lazy"
+						/>
+						<div class="cp-badge-foot">
+							<a
+								href={competitive.badge.profileUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="cp-link"
+							>
+								{competitive.badge.handle}
+							</a>
+						</div>
+					</div>
+					<div class="cf-card">
+						<div class="cf-card-title">Codeforces</div>
+						<div class="cf-handle">{integrations.codeforcesHandle}</div>
+						{
+							cfUser ? (
+								<dl class="cf-stats">
+									<div class="cf-stat">
+										<dt>
+											<span class="i18n i18n--en">{competitive.codeforces.labels.rating.en}</span>
+											<span class="i18n i18n--ko">{competitive.codeforces.labels.rating.ko}</span>
+										</dt>
+										<dd>
+											{cfUser.rating != null ? cfUser.rating : (
+												<>
+													<span class="i18n i18n--en">{competitive.codeforces.labels.unrated.en}</span>
+													<span class="i18n i18n--ko">{competitive.codeforces.labels.unrated.ko}</span>
+												</>
+											)}
+										</dd>
+									</div>
+									<div class="cf-stat">
+										<dt>
+											<span class="i18n i18n--en">{competitive.codeforces.labels.maxRating.en}</span>
+											<span class="i18n i18n--ko">{competitive.codeforces.labels.maxRating.ko}</span>
+										</dt>
+										<dd>{cfUser.maxRating ?? '—'}</dd>
+									</div>
+									<div class="cf-stat">
+										<dt>
+											<span class="i18n i18n--en">{competitive.codeforces.labels.rank.en}</span>
+											<span class="i18n i18n--ko">{competitive.codeforces.labels.rank.ko}</span>
+										</dt>
+										<dd>{cfUser.rank ?? cfUser.maxRank ?? '—'}</dd>
+									</div>
+								</dl>
+							) : (
+								<>
+									<p class="cf-unavailable i18n i18n--en">Could not load Codeforces profile.</p>
+									<p class="cf-unavailable i18n i18n--ko">Codeforces 프로필을 불러오지 못했습니다.</p>
+								</>
+							)
+						}
+						<a
+							href={competitive.codeforces.profileUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="cp-link cf-card-link"
+						>
+							codeforces.com/profile/{integrations.codeforcesHandle}
 						</a>
 					</div>
 				</div>
@@ -293,7 +413,7 @@ const ghIconPath =
 				</div>
 				<div class="contact-links reveal reveal-delay-1">
 					{
-						contactSection.links.map((link) => (
+						contactLinksResolved.map((link) => (
 							<a
 								href={link.href}
 								class="contact-link"
@@ -694,6 +814,82 @@ const ghIconPath =
 
 	.cp-actions {
 		margin-top: 1.5rem;
+	}
+
+	.cp-actions-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+
+	.cp-badges-column {
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+		min-width: min(100%, 20rem);
+	}
+
+	.cf-card {
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--bg3);
+		padding: 1.25rem 1.5rem;
+	}
+
+	.cf-card-title {
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--text-dim);
+		margin-bottom: 0.35rem;
+	}
+
+	.cf-handle {
+		font-family: var(--font-mono);
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: var(--text);
+		margin-bottom: 1rem;
+	}
+
+	.cf-stats {
+		margin: 0 0 1rem;
+		display: grid;
+		gap: 0.65rem;
+	}
+
+	.cf-stat {
+		display: grid;
+		grid-template-columns: 5rem 1fr;
+		gap: 0.5rem;
+		align-items: baseline;
+		font-size: 0.85rem;
+	}
+
+	.cf-stat dt {
+		margin: 0;
+		color: var(--text-dim);
+		font-weight: 400;
+	}
+
+	.cf-stat dd {
+		margin: 0;
+		font-family: var(--font-mono);
+		color: var(--text-muted);
+	}
+
+	.cf-unavailable {
+		font-size: 0.85rem;
+		color: var(--text-dim);
+		margin: 0 0 0.75rem;
+	}
+
+	.cf-card-link {
+		display: inline-block;
+		margin-top: 0.25rem;
+		font-size: 0.72rem;
+		word-break: break-all;
 	}
 
 	.cp-link {
