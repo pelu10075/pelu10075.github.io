@@ -1,11 +1,15 @@
 ---
+import { siteLogo } from '../config/site';
+
 const path = Astro.url.pathname;
 const isHome = path === '/' || path === '';
 const isBlog = path.startsWith('/blog');
 ---
 
 <nav class="site-nav" id="navbar" data-home={isHome ? 'true' : 'false'}>
-	<a href="/" class="nav-logo" aria-label="Home"><span>//</span> msp</a>
+	<a href="/" class="nav-logo" aria-label={siteLogo.ariaLabel}>
+		<span>{siteLogo.prefix}</span>{' '}{siteLogo.slug}
+	</a>
 
 	<ul class="nav-links" id="navLinks" role="navigation" aria-label="Primary">
 		{

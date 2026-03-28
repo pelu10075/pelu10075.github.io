@@ -1,6 +1,7 @@
 ---
 import Header from '../components/Header.astro';
 import SiteLanguage from '../components/SiteLanguage.astro';
+import { siteFooter, formatFooterYear } from '../config/site';
 import '../styles/global.css';
 import '../styles/i18n.css';
 
@@ -50,10 +51,10 @@ const year = new Date().getFullYear();
 			<slot />
 		</main>
 		<footer class="site-footer">
-			<p class="i18n i18n--en">© {year} Min-Seong Park. Astro + GitHub Pages.</p>
-			<p class="i18n i18n--ko">© {year} 박민성. Astro + GitHub Pages.</p>
-			<p class="i18n i18n--en">Aspiring UWaterloo Engineer · FEIA Class of 2028</p>
-			<p class="i18n i18n--ko">UWaterloo 공학도를 지향 · FEIA 2028 졸업 예정</p>
+			<p class="i18n i18n--en">{formatFooterYear(siteFooter.line1.en, year)}</p>
+			<p class="i18n i18n--ko">{formatFooterYear(siteFooter.line1.ko, year)}</p>
+			<p class="i18n i18n--en">{siteFooter.line2.en}</p>
+			<p class="i18n i18n--ko">{siteFooter.line2.ko}</p>
 		</footer>
 		<SiteLanguage />
 	</body>
