@@ -11,8 +11,8 @@ export const siteMeta = {
 
 export const hero = {
 	tagline: {
-		en: 'Jjamjjamtive overprivileged child',
-		ko: '짬짬한 고능아',
+		en: '??',
+		ko: '??',
 	},
 	name: 'Min-Seong Park',
 	nameKr: '박민성',
