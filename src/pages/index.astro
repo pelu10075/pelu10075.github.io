@@ -8,6 +8,8 @@ import {
 	about,
 	skillsSection,
 	projectsSection,
+	projectShowcase,
+	activitySection,
 	competitive,
 	blogSection,
 	contactSection,
@@ -46,6 +48,52 @@ const [ghUser, ghRepos, cfUser] = await Promise.all([
 
 const githubProfileUrl = ghUser?.html_url ?? hero.githubUrl;
 
+type ProjectCard = ProjectEntry & {
+	repoName: string;
+	isFeatured: boolean;
+	category: string;
+	stars: number | null;
+	updatedAt: string | null;
+	updatedRelative: string | null;
+};
+
+function repoNameFromUrl(url: string) {
+	try {
+		const u = new URL(url);
+		const seg = u.pathname.split('/').filter(Boolean);
+		return seg[1] ?? '';
+	} catch {
+		return '';
+	}
+}
+
+function relativeUpdated(iso: string | null) {
+	if (!iso) return null;
+	const t = Date.parse(iso);
+	if (Number.isNaN(t)) return null;
+	const diffMs = Date.now() - t;
+	const dayMs = 24 * 60 * 60 * 1000;
+	const days = Math.max(1, Math.floor(diffMs / dayMs));
+	if (days < 7) return `${days}d ago`;
+	const weeks = Math.floor(days / 7);
+	if (weeks < 5) return `${weeks}w ago`;
+	const months = Math.floor(days / 30);
+	if (months < 12) return `${months}mo ago`;
+	const years = Math.floor(days / 365);
+	return `${years}y ago`;
+}
+
+function categoryFromRepo(repoName: string, tags: string[]) {
+	const manual = projectShowcase.manualCategories[repoName];
+	if (manual) return manual;
+	const normalized = tags.map((t) => t.toLowerCase());
+	if (normalized.some((t) => ['astro', 'react', 'next.js', 'html', 'css'].includes(t))) return 'Web';
+	if (normalized.some((t) => ['cryptography', 'crypto'].includes(t))) return 'Crypto';
+	if (normalized.some((t) => ['algorithms', 'algo', 'competitive'].includes(t))) return 'Algo';
+	if (normalized.some((t) => ['fastapi', 'api', 'backend', 'python'].includes(t))) return 'Backend';
+	return projectShowcase.defaultCategory;
+}
+
 function reposToProjects(repos: GitHubRepo[]): ProjectEntry[] {
 	return repos.map((repo) => {
 		const desc = repo.description?.trim();
@@ -64,10 +112,52 @@ function reposToProjects(repos: GitHubRepo[]): ProjectEntry[] {
 	});
 }
 
-let projectItems: ProjectEntry[] = [...projectsSection.items];
-if (integrations.projectsFromGitHub && ghRepos.length > 0) {
-	projectItems = reposToProjects(ghRepos);
+function toProjectCard(item: ProjectEntry, sourceRepo?: GitHubRepo): ProjectCard {
+	const repoName = sourceRepo?.name ?? repoNameFromUrl(item.sourceUrl);
+	const featuredSet = new Set(projectShowcase.featuredRepoNames);
+	return {
+		...item,
+		repoName,
+		isFeatured: featuredSet.has(repoName),
+		category: categoryFromRepo(repoName, item.tags),
+		stars: sourceRepo?.stargazers_count ?? null,
+		updatedAt: sourceRepo?.updated_at ?? null,
+		updatedRelative: relativeUpdated(sourceRepo?.updated_at ?? null),
+	};
 }
+
+const hiddenSet = new Set(projectShowcase.hiddenRepoNames);
+const githubRepoByName = new Map(ghRepos.map((repo) => [repo.name, repo]));
+const rankedGithubRepos = ghRepos
+	.filter((repo) => !hiddenSet.has(repo.name))
+	.sort((a, b) => {
+		const af = projectShowcase.featuredRepoNames.includes(a.name) ? 1 : 0;
+		const bf = projectShowcase.featuredRepoNames.includes(b.name) ? 1 : 0;
+		if (af !== bf) return bf - af;
+		return Date.parse(b.updated_at) - Date.parse(a.updated_at);
+	});
+
+let projectCards: ProjectCard[] = projectsSection.items
+	.map((item) => {
+		const repoName = repoNameFromUrl(item.sourceUrl);
+		const sourceRepo = githubRepoByName.get(repoName);
+		return toProjectCard(item, sourceRepo);
+	})
+	.filter((item) => !hiddenSet.has(item.repoName));
+if (integrations.projectsFromGitHub && rankedGithubRepos.length > 0) {
+	projectCards = reposToProjects(rankedGithubRepos).map((item, idx) => toProjectCard(item, rankedGithubRepos[idx]));
+}
+
+const dynamicActivity = rankedGithubRepos.slice(0, 2).map((repo) => ({
+	month: repo.updated_at.slice(0, 7),
+	title: { en: `Updated ${repo.name}`, ko: `${repo.name} 업데이트` },
+	detail: {
+		en: repo.description?.trim() || 'Latest project update synced from GitHub.',
+		ko: repo.description?.trim() || 'GitHub 기준 최근 프로젝트 업데이트를 동기화했습니다.',
+	},
+	link: repo.html_url,
+}));
+const activityItems = [...dynamicActivity, ...activitySection.items];
 
 const aboutStats = about.stats.map((s) => {
 	const isRepoStat = s.label.en === 'GitHub Repos' || s.label.ko === 'GitHub 저장소';
@@ -196,14 +286,37 @@ const contactLinksResolved = contactSection.links.map((link) => {
 				<span class="i18n i18n--en">{projectsSection.title.en}</span>
 				<span class="i18n i18n--ko">{projectsSection.title.ko}</span>
 			</h2>
+			<div class="project-filter-row reveal reveal-delay-1">
+				<span class="project-filter-label">
+					<span class="i18n i18n--en">{projectsSection.filterLabel.en}</span>
+					<span class="i18n i18n--ko">{projectsSection.filterLabel.ko}</span>
+				</span>
+				<div class="project-filter-buttons">
+					{projectsSection.filters.map((f, i) => (
+						<button
+							type="button"
+							class:list={['project-filter-btn', i === 0 && 'is-active']}
+							data-project-filter-btn
+							data-filter={f.key}
+						>
+							<span class="i18n i18n--en">{f.label.en}</span>
+							<span class="i18n i18n--ko">{f.label.ko}</span>
+						</button>
+					))}
+				</div>
+			</div>
 			<div class="projects-grid">
 				{
-					projectItems.map((proj, i) => {
+					projectCards.map((proj, i) => {
 						const num = String(i + 1).padStart(2, '0');
 						const delay = revealDelays[i % 4];
 						const pt = projectTitleSpans(proj.title);
 						return (
-							<div class:list={['project-card', 'reveal', `reveal-delay-${delay}`]}>
+							<div
+								class:list={['project-card', 'reveal', `reveal-delay-${delay}`]}
+								data-project-filter-item
+								data-category={proj.category}
+							>
 								<div class="project-num">{num}</div>
 								<div class="project-title">
 									{pt.mode === 'single' ? (
@@ -216,6 +329,15 @@ const contactLinksResolved = contactSection.links.map((link) => {
 									)}
 									<span class="project-arrow">↗</span>
 								</div>
+								<div class="project-meta-row">
+									{proj.isFeatured && (
+										<span class="project-featured-badge">
+											<span class="i18n i18n--en">{projectsSection.featuredLabel.en}</span>
+											<span class="i18n i18n--ko">{projectsSection.featuredLabel.ko}</span>
+										</span>
+									)}
+									<span class="project-category">{proj.category}</span>
+								</div>
 								<div class="project-desc i18n i18n--en" set:html={proj.description.en} />
 								<div class="project-desc i18n i18n--ko" set:html={proj.description.ko} />
 								<div class="project-footer">
@@ -226,6 +348,19 @@ const contactLinksResolved = contactSection.links.map((link) => {
 										<span class="i18n i18n--en">{projectsSection.viewSource.en}</span>
 										<span class="i18n i18n--ko">{projectsSection.viewSource.ko}</span>
 									</a>
+									{proj.stars != null && (
+										<span class="project-metric">
+											<span class="i18n i18n--en">{projectsSection.starsLabel.en}</span>
+											<span class="i18n i18n--ko">{projectsSection.starsLabel.ko}</span> {proj.stars}
+										</span>
+									)}
+									{proj.updatedRelative && (
+										<span class="project-metric">
+											<span class="i18n i18n--en">{projectsSection.updatedPrefix.en}</span>
+											<span class="i18n i18n--ko">{projectsSection.updatedPrefix.ko}</span>{' '}
+											{proj.updatedRelative}
+										</span>
+									)}
 									{proj.tags.map((t) => (
 										<span class="tag">{t}</span>
 									))}
@@ -238,9 +373,44 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		</div>
 	</section>
 
-	<section id="competitive">
+	<section id="activity" class="band">
 		<div class="section-inner">
 			<div class="section-label" data-num="04">
+				<span class="i18n i18n--en">{activitySection.sectionLabel.en}</span>
+				<span class="i18n i18n--ko">{activitySection.sectionLabel.ko}</span>
+			</div>
+			<h2 class="section-title reveal">
+				<span class="i18n i18n--en">{activitySection.title.en}</span>
+				<span class="i18n i18n--ko">{activitySection.title.ko}</span>
+			</h2>
+			<div class="activity-list">
+				{
+					activityItems.map((item, i) => (
+						<div class:list={['activity-item', 'reveal', `reveal-delay-${revealDelays[i % 4]}`]}>
+							<div class="activity-month">{item.month}</div>
+							<div class="activity-content">
+								<div class="activity-title">
+									<span class="i18n i18n--en">{item.title.en}</span>
+									<span class="i18n i18n--ko">{item.title.ko}</span>
+								</div>
+								<div class="activity-detail i18n i18n--en">{item.detail.en}</div>
+								<div class="activity-detail i18n i18n--ko">{item.detail.ko}</div>
+								{item.link && (
+									<a href={item.link} target="_blank" rel="noopener noreferrer" class="cp-link activity-link">
+										View
+									</a>
+								)}
+							</div>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<section id="competitive">
+		<div class="section-inner">
+			<div class="section-label" data-num="05">
 				<span class="i18n i18n--en">{competitive.sectionLabel.en}</span>
 				<span class="i18n i18n--ko">{competitive.sectionLabel.ko}</span>
 			</div>
@@ -357,7 +527,7 @@ const contactLinksResolved = contactSection.links.map((link) => {
 
 	<section id="blog" class="band blog-band">
 		<div class="section-inner">
-			<div class="section-label" data-num="05">
+			<div class="section-label" data-num="06">
 				<span class="i18n i18n--en">{blogSection.sectionLabel.en}</span>
 				<span class="i18n i18n--ko">{blogSection.sectionLabel.ko}</span>
 			</div>
@@ -399,7 +569,7 @@ const contactLinksResolved = contactSection.links.map((link) => {
 
 	<section id="contact" class="band">
 		<div class="section-inner">
-			<div class="section-label" data-num="06">
+			<div class="section-label" data-num="07">
 				<span class="i18n i18n--en">{contactSection.sectionLabel.en}</span>
 				<span class="i18n i18n--ko">{contactSection.sectionLabel.ko}</span>
 			</div>
@@ -726,6 +896,51 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		overflow: hidden;
 	}
 
+	.project-filter-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem 1rem;
+		align-items: center;
+		margin: -1rem 0 1.5rem;
+	}
+
+	.project-filter-label {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--text-dim);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.project-filter-buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.project-filter-btn {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		padding: 0.35rem 0.6rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		background: transparent;
+		color: var(--text-dim);
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.project-filter-btn:hover {
+		color: var(--text);
+		border-color: var(--text-muted);
+	}
+
+	.project-filter-btn.is-active {
+		color: var(--bg);
+		border-color: var(--accent);
+		background: var(--accent);
+	}
+
 	.project-card {
 		background: var(--bg2);
 		padding: 2rem;
@@ -759,6 +974,36 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		align-items: flex-start;
 		justify-content: space-between;
 		gap: 0.5rem;
+	}
+
+	.project-meta-row {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		margin-bottom: 0.85rem;
+	}
+
+	.project-featured-badge {
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+		border-radius: 999px;
+		padding: 0.15rem 0.5rem;
+		background: color-mix(in srgb, var(--accent) 25%, transparent);
+		border: 1px solid color-mix(in srgb, var(--accent) 65%, transparent);
+		color: var(--accent);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.project-category {
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		padding: 0.15rem 0.5rem;
+		color: var(--text-dim);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
 	}
 
 	.project-arrow {
@@ -795,6 +1040,54 @@ const contactLinksResolved = contactSection.links.map((link) => {
 	.project-link:hover {
 		border-color: var(--text-muted);
 		color: var(--text);
+	}
+
+	.project-metric {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		border: 1px solid var(--border);
+		border-radius: 3px;
+		padding: 0.3rem 0.45rem;
+		color: var(--text-dim);
+	}
+
+	.activity-list {
+		display: grid;
+		gap: 1px;
+		background: var(--border);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		overflow: hidden;
+	}
+
+	.activity-item {
+		display: grid;
+		grid-template-columns: 6rem 1fr;
+		gap: 1rem;
+		background: var(--bg2);
+		padding: 1.2rem 1.25rem;
+	}
+
+	.activity-month {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text-dim);
+	}
+
+	.activity-title {
+		font-size: 1rem;
+		font-weight: 600;
+		margin-bottom: 0.35rem;
+	}
+
+	.activity-detail {
+		font-size: 0.9rem;
+		color: var(--text-dim);
+		line-height: 1.6;
+	}
+
+	.activity-link {
+		margin-top: 0.75rem;
 	}
 
 	.cp-layout {
@@ -1094,6 +1387,11 @@ const contactLinksResolved = contactSection.links.map((link) => {
 			grid-template-columns: 1fr;
 		}
 
+		.activity-item {
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
+		}
+
 		.hero-scroll {
 			display: none;
 		}
@@ -1124,6 +1422,24 @@ const contactLinksResolved = contactSection.links.map((link) => {
 			{ threshold: 0.1 },
 		);
 		document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+		const filterButtons = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('[data-project-filter-btn]'),
+		);
+		const projectCards = Array.from(
+			document.querySelectorAll<HTMLElement>('[data-project-filter-item]'),
+		);
+		const applyFilter = (filter: string) => {
+			filterButtons.forEach((btn) => btn.classList.toggle('is-active', btn.dataset.filter === filter));
+			projectCards.forEach((card) => {
+				const category = card.dataset.category;
+				const show = filter === 'All' || category === filter;
+				card.style.display = show ? '' : 'none';
+			});
+		};
+		filterButtons.forEach((btn) => {
+			btn.addEventListener('click', () => applyFilter(btn.dataset.filter || 'All'));
+		});
 	}
 
 	initHome();

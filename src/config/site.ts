@@ -124,10 +124,30 @@ export type ProjectEntry = {
 	tags: string[];
 };
 
+export type ProjectCategoryKey = 'Web' | 'Algo' | 'Crypto' | 'Backend' | 'General';
+
+export type ActivityEntry = {
+	month: string;
+	title: LocaleText;
+	detail: LocaleText;
+	link?: string;
+};
+
 export const projectsSection = {
 	sectionLabel: { en: 'Projects', ko: '프로젝트' } satisfies LocaleText,
 	title: { en: "What I've Built", ko: '만들어 온 것들' } satisfies LocaleText,
 	viewSource: { en: 'View Source', ko: '소스 보기' } satisfies LocaleText,
+	featuredLabel: { en: 'Featured', ko: '대표' } satisfies LocaleText,
+	filterLabel: { en: 'Filter', ko: '필터' } satisfies LocaleText,
+	updatedPrefix: { en: 'Updated', ko: '업데이트' } satisfies LocaleText,
+	starsLabel: { en: 'Stars', ko: '스타' } satisfies LocaleText,
+	filters: [
+		{ key: 'All', label: { en: 'All', ko: '전체' } },
+		{ key: 'Web', label: { en: 'Web', ko: '웹' } },
+		{ key: 'Algo', label: { en: 'Algo', ko: '알고리즘' } },
+		{ key: 'Crypto', label: { en: 'Crypto', ko: '암호' } },
+		{ key: 'Backend', label: { en: 'Backend', ko: '백엔드' } },
+	] as const,
 	items: [
 		{
 			title: { en: 'DES Implementation', ko: 'DES 구현' },
@@ -150,6 +170,41 @@ export const projectsSection = {
 			tags: ['Astro', 'GitHub Pages'],
 		},
 	] satisfies ProjectEntry[],
+} as const;
+
+export const projectShowcase = {
+	featuredRepoNames: ['pelu10075.github.io', 'DES'],
+	hiddenRepoNames: [],
+	manualCategories: {
+		'pelu10075.github.io': 'Web',
+		DES: 'Crypto',
+	} as Record<string, ProjectCategoryKey>,
+	defaultCategory: 'General' as ProjectCategoryKey,
+} as const;
+
+export const activitySection = {
+	sectionLabel: { en: 'Activity', ko: '활동' } satisfies LocaleText,
+	title: { en: 'Recent Progress', ko: '최근 진행' } satisfies LocaleText,
+	items: [
+		{
+			month: '2026-03',
+			title: { en: 'Portfolio refresh', ko: '포트폴리오 개편' },
+			detail: {
+				en: 'Reworked home sections and connected project cards with GitHub build-time data.',
+				ko: '홈 섹션을 개편하고 프로젝트 카드를 GitHub 빌드타임 데이터와 연동했습니다.',
+			},
+			link: 'https://github.com/pelu10075/pelu10075.github.io',
+		},
+		{
+			month: '2026-02',
+			title: { en: 'DES implementation update', ko: 'DES 구현 업데이트' },
+			detail: {
+				en: 'Improved readability and documentation for core Feistel round logic.',
+				ko: '핵심 Feistel 라운드 로직의 가독성과 문서화를 개선했습니다.',
+			},
+			link: 'https://github.com/pelu10075/DES',
+		},
+	] satisfies ActivityEntry[],
 } as const;
 
 export const competitive = {
