@@ -90,6 +90,18 @@ function parseRoundLabel(folder: string): string {
 	return div ? `Round ${num} (${div})` : `Round ${num}`;
 }
 
+/** 소스 코드로 인정할 확장자 (노트·설정·시스템 파일 제외) */
+const CODE_EXTENSIONS = new Set([
+	'py', 'cpp', 'cc', 'cxx', 'c', 'java', 'kt', 'js', 'ts',
+	'go', 'rs', 'rb', 'cs', 'swift', 'php', 'hs', 'd',
+]);
+
+function isCodeFile(filename: string): boolean {
+	if (filename.startsWith('.')) return false; // .DS_Store, .gitkeep 등
+	const ext = filename.split('.').pop()?.toLowerCase() ?? '';
+	return CODE_EXTENSIONS.has(ext);
+}
+
 export async function fetchCodeforcesRepoTree(owner: string): Promise<CfTreeBlob[]> {
 	try {
 		const res = await fetch(
@@ -103,8 +115,11 @@ export async function fetchCodeforcesRepoTree(owner: string): Promise<CfTreeBlob
 		const results: CfTreeBlob[] = [];
 		for (const b of blobs) {
 			const parts = b.path.split('/');
+			const filename = parts[parts.length - 1];
+			if (!isCodeFile(filename)) continue; // 노트·시스템 파일 제외
+
 			if (parts[0] === 'problems' && parts.length === 2) {
-				const name = parts[1].replace(/\.[^.]+$/, '');
+				const name = filename.replace(/\.[^.]+$/, '');
 				results.push({
 					path: b.path,
 					name,
@@ -115,7 +130,7 @@ export async function fetchCodeforcesRepoTree(owner: string): Promise<CfTreeBlob
 				});
 			} else if (parts[0] === 'contests' && parts.length === 3) {
 				const folder = parts[1];
-				const name = parts[2].replace(/\.[^.]+$/, '');
+				const name = filename.replace(/\.[^.]+$/, '');
 				const label = parseRoundLabel(folder);
 				results.push({
 					path: b.path,
