@@ -178,6 +178,7 @@ export const projectShowcase = {
 	manualCategories: {
 		'pelu10075.github.io': 'Web',
 		DES: 'Crypto',
+		codeforces: 'Algo',
 	} as Record<string, ProjectCategoryKey>,
 	defaultCategory: 'General' as ProjectCategoryKey,
 } as const;
@@ -234,6 +235,58 @@ export const competitive = {
 		profileUrl: 'https://solved.ac/profile/edward_10',
 		handle: '@edward_10',
 	},
+} as const;
+
+/** [pelu10075/codeforces](https://github.com/pelu10075/codeforces) — 홈 페이지 문제풀이 섹션 */
+export type CodeforcesSolutionsFolder = {
+	/** `tree/main` 아래 경로 (예: problems) */
+	path: string;
+	title: LocaleText;
+	description: LocaleText;
+};
+
+export const codeforcesSolutionsSection = {
+	sectionLabel: { en: 'Solutions Repo', ko: '문제 풀이 저장소' } satisfies LocaleText,
+	title: { en: 'Codeforces Workspace', ko: 'Codeforces 문제 풀이' } satisfies LocaleText,
+	paragraphsHtml: [
+		{
+			en: `A dedicated GitHub repo for <strong>Codeforces</strong> practice: <code>problems/</code> for single tasks,
+				<code>contests/</code> for full rounds (e.g. Div. 1+2), and <code>templates/</code> in <strong>Python</strong> for on-site speed.`,
+			ko: `<strong>Codeforces</strong> 연습용 GitHub 저장소입니다. 단일 문제는 <code>problems/</code>,
+				라운드 전체는 <code>contests/</code>(Div. 1+2 등), 현장 속도를 위해 <strong>Python</strong> <code>templates/</code>를 두었습니다.`,
+		},
+	] satisfies LocaleText[],
+	repoUrl: 'https://github.com/pelu10075/codeforces',
+	/** 폴더 링크: `{base}/{path}` */
+	repoTreeBase: 'https://github.com/pelu10075/codeforces/tree/main',
+	viewRepoLabel: { en: 'Open repository ↗', ko: '저장소 열기 ↗' } satisfies LocaleText,
+	browseFolderLabel: { en: 'Browse folder ↗', ko: '폴더 보기 ↗' } satisfies LocaleText,
+	folders: [
+		{
+			path: 'problems',
+			title: { en: 'Individual problems', ko: '개별 문제' },
+			description: {
+				en: 'Solutions grouped by problem id — quick lookup and clean diffs when revisiting.',
+				ko: '문제 ID 기준으로 풀이를 모았습니다. 복습할 때 찾기 쉽고 diff도 깔끔합니다.',
+			},
+		},
+		{
+			path: 'contests',
+			title: { en: 'Contest rounds', ko: '대회 라운드' },
+			description: {
+				en: 'One directory per round (e.g. <code>round_1094_div1+2</code>) mirroring how Codeforces publishes rounds.',
+				ko: '라운드마다 폴더를 두어 Codeforces 라운드 구조와 맞춰 두었습니다 (예: <code>round_1094_div1+2</code>).',
+			},
+		},
+		{
+			path: 'templates',
+			title: { en: 'Templates', ko: '템플릿' },
+			description: {
+				en: 'Reusable I/O and snippets shared across submissions to cut boilerplate during contests.',
+				ko: '제출에 공통으로 쓰는 입출력·스니펫을 모아, 대회 중 보일러플레이트를 줄였습니다.',
+			},
+		},
+	] satisfies CodeforcesSolutionsFolder[],
 } as const;
 
 /** 외부 API (GitHub / Codeforces) — 빌드 시 조회 */

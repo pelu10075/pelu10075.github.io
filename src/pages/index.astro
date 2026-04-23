@@ -11,6 +11,7 @@ import {
 	projectShowcase,
 	activitySection,
 	competitive,
+	codeforcesSolutionsSection,
 	blogSection,
 	contactSection,
 	revealDelays,
@@ -525,9 +526,71 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		</div>
 	</section>
 
-	<section id="blog" class="band blog-band">
+	<section id="cf-solutions" class="band">
 		<div class="section-inner">
 			<div class="section-label" data-num="06">
+				<span class="i18n i18n--en">{codeforcesSolutionsSection.sectionLabel.en}</span>
+				<span class="i18n i18n--ko">{codeforcesSolutionsSection.sectionLabel.ko}</span>
+			</div>
+			<h2 class="section-title reveal">
+				<span class="i18n i18n--en">{codeforcesSolutionsSection.title.en}</span>
+				<span class="i18n i18n--ko">{codeforcesSolutionsSection.title.ko}</span>
+			</h2>
+			<div class="cf-solutions-layout">
+				<div class="cf-solutions-intro reveal reveal-delay-1">
+					{
+						codeforcesSolutionsSection.paragraphsHtml.map((para) => (
+							<>
+								<p class="i18n i18n--en" set:html={para.en} />
+								<p class="i18n i18n--ko" set:html={para.ko} />
+							</>
+						))
+					}
+					<div class="cf-solutions-actions">
+						<a
+							href={codeforcesSolutionsSection.repoUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="cp-link"
+						>
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+								<path d={ghIconPath} />
+							</svg>
+							<span class="i18n i18n--en">{codeforcesSolutionsSection.viewRepoLabel.en}</span>
+							<span class="i18n i18n--ko">{codeforcesSolutionsSection.viewRepoLabel.ko}</span>
+						</a>
+					</div>
+				</div>
+				<div class="cf-solutions-grid">
+					{
+						codeforcesSolutionsSection.folders.map((folder, i) => {
+							const treeUrl = `${codeforcesSolutionsSection.repoTreeBase}/${folder.path}`;
+							const delay = revealDelays[i % 4];
+							return (
+								<div class:list={['cf-folder-card', 'reveal', `reveal-delay-${delay}`]}>
+									<div class="cf-folder-path">{folder.path}/</div>
+									<h3 class="cf-folder-title">
+										<span class="i18n i18n--en">{folder.title.en}</span>
+										<span class="i18n i18n--ko">{folder.title.ko}</span>
+									</h3>
+									<p class="cf-folder-desc i18n i18n--en" set:html={folder.description.en} />
+									<p class="cf-folder-desc i18n i18n--ko" set:html={folder.description.ko} />
+									<a href={treeUrl} target="_blank" rel="noopener noreferrer" class="cf-folder-link">
+										<span class="i18n i18n--en">{codeforcesSolutionsSection.browseFolderLabel.en}</span>
+										<span class="i18n i18n--ko">{codeforcesSolutionsSection.browseFolderLabel.ko}</span>
+									</a>
+								</div>
+							);
+						})
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="blog" class="band blog-band">
+		<div class="section-inner">
+			<div class="section-label" data-num="07">
 				<span class="i18n i18n--en">{blogSection.sectionLabel.en}</span>
 				<span class="i18n i18n--ko">{blogSection.sectionLabel.ko}</span>
 			</div>
@@ -569,7 +632,7 @@ const contactLinksResolved = contactSection.links.map((link) => {
 
 	<section id="contact" class="band">
 		<div class="section-inner">
-			<div class="section-label" data-num="07">
+			<div class="section-label" data-num="08">
 				<span class="i18n i18n--en">{contactSection.sectionLabel.en}</span>
 				<span class="i18n i18n--ko">{contactSection.sectionLabel.ko}</span>
 			</div>
@@ -1090,6 +1153,114 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		margin-top: 0.75rem;
 	}
 
+	.cf-solutions-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+		gap: 2.75rem;
+		align-items: start;
+	}
+
+	.cf-solutions-intro p {
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1.9;
+		margin: 0 0 1rem;
+		font-weight: 300;
+	}
+
+	.cf-solutions-intro code {
+		font-family: var(--font-mono);
+		font-size: 0.88em;
+		padding: 0.1em 0.35em;
+		border-radius: 3px;
+		background: var(--bg3);
+		border: 1px solid var(--border);
+		color: var(--accent);
+	}
+
+	.cf-solutions-actions {
+		margin-top: 1.35rem;
+	}
+
+	.cf-solutions-actions .cp-link svg {
+		flex-shrink: 0;
+		opacity: 0.85;
+	}
+
+	.cf-solutions-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	.cf-folder-card {
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--bg2);
+		padding: 1.15rem 1.2rem;
+		display: flex;
+		flex-direction: column;
+		min-height: 100%;
+	}
+
+	.cf-folder-path {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		letter-spacing: 0.06em;
+		color: var(--accent);
+		margin-bottom: 0.5rem;
+	}
+
+	.cf-folder-title {
+		font-size: 0.95rem;
+		font-weight: 600;
+		margin: 0 0 0.5rem;
+		line-height: 1.35;
+	}
+
+	.cf-folder-desc {
+		font-size: 0.82rem;
+		color: var(--text-dim);
+		line-height: 1.65;
+		margin: 0 0 1rem;
+		flex: 1;
+	}
+
+	.cf-folder-desc code {
+		font-family: var(--font-mono);
+		font-size: 0.92em;
+		padding: 0.08em 0.3em;
+		border-radius: 3px;
+		background: var(--bg3);
+		border: 1px solid var(--border);
+		color: var(--text-muted);
+	}
+
+	.cf-folder-link {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		letter-spacing: 0.04em;
+		color: var(--text-muted);
+		text-decoration: none;
+		align-self: flex-start;
+		padding: 0.35rem 0;
+		border-bottom: 1px solid transparent;
+		transition:
+			color 0.2s,
+			border-color 0.2s;
+	}
+
+	.cf-folder-link:hover {
+		color: var(--accent);
+		border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+	}
+
+	@media (max-width: 960px) {
+		.cf-solutions-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	.cp-layout {
 		display: grid;
 		grid-template-columns: 1fr auto;
@@ -1384,6 +1555,10 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		}
 
 		.cp-layout {
+			grid-template-columns: 1fr;
+		}
+
+		.cf-solutions-layout {
 			grid-template-columns: 1fr;
 		}
 
