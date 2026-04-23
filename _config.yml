@@ -1,0 +1,13 @@
+# 이 저장소는 Astro로 빌드됩니다 (`npm run build` → `dist/`). Jekyll 사이트가 아닙니다.
+# Pages에서 Jekyll 워크플로가 잘못 실행될 때, 아래 경로를 처리 대상에서 빼서
+# `.astro` 파일의 `---` 구간이 YAML로 파싱되는 오류를 막습니다.
+# 정상 배포: Settings → Pages → Source = GitHub Actions + `.github/workflows/deploy.yml`
+exclude:
+  - src
+  - node_modules
+  - dist
+  - public
+  - astro.config.mjs
+  - package.json
+  - package-lock.json
+  - tsconfig.json
