@@ -63,6 +63,78 @@ export async function fetchGitHubRepos(login: string, limit: number): Promise<Gi
 	}
 }
 
+export type CfTreeBlob = {
+	path: string;
+	/** file name without extension */
+	name: string;
+	/** 'problem' | 'contest-problem' */
+	kind: 'problem' | 'contest-problem';
+	/** for kind=contest-problem: raw folder name, e.g. "round_1094_div1+2" */
+	round?: string;
+	/** human-friendly round label, e.g. "Round 1094 (Div. 1+2)" */
+	roundLabel?: string;
+	/** display id, e.g. "1234A" or "A" */
+	id: string;
+	/** GitHub blob URL */
+	githubUrl: string;
+	/** lowercase search index string */
+	searchText: string;
+};
+
+function parseRoundLabel(folder: string): string {
+	// "round_1094_div1+2" → "Round 1094 (Div. 1+2)"
+	const m = folder.match(/^round[_-](\d+)(?:[_-](div\d[\+\-]?\d*))?/i);
+	if (!m) return folder.replace(/_/g, ' ');
+	const num = m[1];
+	const div = m[2] ? m[2].replace('div', 'Div. ') : null;
+	return div ? `Round ${num} (${div})` : `Round ${num}`;
+}
+
+export async function fetchCodeforcesRepoTree(owner: string): Promise<CfTreeBlob[]> {
+	try {
+		const res = await fetch(
+			`https://api.github.com/repos/${owner}/codeforces/git/trees/main?recursive=1`,
+			{ headers: ghHeaders },
+		);
+		if (!res.ok) return [];
+		const json = (await res.json()) as { tree: { path: string; type: string }[] };
+		const blobs = json.tree.filter((n) => n.type === 'blob');
+		const base = `https://github.com/${owner}/codeforces/blob/main`;
+		const results: CfTreeBlob[] = [];
+		for (const b of blobs) {
+			const parts = b.path.split('/');
+			if (parts[0] === 'problems' && parts.length === 2) {
+				const name = parts[1].replace(/\.[^.]+$/, '');
+				results.push({
+					path: b.path,
+					name,
+					kind: 'problem',
+					id: name,
+					githubUrl: `${base}/${b.path}`,
+					searchText: name.toLowerCase(),
+				});
+			} else if (parts[0] === 'contests' && parts.length === 3) {
+				const folder = parts[1];
+				const name = parts[2].replace(/\.[^.]+$/, '');
+				const label = parseRoundLabel(folder);
+				results.push({
+					path: b.path,
+					name,
+					kind: 'contest-problem',
+					round: folder,
+					roundLabel: label,
+					id: name,
+					githubUrl: `${base}/${b.path}`,
+					searchText: [name, folder, label].join(' ').toLowerCase(),
+				});
+			}
+		}
+		return results;
+	} catch {
+		return [];
+	}
+}
+
 type CfApiUser = {
 	handle: string;
 	rating?: number;

@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    # 매주 일요일 00:00 UTC — codeforces 레포에 새 풀이가 추가됐을 때 자동 반영
+    - cron: '0 0 * * 0'
 
 permissions:
   contents: read

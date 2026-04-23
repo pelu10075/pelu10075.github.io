@@ -23,6 +23,7 @@ import {
 	fetchGitHubUser,
 	fetchGitHubRepos,
 	fetchCodeforcesUser,
+	fetchCodeforcesRepoTree,
 	type GitHubRepo,
 } from '../lib/profileApis';
 
@@ -41,10 +42,11 @@ function formatBlogDate(d: Date) {
 const ghIconPath =
 	'M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z';
 
-const [ghUser, ghRepos, cfUser] = await Promise.all([
+const [ghUser, ghRepos, cfUser, cfTree] = await Promise.all([
 	fetchGitHubUser(integrations.githubLogin),
 	fetchGitHubRepos(integrations.githubLogin, integrations.githubReposLimit),
 	fetchCodeforcesUser(integrations.codeforcesHandle),
+	fetchCodeforcesRepoTree(integrations.githubLogin),
 ]);
 
 const githubProfileUrl = ghUser?.html_url ?? hero.githubUrl;
@@ -584,6 +586,79 @@ const contactLinksResolved = contactSection.links.map((link) => {
 						})
 					}
 				</div>
+			</div>
+
+			{/* ── Problem Search ── */}
+			<div class="cf-search-wrap reveal">
+				<div class="cf-search-header">
+					<span class="cf-search-title i18n i18n--en">{codeforcesSolutionsSection.search.label.en}</span>
+					<span class="cf-search-title i18n i18n--ko">{codeforcesSolutionsSection.search.label.ko}</span>
+					<span class="cf-search-count" id="cfSearchCount" aria-live="polite"></span>
+				</div>
+				{cfTree.length > 0 ? (
+					<>
+						<div class="cf-search-input-wrap">
+							<input
+								id="cfSearchInput"
+								type="search"
+								class="cf-search-input"
+								placeholder-en={codeforcesSolutionsSection.search.placeholder.en}
+								placeholder-ko={codeforcesSolutionsSection.search.placeholder.ko}
+								autocomplete="off"
+								spellcheck={false}
+							/>
+						</div>
+						<div class="cf-search-table-wrap">
+							<table class="cf-search-table" id="cfSearchTable">
+								<thead>
+									<tr>
+										<th class="i18n i18n--en">{codeforcesSolutionsSection.search.colProblem.en}</th>
+										<th class="i18n i18n--en">{codeforcesSolutionsSection.search.colRound.en}</th>
+										<th class="i18n i18n--en">{codeforcesSolutionsSection.search.colLink.en}</th>
+										<th class="i18n i18n--ko">{codeforcesSolutionsSection.search.colProblem.ko}</th>
+										<th class="i18n i18n--ko">{codeforcesSolutionsSection.search.colRound.ko}</th>
+										<th class="i18n i18n--ko">{codeforcesSolutionsSection.search.colLink.ko}</th>
+									</tr>
+								</thead>
+								<tbody id="cfSearchBody">
+									{cfTree.map((item) => (
+										<tr data-search={item.searchText}>
+											<td>
+												<span class="cf-problem-id">{item.id}</span>
+												<span class:list={['cf-kind-badge', item.kind === 'problem' ? 'cf-kind--individual' : 'cf-kind--contest']}>
+													<span class="i18n i18n--en">{item.kind === 'problem' ? codeforcesSolutionsSection.search.kindProblem.en : codeforcesSolutionsSection.search.kindContest.en}</span>
+													<span class="i18n i18n--ko">{item.kind === 'problem' ? codeforcesSolutionsSection.search.kindProblem.ko : codeforcesSolutionsSection.search.kindContest.ko}</span>
+												</span>
+											</td>
+											<td class="cf-round-cell">
+												{item.roundLabel ?? '—'}
+											</td>
+											<td>
+												<a href={item.githubUrl} target="_blank" rel="noopener noreferrer" class="cf-file-link">
+													{item.path.split('/').pop()}
+												</a>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+							<p class="cf-search-empty" id="cfSearchEmpty" hidden>
+								<span class="i18n i18n--en">{codeforcesSolutionsSection.search.noResults.en}</span>
+								<span class="i18n i18n--ko">{codeforcesSolutionsSection.search.noResults.ko}</span>
+							</p>
+						</div>
+					</>
+				) : (
+					<a
+						href={codeforcesSolutionsSection.repoUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="cp-link"
+					>
+						<span class="i18n i18n--en">{codeforcesSolutionsSection.search.fallback.en}</span>
+						<span class="i18n i18n--ko">{codeforcesSolutionsSection.search.fallback.ko}</span>
+					</a>
+				)}
 			</div>
 		</div>
 	</section>
@@ -1261,6 +1336,170 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		}
 	}
 
+	/* ── Problem Search ── */
+	.cf-search-wrap {
+		margin-top: 2.5rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--bg2);
+		overflow: hidden;
+	}
+
+	.cf-search-header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.75rem 1.25rem;
+		border-bottom: 1px solid var(--border);
+		background: var(--bg3);
+	}
+
+	.cf-search-title {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--text-dim);
+	}
+
+	.cf-search-count {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		color: var(--accent);
+		margin-left: auto;
+	}
+
+	.cf-search-input-wrap {
+		padding: 0.85rem 1.25rem;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.cf-search-input {
+		width: 100%;
+		background: var(--bg);
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		color: var(--text);
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
+		padding: 0.55rem 0.85rem;
+		outline: none;
+		transition: border-color 0.2s;
+	}
+
+	.cf-search-input:focus {
+		border-color: var(--accent);
+	}
+
+	.cf-search-input::placeholder {
+		color: var(--text-dim);
+	}
+
+	.cf-search-table-wrap {
+		overflow-x: auto;
+		max-height: 22rem;
+		overflow-y: auto;
+	}
+
+	.cf-search-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.84rem;
+	}
+
+	.cf-search-table thead th {
+		position: sticky;
+		top: 0;
+		background: var(--bg3);
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--text-dim);
+		font-weight: 400;
+		padding: 0.55rem 1rem;
+		text-align: left;
+		border-bottom: 1px solid var(--border);
+		white-space: nowrap;
+	}
+
+	.cf-search-table tbody tr {
+		border-bottom: 1px solid var(--border);
+		transition: background 0.15s;
+	}
+
+	.cf-search-table tbody tr:last-child {
+		border-bottom: none;
+	}
+
+	.cf-search-table tbody tr:hover {
+		background: var(--bg3);
+	}
+
+	.cf-search-table td {
+		padding: 0.55rem 1rem;
+		vertical-align: middle;
+	}
+
+	.cf-problem-id {
+		font-family: var(--font-mono);
+		font-size: 0.88rem;
+		font-weight: 600;
+		color: var(--text);
+		margin-right: 0.5rem;
+	}
+
+	.cf-kind-badge {
+		font-family: var(--font-mono);
+		font-size: 0.6rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		padding: 0.1rem 0.4rem;
+		border-radius: 999px;
+		vertical-align: middle;
+	}
+
+	.cf-kind--individual {
+		background: color-mix(in srgb, var(--accent) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+		color: var(--accent);
+	}
+
+	.cf-kind--contest {
+		background: color-mix(in srgb, var(--text-muted) 12%, transparent);
+		border: 1px solid var(--border);
+		color: var(--text-dim);
+	}
+
+	.cf-round-cell {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: var(--text-dim);
+		white-space: nowrap;
+	}
+
+	.cf-file-link {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		text-decoration: none;
+		border-bottom: 1px solid transparent;
+		transition: color 0.15s, border-color 0.15s;
+		white-space: nowrap;
+	}
+
+	.cf-file-link:hover {
+		color: var(--accent);
+		border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+	}
+
+	.cf-search-empty {
+		padding: 1.5rem 1.25rem;
+		font-size: 0.85rem;
+		color: var(--text-dim);
+		text-align: center;
+	}
+
 	.cp-layout {
 		display: grid;
 		grid-template-columns: 1fr auto;
@@ -1615,6 +1854,52 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		filterButtons.forEach((btn) => {
 			btn.addEventListener('click', () => applyFilter(btn.dataset.filter || 'All'));
 		});
+
+		// ── Codeforces problem search ──
+		const cfInput = document.getElementById('cfSearchInput') as HTMLInputElement | null;
+		const cfBody = document.getElementById('cfSearchBody');
+		const cfEmpty = document.getElementById('cfSearchEmpty') as HTMLElement | null;
+		const cfCount = document.getElementById('cfSearchCount');
+
+		function syncPlaceholder() {
+			if (!cfInput) return;
+			const isKo = document.documentElement.dataset.lang === 'ko';
+			cfInput.placeholder = isKo
+				? cfInput.getAttribute('placeholder-ko') ?? ''
+				: cfInput.getAttribute('placeholder-en') ?? '';
+		}
+
+		function updateCount(visible: number, total: number) {
+			if (!cfCount) return;
+			const isKo = document.documentElement.dataset.lang === 'ko';
+			cfCount.textContent = isKo ? `${visible} / ${total} 개 결과` : `${visible} / ${total} results`;
+		}
+
+		function initCfSearch() {
+			if (!cfInput || !cfBody) return;
+			const rows = Array.from(cfBody.querySelectorAll<HTMLTableRowElement>('tr'));
+			const total = rows.length;
+
+			syncPlaceholder();
+			updateCount(total, total);
+
+			cfInput.addEventListener('input', () => {
+				const q = cfInput.value.trim().toLowerCase();
+				let visible = 0;
+				rows.forEach((row) => {
+					const match = !q || (row.dataset.search ?? '').includes(q);
+					row.style.display = match ? '' : 'none';
+					if (match) visible++;
+				});
+				updateCount(visible, total);
+				if (cfEmpty) cfEmpty.hidden = visible > 0;
+			});
+
+			// re-sync placeholder when language switches
+			document.addEventListener('langchange', syncPlaceholder);
+		}
+
+		initCfSearch();
 	}
 
 	initHome();

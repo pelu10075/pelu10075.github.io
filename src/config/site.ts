@@ -261,6 +261,18 @@ export const codeforcesSolutionsSection = {
 	repoTreeBase: 'https://github.com/pelu10075/codeforces/tree/main',
 	viewRepoLabel: { en: 'Open repository ↗', ko: '저장소 열기 ↗' } satisfies LocaleText,
 	browseFolderLabel: { en: 'Browse folder ↗', ko: '폴더 보기 ↗' } satisfies LocaleText,
+	search: {
+		label: { en: 'Problem Search', ko: '문제 검색' } satisfies LocaleText,
+		placeholder: { en: 'Search by ID or round…  e.g. 1094, A, 1234A', ko: 'ID 또는 라운드 검색…  예) 1094, A, 1234A' } satisfies LocaleText,
+		countSuffix: { en: 'results', ko: '개 결과' } satisfies LocaleText,
+		noResults: { en: 'No matches.', ko: '결과 없음.' } satisfies LocaleText,
+		fallback: { en: 'Could not load file list — view on GitHub ↗', ko: '파일 목록을 불러오지 못했습니다 — GitHub에서 보기 ↗' } satisfies LocaleText,
+		colProblem: { en: 'Problem', ko: '문제' } satisfies LocaleText,
+		colRound: { en: 'Round', ko: '라운드' } satisfies LocaleText,
+		colLink: { en: 'File', ko: '파일' } satisfies LocaleText,
+		kindProblem: { en: 'individual', ko: '개별' } satisfies LocaleText,
+		kindContest: { en: 'contest', ko: '대회' } satisfies LocaleText,
+	},
 	folders: [
 		{
 			path: 'problems',
