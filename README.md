@@ -49,6 +49,14 @@ git push -u origin main
 4. **Actions** 탭에서 **Deploy to GitHub Pages** 워크플로만 사용합니다. `Build with Jekyll` / `jekyll-build-pages` 가 돌면 Pages 소스가 잘못된 것입니다. Settings → Pages에서 다시 **GitHub Actions** 를 고르고, 필요하면 잘못된 워크플로를 비활성화합니다.
 5. `main`에 푸시할 때마다 `.github/workflows/deploy.yml` 이 `npm run build` 로 `dist/` 를 올려 `https://pelu10075.github.io` 에 반영합니다.
 
+### 사이트에 README만 보일 때
+
+이 저장소의 실제 사이트는 **`npm run build` 결과인 `dist/`** 입니다. `dist/` 는 보통 Git에 올리지 않고, **CI가 빌드한 뒤 GitHub Pages에만** 올라갑니다.
+
+- **Settings → Pages → Build and deployment** 가 **GitHub Actions** 가 아니라 **Deploy from a branch** (`main` / `(root)` 등)이면, 루트에는 `index.html`이 없어서 Jekyll/기본 페이지가 **README.md** 위주로 보여 줄 수 있습니다. Source를 **GitHub Actions** 로 바꿉니다.
+- 바꾼 뒤 **Actions** 탭에서 **Deploy to GitHub Pages** 가 성공(초록)인지 확인합니다. 처음이면 **Settings → Environments → github-pages** 에서 배포 승인이 필요할 수 있습니다.
+- `pages-build-deployment`(Jekyll)만 돌고 Astro 워크플로가 안 돌면, 위 Pages 소스 설정을 다시 확인합니다.
+
 ## 빌드만 확인
 
 ```sh
