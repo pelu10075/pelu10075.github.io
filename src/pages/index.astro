@@ -430,15 +430,6 @@ const contactLinksResolved = contactSection.links.map((link) => {
 					}
 					<div class="cp-actions cp-actions-row">
 						<a
-							href={competitive.badge.profileUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="cp-link"
-						>
-							<span class="i18n i18n--en">{competitive.profileLinkLabel.en}</span>
-							<span class="i18n i18n--ko">{competitive.profileLinkLabel.ko}</span>
-						</a>
-						<a
 							href={competitive.codeforces.profileUrl}
 							target="_blank"
 							rel="noopener noreferrer"
@@ -447,28 +438,18 @@ const contactLinksResolved = contactSection.links.map((link) => {
 							<span class="i18n i18n--en">{competitive.codeforces.linkLabel.en}</span>
 							<span class="i18n i18n--ko">{competitive.codeforces.linkLabel.ko}</span>
 						</a>
+						<a
+							href={competitive.badge.profileUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="cp-link"
+						>
+							<span class="i18n i18n--en">{competitive.profileLinkLabel.en}</span>
+							<span class="i18n i18n--ko">{competitive.profileLinkLabel.ko}</span>
+						</a>
 					</div>
 				</div>
 				<div class="cp-badges-column reveal reveal-delay-2">
-					<div class="cp-badge-wrap">
-						<img
-							src={competitive.badge.imageUrl}
-							alt={competitive.badge.alt}
-							width="320"
-							height="160"
-							loading="lazy"
-						/>
-						<div class="cp-badge-foot">
-							<a
-								href={competitive.badge.profileUrl}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="cp-link"
-							>
-								{competitive.badge.handle}
-							</a>
-						</div>
-					</div>
 					<div class="cf-card">
 						<div class="cf-card-title">Codeforces</div>
 						<div class="cf-handle">{integrations.codeforcesHandle}</div>
@@ -519,6 +500,25 @@ const contactLinksResolved = contactSection.links.map((link) => {
 						>
 							codeforces.com/profile/{integrations.codeforcesHandle}
 						</a>
+					</div>
+					<div class="cp-badge-wrap">
+						<img
+							src={competitive.badge.imageUrl}
+							alt={competitive.badge.alt}
+							width="320"
+							height="160"
+							loading="lazy"
+						/>
+						<div class="cp-badge-foot">
+							<a
+								href={competitive.badge.profileUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="cp-link"
+							>
+								{competitive.badge.handle}
+							</a>
+						</div>
 					</div>
 				</div>
 			</div>

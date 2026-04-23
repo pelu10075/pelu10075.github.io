@@ -216,13 +216,6 @@ export const competitive = {
 			ko: `ㅇㅇ;;`,
 		},
 	] satisfies LocaleText[],
-	profileLinkLabel: { en: 'View solved.ac Profile ↗', ko: 'solved.ac 프로필 보기 ↗' } satisfies LocaleText,
-	badge: {
-		imageUrl: 'https://mazassumnida.wtf/api/v2/generate_badge?boj=edward_10',
-		alt: "edward_10's solved.ac stats",
-		profileUrl: 'https://solved.ac/profile/edward_10',
-		handle: '@edward_10',
-	},
 	/** Codeforces — 표시 데이터는 빌드 시 API로 채움 */
 	codeforces: {
 		profileUrl: 'https://codeforces.com/profile/edward_10',
@@ -233,6 +226,13 @@ export const competitive = {
 			rank: { en: 'Rank', ko: '등급' } satisfies LocaleText,
 			unrated: { en: 'Unrated', ko: '비레이팅' } satisfies LocaleText,
 		},
+	},
+	profileLinkLabel: { en: 'View solved.ac Profile ↗', ko: 'solved.ac 프로필 보기 ↗' } satisfies LocaleText,
+	badge: {
+		imageUrl: 'https://mazassumnida.wtf/api/v2/generate_badge?boj=edward_10',
+		alt: "edward_10's solved.ac stats",
+		profileUrl: 'https://solved.ac/profile/edward_10',
+		handle: '@edward_10',
 	},
 } as const;
 
