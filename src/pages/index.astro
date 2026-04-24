@@ -312,6 +312,15 @@ const contactLinksResolved = contactSection.links.map((link) => {
 							<span class="i18n i18n--ko">{competitive.codeforces.linkLabel.ko}</span>
 						</a>
 						<a
+							href={competitive.leetcode.profileUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="cp-link"
+						>
+							<span class="i18n i18n--en">{competitive.leetcode.linkLabel.en}</span>
+							<span class="i18n i18n--ko">{competitive.leetcode.linkLabel.ko}</span>
+						</a>
+						<a
 							href={competitive.badge.profileUrl}
 							target="_blank"
 							rel="noopener noreferrer"
@@ -430,12 +439,6 @@ const contactLinksResolved = contactSection.links.map((link) => {
 						</div>
 					</div>
 				</div>
-			</div>
-
-			<!-- ── Workspace divider ────────────────────────────── -->
-			<div class="cp-workspace-divider reveal">
-				<span class="i18n i18n--en">{codeforcesSolutionsSection.title.en}</span>
-				<span class="i18n i18n--ko">{codeforcesSolutionsSection.title.ko}</span>
 			</div>
 
 			<!-- ── Workspace intro + folders ────────────────────── -->
@@ -1194,26 +1197,8 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		margin-top: 0.75rem;
 	}
 
-	.cp-workspace-divider {
-		margin: 4rem 0 2.5rem;
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-		color: var(--text-dim);
-	}
-	.cp-workspace-divider::before,
-	.cp-workspace-divider::after {
-		content: '';
-		flex: 1;
-		height: 1px;
-		background: var(--border);
-	}
-
 	.cf-solutions-layout {
+		margin-top: 3.5rem;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
 		gap: 2.75rem;
