@@ -1,0 +1,597 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CF_REPO, REPO_URL, BLOB_BASE } from '../../lib/cfSearch';
+
+const folders = [
+	{
+		path: 'problems',
+		titleEn: 'Individual Problems',
+		titleKo: '개별 문제',
+		descEn: 'One directory per problem ID — note.md with metadata + solution files.',
+		descKo: '문제 ID마다 폴더 — 메타데이터를 담은 note.md와 풀이 파일.',
+		treeUrl: `https://github.com/${CF_REPO.owner}/${CF_REPO.name}/tree/main/problems`,
+	},
+	{
+		path: 'contests',
+		titleEn: 'Contest Rounds',
+		titleKo: '대회 라운드',
+		descEn: 'One directory per round — notes.md with round metadata + solution files per problem.',
+		descKo: '라운드마다 폴더 — 대회 메타데이터와 문제별 풀이 파일.',
+		treeUrl: `https://github.com/${CF_REPO.owner}/${CF_REPO.name}/tree/main/contests`,
+	},
+	{
+		path: 'templates',
+		titleEn: 'Templates',
+		titleKo: '템플릿',
+		descEn: 'Reusable I/O and snippet files shared across all submissions.',
+		descKo: '모든 제출에 공통으로 쓰는 입출력·스니펫 파일.',
+		treeUrl: `https://github.com/${CF_REPO.owner}/${CF_REPO.name}/tree/main/templates`,
+	},
+];
+---
+
+<BaseLayout title="Problems · pelu10075" description="Codeforces 문제 풀이 검색">
+	<div class="prb-page">
+
+		<!-- ── Hero ──────────────────────────────────────────────── -->
+		<header class="prb-hero">
+			<div class="prb-hero-inner">
+				<div class="prb-hero-label">
+					<a href="/" class="prb-back">← portfolio</a>
+					<span class="prb-sep">/</span>
+					<span>problems</span>
+				</div>
+				<h1 class="prb-title">
+					<span class="i18n i18n--en">Codeforces Solutions</span>
+					<span class="i18n i18n--ko">Codeforces 문제 풀이</span>
+				</h1>
+				<p class="prb-subtitle">
+					<span class="i18n i18n--en">Search problems by ID, round number, tag, or difficulty.</span>
+					<span class="i18n i18n--ko">문제 ID, 라운드, 태그, 난이도로 풀이를 검색합니다.</span>
+				</p>
+				<div class="prb-hero-actions">
+					<a href={REPO_URL} target="_blank" rel="noopener noreferrer" class="prb-repo-link">
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+							<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+						</svg>
+						<span>{CF_REPO.owner}/{CF_REPO.name}</span>
+					</a>
+				</div>
+			</div>
+		</header>
+
+		<!-- ── Folder Cards ──────────────────────────────────────── -->
+		<section class="prb-folders">
+			{folders.map((f) => (
+				<a href={f.treeUrl} target="_blank" rel="noopener noreferrer" class="prb-folder-card">
+					<div class="prb-folder-path">{f.path}/</div>
+					<div class="prb-folder-title">
+						<span class="i18n i18n--en">{f.titleEn}</span>
+						<span class="i18n i18n--ko">{f.titleKo}</span>
+					</div>
+					<div class="prb-folder-desc">
+						<span class="i18n i18n--en">{f.descEn}</span>
+						<span class="i18n i18n--ko">{f.descKo}</span>
+					</div>
+					<span class="prb-folder-arrow">↗</span>
+				</a>
+			))}
+		</section>
+
+		<!-- ── Search ────────────────────────────────────────────── -->
+		<section class="prb-search-section" id="prb-search">
+			<div class="prb-search-bar">
+				<input
+					id="prbInput"
+					type="search"
+					class="prb-input"
+					placeholder="Search by ID or round…  e.g. 1094, A, 2220A, greedy"
+					autocomplete="off"
+					spellcheck="false"
+				/>
+				<span class="prb-count" id="prbCount"></span>
+			</div>
+			<div id="prbResults" class="prb-results">
+				<div class="prb-loading" id="prbLoading">
+					<span class="prb-spinner"></span>
+					<span class="i18n i18n--en">Loading repo data…</span>
+					<span class="i18n i18n--ko">저장소 데이터 불러오는 중…</span>
+				</div>
+			</div>
+		</section>
+
+	</div>
+</BaseLayout>
+
+<style>
+	/* ── Layout ─────────────────────────────────────────────────── */
+	.prb-page {
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 2rem 1.5rem 5rem;
+	}
+
+	/* ── Hero ───────────────────────────────────────────────────── */
+	.prb-hero {
+		padding: 3rem 0 2.5rem;
+		border-bottom: 1px solid var(--border);
+		margin-bottom: 2.5rem;
+	}
+
+	.prb-hero-label {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--text-dim);
+		letter-spacing: 0.08em;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.prb-back {
+		color: var(--text-muted);
+		text-decoration: none;
+		transition: color 0.15s;
+	}
+	.prb-back:hover { color: var(--accent); }
+	.prb-sep { color: var(--text-dim); }
+
+	.prb-title {
+		font-size: clamp(1.8rem, 4vw, 2.75rem);
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		margin: 0 0 0.65rem;
+		color: var(--text);
+	}
+
+	.prb-subtitle {
+		font-size: 0.95rem;
+		color: var(--text-muted);
+		margin: 0 0 1.5rem;
+		font-weight: 300;
+		line-height: 1.6;
+	}
+
+	.prb-hero-actions {
+		display: flex;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	.prb-repo-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: var(--text-muted);
+		text-decoration: none;
+		padding: 0.45rem 0.9rem;
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		transition: border-color 0.2s, color 0.2s;
+	}
+	.prb-repo-link:hover {
+		border-color: var(--text-muted);
+		color: var(--accent);
+	}
+
+	/* ── Folder cards ───────────────────────────────────────────── */
+	.prb-folders {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1rem;
+		margin-bottom: 2.5rem;
+	}
+
+	.prb-folder-card {
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--bg2);
+		padding: 1.15rem 1.2rem;
+		text-decoration: none;
+		color: inherit;
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		transition: border-color 0.2s, background 0.2s;
+		position: relative;
+	}
+	.prb-folder-card:hover {
+		border-color: var(--text-dim);
+		background: var(--bg3);
+	}
+
+	.prb-folder-path {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		letter-spacing: 0.06em;
+		color: var(--accent);
+	}
+
+	.prb-folder-title {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--text);
+	}
+
+	.prb-folder-desc {
+		font-size: 0.78rem;
+		color: var(--text-dim);
+		line-height: 1.55;
+		flex: 1;
+	}
+
+	.prb-folder-arrow {
+		font-size: 0.9rem;
+		color: var(--text-dim);
+		align-self: flex-end;
+		transition: color 0.2s;
+	}
+	.prb-folder-card:hover .prb-folder-arrow { color: var(--accent); }
+
+	/* ── Search bar ─────────────────────────────────────────────── */
+	.prb-search-section {
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		overflow: hidden;
+	}
+
+	.prb-search-bar {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.85rem 1.25rem;
+		border-bottom: 1px solid var(--border);
+		background: var(--bg3);
+	}
+
+	.prb-input {
+		flex: 1;
+		background: var(--bg);
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		color: var(--text);
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
+		padding: 0.6rem 0.9rem;
+		outline: none;
+		transition: border-color 0.2s;
+	}
+	.prb-input:focus { border-color: var(--accent); }
+	.prb-input::placeholder { color: var(--text-dim); }
+
+	.prb-count {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		color: var(--text-dim);
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	/* ── Results area ───────────────────────────────────────────── */
+	.prb-results {
+		min-height: 6rem;
+	}
+
+	/* Loading */
+	.prb-loading {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 2rem 1.5rem;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: var(--text-dim);
+	}
+
+	.prb-spinner {
+		width: 14px;
+		height: 14px;
+		border: 1.5px solid var(--border);
+		border-top-color: var(--text-muted);
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+		flex-shrink: 0;
+	}
+	@keyframes spin { to { transform: rotate(360deg); } }
+
+	/* Error / empty */
+	.prb-msg {
+		padding: 2rem 1.5rem;
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
+		color: var(--text-dim);
+		text-align: center;
+	}
+
+	/* Section header (대회 / 문제) */
+	.prb-section-hd {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.55rem 1.25rem;
+		background: var(--bg3);
+		border-bottom: 1px solid var(--border);
+		font-family: var(--font-mono);
+		font-size: 0.62rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--text-dim);
+	}
+
+	/* Results table */
+	.prb-table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.prb-table th {
+		position: sticky;
+		top: 0;
+		background: var(--bg2);
+		font-family: var(--font-mono);
+		font-size: 0.6rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--text-dim);
+		font-weight: 400;
+		padding: 0.45rem 1rem;
+		text-align: left;
+		border-bottom: 1px solid var(--border);
+		white-space: nowrap;
+	}
+
+	.prb-table tbody tr {
+		border-bottom: 1px solid var(--border);
+		transition: background 0.12s;
+	}
+	.prb-table tbody tr:last-child { border-bottom: none; }
+	.prb-table tbody tr:hover { background: var(--bg3); }
+
+	.prb-table td {
+		padding: 0.6rem 1rem;
+		vertical-align: middle;
+		font-size: 0.84rem;
+	}
+
+	/* Problem ID cell */
+	.prb-id {
+		font-family: var(--font-mono);
+		font-size: 0.88rem;
+		font-weight: 700;
+		color: var(--text);
+		letter-spacing: 0.04em;
+	}
+
+	/* Title cell */
+	.prb-title-cell {
+		color: var(--text-muted);
+		font-size: 0.85rem;
+	}
+	.prb-title-cell a {
+		color: inherit;
+		text-decoration: none;
+		transition: color 0.15s;
+	}
+	.prb-title-cell a:hover { color: var(--accent); }
+
+	/* Tags */
+	.prb-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+	}
+	.prb-tag {
+		font-family: var(--font-mono);
+		font-size: 0.58rem;
+		letter-spacing: 0.04em;
+		padding: 0.1rem 0.45rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		color: var(--text-dim);
+		white-space: nowrap;
+	}
+
+	/* Difficulty */
+	.prb-diff {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		font-weight: 600;
+		white-space: nowrap;
+	}
+	.diff-none  { color: var(--text-dim); }
+	.diff-grey  { color: #808080; }
+	.diff-green { color: #77bb77; }
+	.diff-cyan  { color: #33bbbb; }
+	.diff-blue  { color: #6699ff; }
+	.diff-purple{ color: #aa77dd; }
+	.diff-orange{ color: #ffaa44; }
+	.diff-red   { color: #ff4444; }
+
+	/* Round cell */
+	.prb-round-cell {
+		font-family: var(--font-mono);
+		font-size: 0.76rem;
+		color: var(--text-dim);
+		white-space: nowrap;
+	}
+
+	/* Solution links */
+	.prb-sol-links {
+		display: flex;
+		gap: 0.4rem;
+		flex-wrap: nowrap;
+	}
+	.prb-sol-link {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		color: var(--text-muted);
+		text-decoration: none;
+		padding: 0.15rem 0.45rem;
+		border: 1px solid var(--border);
+		border-radius: 3px;
+		white-space: nowrap;
+		transition: border-color 0.15s, color 0.15s;
+	}
+	.prb-sol-link:hover {
+		border-color: var(--text-muted);
+		color: var(--accent);
+	}
+
+	/* Contest row */
+	.prb-contest-name {
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--text);
+	}
+	.prb-contest-probs {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--text-dim);
+		margin-top: 0.2rem;
+	}
+	.prb-contest-date {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--text-dim);
+		white-space: nowrap;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.prb-folders { grid-template-columns: 1fr; }
+		.prb-table td:nth-child(4),
+		.prb-table th:nth-child(4) { display: none; } /* hide round on small */
+	}
+</style>
+
+<script>
+	import {
+		loadRepoData,
+		performSearch,
+		difficultyClass,
+		BLOB_BASE,
+		REPO_URL,
+	} from '../../lib/cfSearch';
+	import type { CfItem, ProblemItem, ContestItem } from '../../lib/cfSearch';
+
+	// ── DOM refs ──────────────────────────────────────────────────
+	const input   = document.getElementById('prbInput')   as HTMLInputElement;
+	const results = document.getElementById('prbResults') as HTMLElement;
+	const countEl = document.getElementById('prbCount')   as HTMLElement;
+	const loading = document.getElementById('prbLoading') as HTMLElement;
+
+	// ── Render helpers ────────────────────────────────────────────
+	function solLinks(sols: { name: string; url: string }[]): string {
+		if (!sols.length) return '<span style="color:var(--text-dim)">—</span>';
+		return `<div class="prb-sol-links">${sols
+			.map((s) => `<a href="${s.url}" target="_blank" rel="noopener noreferrer" class="prb-sol-link">${s.name}</a>`)
+			.join('')}</div>`;
+	}
+
+	function problemRow(p: ProblemItem): string {
+		const dc = difficultyClass(p.difficulty);
+		const diff = p.difficulty != null
+			? `<span class="prb-diff ${dc}">*${p.difficulty}</span>`
+			: `<span class="prb-diff diff-none">—</span>`;
+		const tags = p.tags.length
+			? `<div class="prb-tags">${p.tags.map((t) => `<span class="prb-tag">${t}</span>`).join('')}</div>`
+			: '—';
+		const titleLink = `<a href="${BLOB_BASE}/${p.path}/note.md" target="_blank" rel="noopener noreferrer">${p.title || p.id}</a>`;
+		return `<tr>
+			<td><span class="prb-id">${p.id}</span></td>
+			<td class="prb-title-cell">${titleLink}</td>
+			<td>${tags}</td>
+			<td>${diff}</td>
+			<td class="prb-round-cell">${p.roundName || '—'}</td>
+			<td>${solLinks(p.solutions)}</td>
+		</tr>`;
+	}
+
+	function contestRow(c: ContestItem): string {
+		const probs = c.problems.length ? c.problems.join(', ') : '—';
+		return `<tr>
+			<td colspan="3">
+				<div class="prb-contest-name">${c.roundName}</div>
+				<div class="prb-contest-probs">${probs}</div>
+			</td>
+			<td></td>
+			<td class="prb-contest-date">${c.date ?? '—'}</td>
+			<td>${solLinks(c.solutions)}</td>
+		</tr>`;
+	}
+
+	function tableWrap(rows: string): string {
+		return `<div style="overflow-x:auto">
+		<table class="prb-table">
+			<thead><tr>
+				<th>ID</th>
+				<th>Title / Round</th>
+				<th>Tags</th>
+				<th>Diff</th>
+				<th>Round</th>
+				<th>Files</th>
+			</tr></thead>
+			<tbody>${rows}</tbody>
+		</table></div>`;
+	}
+
+	function sectionHeader(label: string): string {
+		return `<div class="prb-section-hd">${label}</div>`;
+	}
+
+	function render(items: CfItem[], query: string): void {
+		const { rounds, problems } = performSearch(items, query);
+		const total  = items.filter((i) => i.type === 'problem').length;
+		const pureNum = /^\d+$/.test(query.trim());
+
+		// Count label
+		const visible = problems.length + rounds.length;
+		countEl.textContent = query.trim()
+			? `${visible} / ${total} results`
+			: `${total} problems`;
+
+		if (visible === 0) {
+			results.innerHTML = `<p class="prb-msg">No matches for "<strong>${query}</strong>"</p>`;
+			return;
+		}
+
+		let html = '';
+
+		if (pureNum && rounds.length) {
+			html += sectionHeader('Rounds');
+			html += tableWrap(rounds.map(contestRow).join(''));
+		}
+
+		if (problems.length) {
+			if (pureNum && rounds.length) html += sectionHeader('Problems');
+			html += tableWrap(problems.map(problemRow).join(''));
+		}
+
+		results.innerHTML = html;
+	}
+
+	// ── Init ──────────────────────────────────────────────────────
+	async function init() {
+		let items: CfItem[] = [];
+		try {
+			items = await loadRepoData();
+		} catch {
+			loading.innerHTML = `<span class="prb-msg" style="display:block">
+				Failed to load repo data.
+				<a href="${REPO_URL}" target="_blank" rel="noopener noreferrer" style="margin-left:.5rem">View on GitHub ↗</a>
+			</span>`;
+			return;
+		}
+
+		loading.remove();
+		render(items, '');
+
+		input.addEventListener('input', () => render(items, input.value));
+	}
+
+	init();
+</script>
