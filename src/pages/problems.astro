@@ -17,8 +17,8 @@ const repoUrl = REPO_URL;
 		</nav>
 		<h1>Problems</h1>
 		<p class="prb-subtitle">
-			<span class="i18n i18n--en">Search solved Codeforces problems by ID, round, tag, or difficulty.</span>
-			<span class="i18n i18n--ko">문제 ID, 라운드, 태그, 난이도로 풀이를 검색합니다.</span>
+			<span class="i18n i18n--en">All Codeforces submissions — solved status &amp; solution folder.</span>
+			<span class="i18n i18n--ko">코드포스 제출 이력 — solved 여부 및 풀이 폴더를 확인합니다.</span>
 		</p>
 		<a href={repoUrl} target="_blank" rel="noopener noreferrer" class="prb-repo-btn">
 			<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -33,7 +33,7 @@ const repoUrl = REPO_URL;
 		<input
 			id="cf-search"
 			type="text"
-			placeholder="Search by ID or round…  e.g. 1094, A, 2220A, greedy"
+			placeholder="Search by ID, contest, tag…  e.g. 2220, A, 2220A, greedy"
 			autocomplete="off"
 			spellcheck="false"
 		/>
@@ -52,16 +52,17 @@ const repoUrl = REPO_URL;
 		<button id="cf-retry" class="prb-retry-btn">Retry</button>
 	</div>
 
-	<!-- ── Merged results ───────────────────────────────────── -->
+	<!-- ── Results table ────────────────────────────────────── -->
 	<div id="cf-table-wrap" hidden>
-		<table id="cf-table">
+		<table>
 			<thead>
 				<tr>
 					<th>ID</th>
 					<th><span class="i18n i18n--en">Title</span><span class="i18n i18n--ko">제목</span></th>
 					<th><span class="i18n i18n--en">Tags</span><span class="i18n i18n--ko">태그</span></th>
 					<th><span class="i18n i18n--en">Diff</span><span class="i18n i18n--ko">난이도</span></th>
-					<th><span class="i18n i18n--en">Round</span><span class="i18n i18n--ko">라운드</span></th>
+					<th><span class="i18n i18n--en">Contest</span><span class="i18n i18n--ko">대회</span></th>
+					<th>AC</th>
 					<th><span class="i18n i18n--en">Folder</span><span class="i18n i18n--ko">폴더</span></th>
 				</tr>
 			</thead>
@@ -73,106 +74,61 @@ const repoUrl = REPO_URL;
 		</p>
 	</div>
 
-	<!-- ── Split results (numeric query) ────────────────────── -->
-	<div id="cf-split" hidden>
-		<h2 class="prb-section-hd">[대회]</h2>
-		<div id="cf-contest-wrap">
-			<table id="cf-contest-table">
-				<thead>
-					<tr>
-						<th><span class="i18n i18n--en">Round</span><span class="i18n i18n--ko">라운드</span></th>
-						<th><span class="i18n i18n--en">Problems</span><span class="i18n i18n--ko">문제 목록</span></th>
-						<th><span class="i18n i18n--en">Date</span><span class="i18n i18n--ko">날짜</span></th>
-					</tr>
-				</thead>
-				<tbody id="cf-contest-tbody"></tbody>
-			</table>
-			<p id="cf-contest-empty" class="prb-empty" hidden>
-				<span class="i18n i18n--en">No contests.</span>
-				<span class="i18n i18n--ko">대회 없음.</span>
-			</p>
-		</div>
-		<h2 class="prb-section-hd">[문제]</h2>
-		<div id="cf-split-problem-wrap">
-			<table id="cf-problem-table">
-				<thead>
-					<tr>
-						<th>ID</th>
-						<th><span class="i18n i18n--en">Title</span><span class="i18n i18n--ko">제목</span></th>
-						<th><span class="i18n i18n--en">Tags</span><span class="i18n i18n--ko">태그</span></th>
-						<th><span class="i18n i18n--en">Diff</span><span class="i18n i18n--ko">난이도</span></th>
-						<th><span class="i18n i18n--en">Folder</span><span class="i18n i18n--ko">폴더</span></th>
-					</tr>
-				</thead>
-				<tbody id="cf-problem-tbody"></tbody>
-			</table>
-			<p id="cf-split-problem-empty" class="prb-empty" hidden>
-				<span class="i18n i18n--en">No problems.</span>
-				<span class="i18n i18n--ko">문제 없음.</span>
-			</p>
-		</div>
-	</div>
-
 </main>
 </BaseLayout>
 
-<style>
-	/* ── Variables (supplement global) ──────────────────────── */
+<!-- is:global — 동적으로 생성된 DOM 요소에도 스타일 적용 -->
+<style is:global>
+	/* ── Variables ───────────────────────────────────────────── */
 	:root {
-		--font-mono: 'Space Mono', monospace;
-		--font-sans: 'Space Grotesk', sans-serif;
-		--color-bg:         #0d0d0d;
-		--color-text:       #f0f0f0;
-		--color-border:     #2a2a2a;
-		--color-tag-bg:     transparent;
-		--color-tag-border: #444;
+		--prb-mono:       'Space Mono', monospace;
+		--prb-sans:       'Space Grotesk', sans-serif;
+		--prb-bg:         #0d0d0d;
+		--prb-text:       #f0f0f0;
+		--prb-border:     #2a2a2a;
+		--prb-tag-bg:     transparent;
+		--prb-tag-border: #3a3a3a;
 	}
 
-	/* ── Layout ─────────────────────────────────────────────── */
+	/* ── Layout ──────────────────────────────────────────────── */
 	.prb-main {
-		max-width: 900px;
+		max-width: 960px;
 		margin: 0 auto;
 		padding: 2rem 1.5rem 6rem;
 	}
 
-	/* ── Hero ───────────────────────────────────────────────── */
+	/* ── Hero ────────────────────────────────────────────────── */
 	.prb-hero {
 		padding: 2.5rem 0 2rem;
-		border-bottom: 1px solid var(--color-border);
-		margin-bottom: 0;
+		border-bottom: 1px solid var(--prb-border);
 	}
 
 	.prb-nav {
-		font-family: var(--font-mono);
+		font-family: var(--prb-mono);
 		font-size: 0.7rem;
-		color: var(--text-dim, #555);
+		color: #555;
 		display: flex;
 		align-items: center;
 		gap: 0.4rem;
 		margin-bottom: 1.25rem;
 		letter-spacing: 0.06em;
 	}
-	.prb-nav a {
-		color: var(--text-muted, #888);
-		text-decoration: none;
-		transition: color 0.15s;
-	}
-	.prb-nav a:hover { color: var(--color-text); }
-	.prb-nav-sep { color: var(--color-border); }
+	.prb-nav a { color: #888; text-decoration: none; transition: color 0.15s; }
+	.prb-nav a:hover { color: var(--prb-text); }
+	.prb-nav-sep { color: var(--prb-border); }
 
 	.prb-hero h1 {
 		font-size: clamp(1.9rem, 4vw, 2.8rem);
 		font-weight: 700;
 		letter-spacing: -0.03em;
 		margin: 0 0 0.6rem;
-		color: var(--color-text);
+		color: var(--prb-text);
 	}
 
 	.prb-subtitle {
 		font-size: 0.92rem;
-		color: var(--text-muted, #888);
+		color: #888;
 		margin: 0 0 1.25rem;
-		font-weight: 300;
 		line-height: 1.6;
 	}
 
@@ -180,35 +136,33 @@ const repoUrl = REPO_URL;
 		display: inline-flex;
 		align-items: center;
 		gap: 0.45rem;
-		font-family: var(--font-mono);
+		font-family: var(--prb-mono);
 		font-size: 0.76rem;
-		color: var(--text-muted, #888);
+		color: #888;
 		text-decoration: none;
 		padding: 0.4rem 0.85rem;
-		border: 1px solid var(--color-border);
+		border: 1px solid var(--prb-border);
 		border-radius: 4px;
 		transition: border-color 0.2s, color 0.2s;
 	}
-	.prb-repo-btn:hover { border-color: #555; color: var(--color-text); }
+	.prb-repo-btn:hover { border-color: #555; color: var(--prb-text); }
 
-	/* ── Search bar ─────────────────────────────────────────── */
+	/* ── Search bar ──────────────────────────────────────────── */
 	.search-bar {
 		display: flex;
 		align-items: center;
 		gap: 0.85rem;
 		padding: 0.9rem 0;
-		border-bottom: 1px solid var(--color-border);
-		margin-bottom: 0;
+		border-bottom: 1px solid var(--prb-border);
 	}
 
 	#cf-search {
 		flex: 1;
-		width: 100%;
 		background: transparent;
-		border: 1px solid var(--color-border);
+		border: 1px solid var(--prb-border);
 		border-radius: 4px;
-		color: var(--color-text);
-		font-family: var(--font-mono);
+		color: var(--prb-text);
+		font-family: var(--prb-mono);
 		font-size: 0.875rem;
 		padding: 0.6rem 0.9rem;
 		outline: none;
@@ -218,28 +172,26 @@ const repoUrl = REPO_URL;
 	#cf-search::placeholder { color: #444; }
 
 	#cf-count {
-		font-family: var(--font-mono);
+		font-family: var(--prb-mono);
 		font-size: 0.68rem;
 		color: #555;
 		white-space: nowrap;
 		flex-shrink: 0;
 	}
 
-	/* ── Status (loading / error) ───────────────────────────── */
+	/* ── Status ──────────────────────────────────────────────── */
 	.prb-status {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
 		padding: 2.25rem 0;
-		font-family: var(--font-mono);
+		font-family: var(--prb-mono);
 		font-size: 0.8rem;
 		color: #555;
 	}
-
 	.prb-error { color: #cc4444; }
-
 	.prb-retry-btn {
-		font-family: var(--font-mono);
+		font-family: var(--prb-mono);
 		font-size: 0.72rem;
 		background: transparent;
 		border: 1px solid #cc4444;
@@ -251,27 +203,13 @@ const repoUrl = REPO_URL;
 	}
 	.prb-retry-btn:hover { background: rgba(204,68,68,0.12); }
 
-	/* ── Section headers (split mode) ───────────────────────── */
-	.prb-section-hd {
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: #555;
-		padding: 0.9rem 0 0.4rem;
-		border-bottom: 1px solid var(--color-border);
-		margin: 0 0 0;
-		font-weight: 400;
-	}
-
-	/* ── Tables ─────────────────────────────────────────────── */
-	table {
+	/* ── Table ───────────────────────────────────────────────── */
+	.prb-main table {
 		width: 100%;
 		border-collapse: collapse;
-		font-family: var(--font-mono);
+		font-family: var(--prb-mono);
 	}
-
-	th {
+	.prb-main th {
 		font-size: 0.6rem;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
@@ -279,63 +217,31 @@ const repoUrl = REPO_URL;
 		font-weight: 400;
 		padding: 0.5rem 0.85rem;
 		text-align: left;
-		border-bottom: 1px solid var(--color-border);
+		border-bottom: 1px solid var(--prb-border);
 		white-space: nowrap;
-		background: var(--bg2, #111);
+		background: #111;
 	}
-
-	td {
+	.prb-main td {
 		padding: 0.6rem 0.85rem;
-		border-bottom: 1px solid var(--color-border);
+		border-bottom: 1px solid var(--prb-border);
 		vertical-align: middle;
 		font-size: 0.84rem;
 	}
+	.prb-main tbody tr:last-child td { border-bottom: none; }
+	.prb-main tbody tr { transition: background 0.1s; }
+	.prb-main tbody tr:hover { background: #1a1a1a; }
 
-	tbody tr:last-child td { border-bottom: none; }
-	tbody tr { transition: background 0.1s; }
-	tbody tr:hover { background: var(--bg3, #1a1a1a); }
-
-	/* ── Problem ID ─────────────────────────────────────────── */
+	/* ── Problem ID ──────────────────────────────────────────── */
 	.prb-id {
-		font-family: var(--font-mono);
+		font-family: var(--prb-mono);
 		font-weight: 700;
 		font-size: 0.88rem;
-		color: var(--color-text);
 		letter-spacing: 0.05em;
 	}
+	.prb-id--solved { color: #f0f0f0; }
+	.prb-id--unsolved { color: #555; }
 
-	/* ── Tags ───────────────────────────────────────────────── */
-	.prb-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.3rem;
-	}
-	.tag {
-		padding: 2px 6px;
-		border: 1px solid var(--color-tag-border);
-		font-size: 0.75rem;
-		font-family: var(--font-mono);
-		background: var(--color-tag-bg);
-		border-radius: 3px;
-		color: #888;
-		white-space: nowrap;
-	}
-
-	/* ── Difficulty ─────────────────────────────────────────── */
-	.prb-diff {
-		font-family: var(--font-mono);
-		font-size: 0.8rem;
-		font-weight: 700;
-		white-space: nowrap;
-	}
-
-	/* ── Round / title cells ────────────────────────────────── */
-	.prb-round {
-		font-family: var(--font-mono);
-		font-size: 0.76rem;
-		color: #666;
-		white-space: nowrap;
-	}
+	/* ── Title cell ──────────────────────────────────────────── */
 	.prb-title-cell {
 		font-size: 0.84rem;
 		color: #aaa;
@@ -345,45 +251,91 @@ const repoUrl = REPO_URL;
 		text-decoration: none;
 		transition: color 0.15s;
 	}
-	.prb-title-cell a:hover { color: var(--color-text); }
+	.prb-title-cell a:hover { color: var(--prb-text); }
 
-	/* ── File link ──────────────────────────────────────────── */
-	.prb-file-link {
-		font-family: var(--font-mono);
+	/* ── Tags ────────────────────────────────────────────────── */
+	.prb-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+		min-width: 0;
+	}
+	.prb-tag {
+		display: inline-block;
+		padding: 2px 7px;
+		border: 1px solid var(--prb-tag-border);
+		font-size: 0.7rem;
+		font-family: var(--prb-mono);
+		background: transparent;
+		border-radius: 3px;
+		color: #777;
+		white-space: nowrap;
+		line-height: 1.5;
+	}
+
+	/* ── Difficulty ──────────────────────────────────────────── */
+	.prb-diff {
+		font-family: var(--prb-mono);
+		font-size: 0.8rem;
+		font-weight: 700;
+		white-space: nowrap;
+	}
+
+	/* ── Contest cell ────────────────────────────────────────── */
+	.prb-contest-link {
+		font-family: var(--prb-mono);
+		font-size: 0.76rem;
+		color: #666;
+		text-decoration: none;
+		white-space: nowrap;
+		transition: color 0.15s;
+	}
+	.prb-contest-link:hover { color: #aaa; }
+
+	/* ── AC status ───────────────────────────────────────────── */
+	.prb-ac {
+		font-family: var(--prb-mono);
+		font-size: 0.78rem;
+		font-weight: 700;
+		color: #4caf50;
+	}
+	.prb-ac--no { color: #444; }
+
+	/* ── Folder link ─────────────────────────────────────────── */
+	.prb-folder-link {
+		font-family: var(--prb-mono);
 		font-size: 0.7rem;
 		color: #666;
 		text-decoration: none;
 		padding: 0.15rem 0.45rem;
-		border: 1px solid var(--color-border);
+		border: 1px solid var(--prb-border);
 		border-radius: 3px;
 		transition: border-color 0.15s, color 0.15s;
 		white-space: nowrap;
 	}
-	.prb-file-link:hover { border-color: #555; color: var(--color-text); }
+	.prb-folder-link:hover { border-color: #555; color: var(--prb-text); }
 
-	/* ── Contest row ────────────────────────────────────────── */
-	.prb-contest-name {
-		font-weight: 700;
-		color: var(--color-text);
-	}
-	.prb-contest-probs {
-		font-size: 0.72rem;
-		color: #555;
-		margin-top: 0.2rem;
-	}
-
-	/* ── Empty ──────────────────────────────────────────────── */
+	/* ── Empty ───────────────────────────────────────────────── */
 	.prb-empty {
 		padding: 1.5rem 0.85rem;
-		font-family: var(--font-mono);
+		font-family: var(--prb-mono);
 		font-size: 0.8rem;
 		color: #444;
 		margin: 0;
 	}
 
-	/* ── Responsive ─────────────────────────────────────────── */
-	@media (max-width: 680px) {
-		td:nth-child(5), th:nth-child(5) { display: none; }
+	/* ── Responsive ──────────────────────────────────────────── */
+	@media (max-width: 760px) {
+		/* Contest, AC 컬럼 숨김 */
+		.prb-main td:nth-child(5),
+		.prb-main th:nth-child(5),
+		.prb-main td:nth-child(6),
+		.prb-main th:nth-child(6) { display: none; }
+	}
+	@media (max-width: 540px) {
+		/* Tags 컬럼도 숨김 */
+		.prb-main td:nth-child(3),
+		.prb-main th:nth-child(3) { display: none; }
 	}
 </style>
 
@@ -394,118 +346,86 @@ const repoUrl = REPO_URL;
 		difficultyColor,
 		TREE_BASE,
 	} from '../lib/cfSearch';
-	import type { ProblemEntry, ContestEntry, Entry } from '../lib/cfSearch';
+	import type { ProblemEntry } from '../lib/cfSearch';
 
-	// ── DOM refs ───────────────────────────────────────────────
-	const input        = document.getElementById('cf-search')          as HTMLInputElement;
-	const countEl      = document.getElementById('cf-count')           as HTMLElement;
-	const loadingEl    = document.getElementById('cf-loading')         as HTMLElement;
-	const errorEl      = document.getElementById('cf-error')           as HTMLElement;
-	const errorMsg     = document.getElementById('cf-error-msg')       as HTMLElement;
-	const retryBtn     = document.getElementById('cf-retry')           as HTMLButtonElement;
-	const tableWrap    = document.getElementById('cf-table-wrap')      as HTMLElement;
-	const tbody        = document.getElementById('cf-tbody')           as HTMLTableSectionElement;
-	const noResults    = document.getElementById('cf-no-results')      as HTMLElement;
-	const splitEl      = document.getElementById('cf-split')           as HTMLElement;
-	const contestTbody = document.getElementById('cf-contest-tbody')   as HTMLTableSectionElement;
-	const contestEmpty = document.getElementById('cf-contest-empty')   as HTMLElement;
-	const problemTbody = document.getElementById('cf-problem-tbody')   as HTMLTableSectionElement;
-	const splitEmpty   = document.getElementById('cf-split-problem-empty') as HTMLElement;
+	// ── DOM refs ────────────────────────────────────────────────
+	const input     = document.getElementById('cf-search')      as HTMLInputElement;
+	const countEl   = document.getElementById('cf-count')       as HTMLElement;
+	const loadingEl = document.getElementById('cf-loading')     as HTMLElement;
+	const errorEl   = document.getElementById('cf-error')       as HTMLElement;
+	const errorMsg  = document.getElementById('cf-error-msg')   as HTMLElement;
+	const retryBtn  = document.getElementById('cf-retry')       as HTMLButtonElement;
+	const tableWrap = document.getElementById('cf-table-wrap')  as HTMLElement;
+	const tbody     = document.getElementById('cf-tbody')       as HTMLTableSectionElement;
+	const noResults = document.getElementById('cf-no-results')  as HTMLElement;
 
-	// ── Render helpers ─────────────────────────────────────────
+	// ── Render ──────────────────────────────────────────────────
 
-	function renderProblemRow(p: ProblemEntry, showRound = true): HTMLTableRowElement {
-		const tr = document.createElement('tr');
+	function renderRow(p: ProblemEntry): HTMLTableRowElement {
+		const tr    = document.createElement('tr');
 		const color = difficultyColor(p.difficulty);
 
-		const folderUrl  = `${TREE_BASE}/problems/${p.id}`;
-		const folderName = `${p.id}/`;
+		const cfUrl     = `https://codeforces.com/contest/${p.contestId}/problem/${p.id.replace(/^\d+/, '')}`;
+		const contestUrl = `https://codeforces.com/contest/${p.contestId}`;
+		const folderUrl  = p.folderPath ? `${TREE_BASE}/${p.folderPath}` : null;
 
-		const tags = p.tags.length
-			? `<div class="prb-tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join('')}</div>`
-			: '—';
-		const diff = p.difficulty
+		// ID
+		const idClass = p.solved ? 'prb-id prb-id--solved' : 'prb-id prb-id--unsolved';
+
+		// Tags — 개별 chip으로 렌더
+		const tagsHtml = p.tags.length
+			? `<div class="prb-tags">${p.tags.map((t) => `<span class="prb-tag">${t}</span>`).join('')}</div>`
+			: '<span style="color:#444">—</span>';
+
+		// Difficulty
+		const diffHtml = p.difficulty
 			? `<span class="prb-diff" style="color:${color}">*${p.difficulty}</span>`
 			: `<span class="prb-diff" style="color:#808080">?</span>`;
 
+		// AC badge
+		const acHtml = p.solved
+			? `<span class="prb-ac">✓</span>`
+			: `<span class="prb-ac prb-ac--no">—</span>`;
+
+		// Folder link
+		const folderHtml = folderUrl
+			? `<a href="${folderUrl}" target="_blank" rel="noopener noreferrer" class="prb-folder-link">${p.id}/</a>`
+			: `<span style="color:#333">—</span>`;
+
 		tr.innerHTML = `
-			<td><span class="prb-id">${p.id}</span></td>
+			<td><span class="${idClass}">${p.id}</span></td>
 			<td class="prb-title-cell">
-				<a href="${folderUrl}" target="_blank" rel="noopener noreferrer">${p.title || p.id}</a>
+				<a href="${cfUrl}" target="_blank" rel="noopener noreferrer">${p.title || p.id}</a>
 			</td>
-			<td>${tags}</td>
-			<td>${diff}</td>
-			${showRound ? `<td class="prb-round">${p.round_name || '—'}</td>` : ''}
-			<td><a href="${folderUrl}" target="_blank" rel="noopener noreferrer" class="prb-file-link">${folderName}</a></td>
+			<td>${tagsHtml}</td>
+			<td>${diffHtml}</td>
+			<td><a href="${contestUrl}" target="_blank" rel="noopener noreferrer" class="prb-contest-link">#${p.contestId}</a></td>
+			<td>${acHtml}</td>
+			<td>${folderHtml}</td>
 		`;
 		return tr;
 	}
 
-	function renderContestRow(c: ContestEntry): HTMLTableRowElement {
-		const tr = document.createElement('tr');
-		const blobUrl = `${TREE_BASE}/contests/${c.slug}`;
-		tr.innerHTML = `
-			<td>
-				<div class="prb-contest-name">
-					<a href="${blobUrl}" target="_blank" rel="noopener noreferrer" class="prb-title-cell">
-						${c.round_name || `Round ${c.round}`}
-					</a>
-				</div>
-			</td>
-			<td><div class="prb-contest-probs">${c.problems.join(', ') || '—'}</div></td>
-			<td class="prb-round">${c.date || '—'}</td>
-		`;
-		return tr;
-	}
-
-	function updateCount(visible: number, total: number, query: string) {
+	function render(entries: ProblemEntry[], query: string) {
+		const results = performSearch(query, entries);
 		countEl.textContent = query
-			? `${visible} / ${total} results`
-			: `${total} problems`;
+			? `${results.length} / ${entries.length}`
+			: `${entries.length} problems`;
+
+		tbody.innerHTML = '';
+		results.forEach((p) => tbody.appendChild(renderRow(p)));
+		noResults.hidden = results.length > 0 || !query;
+		tableWrap.hidden = false;
 	}
 
-	// ── Render ─────────────────────────────────────────────────
-
-	function render(entries: Entry[], query: string) {
-		const { problems, contests, mode } = performSearch(query, entries);
-		const totalProblems = entries.filter((e) => e.type === 'problem').length;
-		const visibleCount  = problems.length + (mode === 'split' ? contests.length : 0);
-
-		updateCount(problems.length, totalProblems, query);
-
-		if (mode === 'split') {
-			tableWrap.hidden = true;
-			splitEl.hidden   = false;
-
-			// Contests
-			contestTbody.innerHTML = '';
-			contests.forEach((c) => contestTbody.appendChild(renderContestRow(c)));
-			contestEmpty.hidden = contests.length > 0;
-
-			// Problems (split — no round column)
-			problemTbody.innerHTML = '';
-			problems.forEach((p) => problemTbody.appendChild(renderProblemRow(p, false)));
-			splitEmpty.hidden = problems.length > 0;
-
-		} else {
-			splitEl.hidden   = true;
-			tableWrap.hidden = false;
-
-			tbody.innerHTML = '';
-			problems.forEach((p) => tbody.appendChild(renderProblemRow(p, true)));
-			noResults.hidden = problems.length > 0 || !query;
-		}
-	}
-
-	// ── Init & retry ───────────────────────────────────────────
+	// ── Init ────────────────────────────────────────────────────
 
 	async function init() {
-		loadingEl.hidden  = false;
-		errorEl.hidden    = true;
-		tableWrap.hidden  = true;
-		splitEl.hidden    = true;
+		loadingEl.hidden = false;
+		errorEl.hidden   = true;
+		tableWrap.hidden = true;
 
-		let entries: Entry[];
+		let entries: ProblemEntry[];
 		try {
 			entries = await loadEntries();
 		} catch (e) {
@@ -518,7 +438,6 @@ const repoUrl = REPO_URL;
 		loadingEl.hidden = true;
 		render(entries, '');
 
-		// Debounced search
 		let timer: ReturnType<typeof setTimeout> | null = null;
 		input.addEventListener('input', () => {
 			if (timer) clearTimeout(timer);

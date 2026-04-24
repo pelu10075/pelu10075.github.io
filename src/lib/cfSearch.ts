@@ -1,212 +1,141 @@
 /**
- * Codeforces 문제 풀이 저장소 — 런타임 데이터 페치 및 스마트 검색
+ * Codeforces 문제 풀이 — 런타임 데이터 로드 및 검색
  *
- * 데이터 로딩 전략 (N+1 → 1):
- *   1순위: /cf-data.json  (빌드 시 cfDataIntegration이 생성한 정적 파일)
- *   2순위: GitHub Trees API + raw.githubusercontent.com 직접 fetch (dev / fallback)
+ * 로딩 전략:
+ *   1순위: /cf-data.json  (빌드 시 cfDataIntegration이 생성, 1 fetch)
+ *   2순위: CF user.status API + GitHub tree (dev / 정적 파일 없을 때)
  */
 
-// ── 상수 ─────────────────────────────────────────────────────────────────────
+const CF_HANDLE = 'pelu10075';
+const OWNER     = 'pelu10075';
+const REPO      = 'codeforces';
+const BRANCH    = 'main';
 
-const OWNER  = 'pelu10075';
-const REPO   = 'codeforces';
-const BRANCH = 'main';
+const CF_STATUS_API = `https://codeforces.com/api/user.status?handle=${CF_HANDLE}&from=1&count=10000`;
+const TREE_API      = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
 
-const TREE_API  = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
-const RAW_BASE  = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}`;
-export const BLOB_BASE = `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}`;
 export const TREE_BASE = `https://github.com/${OWNER}/${REPO}/tree/${BRANCH}`;
 export const REPO_URL  = `https://github.com/${OWNER}/${REPO}`;
 
 // ── 타입 ─────────────────────────────────────────────────────────────────────
 
 export type ProblemEntry = {
-	id: string;
-	title: string;
-	round: number;
-	round_name: string;
 	type: 'problem';
+	id: string;          // e.g. "2220A"
+	contestId: number;   // e.g. 2220
+	title: string;
+	difficulty: number;  // CF rating, 0 = unrated
 	tags: string[];
-	/** 0 = unrated / unknown */
-	difficulty: number;
+	solved: boolean;     // CF verdict === 'OK' 존재 여부
+	folderPath: string | null; // "problems/2220A" or null
 };
 
-export type ContestEntry = {
-	round: number;
-	round_name: string;
-	type: 'contest';
-	problems: string[];
-	date: string;
-	slug: string;
-};
+// ── 캐시 ─────────────────────────────────────────────────────────────────────
 
-export type Entry = ProblemEntry | ContestEntry;
-
-export type SearchResult = {
-	problems: ProblemEntry[];
-	contests: ContestEntry[];
-	mode: 'split' | 'merged';
-};
-
-// ── parseFrontmatter ──────────────────────────────────────────────────────────
-
-export function parseFrontmatter(raw: string): Record<string, unknown> | null {
-	const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-	if (!m) return null;
-	const result: Record<string, unknown> = {};
-	for (const line of m[1].split(/\r?\n/)) {
-		const ci = line.indexOf(':');
-		if (ci === -1) continue;
-		const key = line.slice(0, ci).trim();
-		const val = line.slice(ci + 1).trim();
-		if (!key) continue;
-		if (/^\[.*\]$/.test(val)) {
-			result[key] = val
-				.slice(1, -1)
-				.split(',')
-				.map((s) => s.trim().replace(/^["']|["']$/g, ''))
-				.filter(Boolean);
-		} else if (/^-?\d+(\.\d+)?$/.test(val)) {
-			result[key] = Number(val);
-		} else {
-			result[key] = val.replace(/^["']|["']$/g, '');
-		}
-	}
-	return Object.keys(result).length ? result : null;
-}
-
-// ── 모듈 캐시 ─────────────────────────────────────────────────────────────────
-
-let _cache: Entry[] | null = null;
+let _cache: ProblemEntry[] | null = null;
 
 // ── loadEntries ───────────────────────────────────────────────────────────────
 
-export async function loadEntries(): Promise<Entry[]> {
+export async function loadEntries(): Promise<ProblemEntry[]> {
 	if (_cache) return _cache;
 
-	// 1순위: 정적 JSON (빌드 시 생성, 1 fetch)
+	// 1순위: 정적 JSON
 	try {
 		const res = await fetch('/cf-data.json');
 		if (res.ok) {
-			const { entries } = (await res.json()) as { entries: Entry[] };
-			if (Array.isArray(entries) && entries.length > 0) {
-				_cache = entries;
-				return entries;
+			const { problems } = (await res.json()) as { problems: ProblemEntry[] };
+			if (Array.isArray(problems) && problems.length > 0) {
+				_cache = problems;
+				return problems;
 			}
 		}
 	} catch {
-		// 정적 파일 없음 → live API fallback
+		// fall through to live API
 	}
 
-	// 2순위: GitHub API live fetch (dev 환경 또는 정적 파일 없는 경우)
-	const treeRes = await fetch(TREE_API, {
-		headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
-	});
-	if (!treeRes.ok) throw new Error(`Trees API ${treeRes.status}`);
-	const { tree } = (await treeRes.json()) as { tree: { path: string; type: string }[] };
+	// 2순위: 라이브 API (dev 환경)
+	type CFSub = {
+		verdict?: string;
+		problem: { contestId: number; index: string; name: string; rating?: number; tags: string[] };
+	};
+	const cfRes = await fetch(CF_STATUS_API);
+	if (!cfRes.ok) throw new Error(`CF API ${cfRes.status}`);
+	const { status, result } = (await cfRes.json()) as { status: string; result: CFSub[] };
+	if (status !== 'OK') throw new Error(`CF API: ${status}`);
 
-	const notePaths = tree
-		.filter(
-			(n) =>
-				n.type === 'blob' &&
-				(n.path.match(/^problems\/[^/]+\/note\.md$/) ||
-					n.path.match(/^contests\/[^/]+\/notes\.md$/)),
-		)
-		.map((n) => n.path);
-
-	const settled = await Promise.allSettled(
-		notePaths.map((p) => fetch(`${RAW_BASE}/${p}`).then((r) => ({ path: p, text: r.text() }))),
-	);
-
-	const entries: Entry[] = [];
-
-	for (const result of settled) {
-		if (result.status === 'rejected') continue;
-		const { path, text: textPromise } = result.value;
-		let raw: string;
-		try { raw = await textPromise; } catch { continue; }
-		const fm = parseFrontmatter(raw);
-		if (!fm) continue;
-
-		if (fm.type === 'problem' && fm.id) {
-			const d = Number(fm.difficulty);
-			entries.push({
-				type:       'problem',
-				id:         String(fm.id),
-				title:      String(fm.title ?? ''),
-				round:      Number(fm.round ?? 0),
-				round_name: String(fm.round_name ?? ''),
-				tags:       Array.isArray(fm.tags) ? (fm.tags as string[]) : [],
-				difficulty: isNaN(d) ? 0 : d,
-			});
-		} else if (fm.type === 'contest') {
-			const parts = path.split('/');
-			entries.push({
-				type:       'contest',
-				round:      Number(fm.round ?? 0),
-				round_name: String(fm.round_name ?? ''),
-				problems:   Array.isArray(fm.problems) ? (fm.problems as string[]) : [],
-				date:       String(fm.date ?? ''),
-				slug:       parts[1] ?? '',
-			});
+	const problemMap = new Map<
+		string,
+		{ contestId: number; title: string; difficulty: number; tags: string[]; solved: boolean }
+	>();
+	for (const sub of result) {
+		const { contestId, index, name, rating, tags } = sub.problem;
+		const id = `${contestId}${index}`;
+		const ok = sub.verdict === 'OK';
+		if (!problemMap.has(id)) {
+			problemMap.set(id, { contestId, title: name, difficulty: rating ?? 0, tags, solved: ok });
+		} else if (ok) {
+			problemMap.get(id)!.solved = true;
 		}
 	}
 
-	entries.sort((a, b) => {
-		if (a.type === 'problem' && b.type === 'problem') return a.id.localeCompare(b.id);
-		if (a.type === 'contest' && b.type === 'contest') return b.round - a.round;
-		return a.type === 'contest' ? -1 : 1;
-	});
+	// GitHub tree — folder set
+	const folderSet = new Set<string>();
+	try {
+		const tRes = await fetch(TREE_API, {
+			headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+		});
+		if (tRes.ok) {
+			const { tree } = (await tRes.json()) as { tree: { path: string }[] };
+			for (const n of tree) {
+				const m = n.path.match(/^problems\/([^/]+)\//);
+				if (m) folderSet.add(m[1]);
+			}
+		}
+	} catch { /* folder links disabled */ }
 
-	_cache = entries;
-	return entries;
+	const problems: ProblemEntry[] = Array.from(problemMap.entries())
+		.map(([id, d]) => ({
+			type: 'problem' as const,
+			id,
+			contestId: d.contestId,
+			title: d.title,
+			difficulty: d.difficulty,
+			tags: d.tags,
+			solved: d.solved,
+			folderPath: folderSet.has(id) ? `problems/${id}` : null,
+		}))
+		.sort((a, b) => a.id.localeCompare(b.id));
+
+	_cache = problems;
+	return problems;
 }
 
 // ── performSearch ─────────────────────────────────────────────────────────────
 
-export function performSearch(query: string, entries: Entry[]): SearchResult {
-	const q    = query.trim();
-	const ql   = q.toLowerCase();
-	const all  = entries.filter((e): e is ProblemEntry => e.type === 'problem');
-	const cons = entries.filter((e): e is ContestEntry => e.type === 'contest');
+export function performSearch(query: string, entries: ProblemEntry[]): ProblemEntry[] {
+	const q  = query.trim();
+	const ql = q.toLowerCase();
+	if (!q) return entries;
 
-	if (!q) return { problems: all, contests: cons, mode: 'merged' };
-
+	// 순수 숫자 — contestId prefix (e.g. "2220" → 2220A, 2220B…)
 	if (/^\d+$/.test(q)) {
-		const n = parseInt(q, 10);
-		return {
-			contests: cons.filter((c) => c.round === n),
-			problems: all.filter((p) => p.round === n || p.id.toLowerCase().startsWith(ql)),
-			mode: 'split',
-		};
+		return entries.filter((p) => p.id.toLowerCase().startsWith(ql));
 	}
-
+	// 문제 ID (e.g. "2220A", "2220B1")
 	if (/^\d+[A-Za-z][1-9]?$/.test(q)) {
-		return {
-			problems: all.filter((p) => p.id.toLowerCase().startsWith(ql)),
-			contests: [],
-			mode: 'merged',
-		};
+		return entries.filter((p) => p.id.toLowerCase().startsWith(ql));
 	}
-
+	// 단일 알파벳 (e.g. "A", "B1")
 	if (/^[A-Za-z][1-9]?$/.test(q)) {
 		const letter = q.toUpperCase();
-		return {
-			problems: all.filter((p) => p.id.replace(/^\d+/, '').toUpperCase() === letter),
-			contests: [],
-			mode: 'merged',
-		};
+		return entries.filter((p) => p.id.replace(/^\d+/, '') === letter);
 	}
-
-	return {
-		problems: all.filter(
-			(p) =>
-				p.title.toLowerCase().includes(ql) ||
-				p.tags.some((t) => t.toLowerCase().includes(ql)),
-		),
-		contests: [],
-		mode: 'merged',
-	};
+	// 텍스트 — 제목 · 태그 부분 일치
+	return entries.filter(
+		(p) =>
+			p.title.toLowerCase().includes(ql) ||
+			p.tags.some((t) => t.toLowerCase().includes(ql)),
+	);
 }
 
 // ── difficultyColor ───────────────────────────────────────────────────────────
