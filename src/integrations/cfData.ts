@@ -13,7 +13,7 @@ import { resolve } from 'node:path';
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
-const CF_HANDLE  = 'pelu10075';
+const CF_HANDLE  = 'edward_10';
 const LC_HANDLE  = 'edward_10';
 const GH_OWNER   = 'pelu10075';
 const GH_REPO    = 'codeforces';

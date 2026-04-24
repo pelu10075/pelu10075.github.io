@@ -72,6 +72,48 @@ type CfApiUser = {
 	maxRank?: string;
 };
 
+export type LeetCodeUser = {
+	totalSolved: number;
+	easySolved: number;
+	mediumSolved: number;
+	hardSolved: number;
+};
+
+export async function fetchLeetCodeUser(username: string): Promise<LeetCodeUser | null> {
+	try {
+		const res = await fetch('https://leetcode.com/graphql/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'User-Agent': 'Mozilla/5.0 (compatible; portfolio-builder/1.0)',
+				Referer: 'https://leetcode.com',
+			},
+			body: JSON.stringify({
+				query: `query($u:String!){matchedUser(username:$u){submitStats:submitStatsGlobal{acSubmissionNum{difficulty count}}}}`,
+				variables: { u: username },
+			}),
+		});
+		if (!res.ok) return null;
+		const json = (await res.json()) as {
+			data?: {
+				matchedUser?: {
+					submitStats?: { acSubmissionNum: { difficulty: string; count: number }[] };
+				};
+			};
+		};
+		const nums = json.data?.matchedUser?.submitStats?.acSubmissionNum ?? [];
+		const get = (d: string) => nums.find((n) => n.difficulty === d)?.count ?? 0;
+		return {
+			totalSolved:  get('All'),
+			easySolved:   get('Easy'),
+			mediumSolved: get('Medium'),
+			hardSolved:   get('Hard'),
+		};
+	} catch {
+		return null;
+	}
+}
+
 export async function fetchCodeforcesUser(handle: string): Promise<CodeforcesUser | null> {
 	try {
 		const url = `https://codeforces.com/api/user.info?handles=${encodeURIComponent(handle)}`;

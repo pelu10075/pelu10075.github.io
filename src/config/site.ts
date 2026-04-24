@@ -228,6 +228,16 @@ export const competitive = {
 			unrated: { en: 'Unrated', ko: '비레이팅' } satisfies LocaleText,
 		},
 	},
+	leetcode: {
+		profileUrl: 'https://leetcode.com/edward_10',
+		linkLabel: { en: 'View LeetCode Profile ↗', ko: 'LeetCode 프로필 보기 ↗' } satisfies LocaleText,
+		labels: {
+			easy:   { en: 'Easy',   ko: 'Easy'   } satisfies LocaleText,
+			medium: { en: 'Medium', ko: 'Medium'  } satisfies LocaleText,
+			hard:   { en: 'Hard',   ko: 'Hard'    } satisfies LocaleText,
+			total:  { en: 'Total',  ko: '총합'    } satisfies LocaleText,
+		},
+	},
 	profileLinkLabel: { en: 'View solved.ac Profile ↗', ko: 'solved.ac 프로필 보기 ↗' } satisfies LocaleText,
 	badge: {
 		imageUrl: 'https://mazassumnida.wtf/api/v2/generate_badge?boj=edward_10',
