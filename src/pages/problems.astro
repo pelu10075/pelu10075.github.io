@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { REPO_URL } from '../lib/cfSearch';
+import { REPO_URL, LC_REPO_URL } from '../lib/cfSearch';
 
-const repoUrl = REPO_URL;
+const repoUrl   = REPO_URL;
+const lcRepoUrl = LC_REPO_URL;
 ---
 
 <BaseLayout title="Problems · pelu10075" description="Codeforces / LeetCode 문제 풀이 검색">
@@ -20,12 +21,20 @@ const repoUrl = REPO_URL;
 			<span class="i18n i18n--en">Solved problems from Codeforces &amp; LeetCode — with difficulty, tags, and solution folders.</span>
 			<span class="i18n i18n--ko">Codeforces · LeetCode 풀이 이력 — 난이도, 태그, 풀이 폴더를 확인합니다.</span>
 		</p>
-		<a href={repoUrl} target="_blank" rel="noopener noreferrer" class="prb-repo-btn">
-			<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-				<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-			</svg>
-			pelu10075/codeforces
-		</a>
+		<div class="prb-repo-links">
+			<a href={repoUrl} target="_blank" rel="noopener noreferrer" class="prb-repo-btn">
+				<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+					<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+				</svg>
+				pelu10075/codeforces
+			</a>
+			<a href={lcRepoUrl} target="_blank" rel="noopener noreferrer" class="prb-repo-btn">
+				<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+					<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+				</svg>
+				pelu10075/leetcode
+			</a>
+		</div>
 	</header>
 
 	<!-- ── Source tabs ──────────────────────────────────────── -->
@@ -85,6 +94,7 @@ const repoUrl = REPO_URL;
 					<th><span class="i18n i18n--en">Title</span><span class="i18n i18n--ko">제목</span></th>
 					<th><span class="i18n i18n--en">Difficulty</span><span class="i18n i18n--ko">난이도</span></th>
 					<th><span class="i18n i18n--en">Tags</span><span class="i18n i18n--ko">태그</span></th>
+					<th><span class="i18n i18n--en">File</span><span class="i18n i18n--ko">파일</span></th>
 				</tr>
 			</thead>
 			<tbody id="lc-tbody"></tbody>
@@ -96,6 +106,37 @@ const repoUrl = REPO_URL;
 	</div>
 
 </main>
+
+<!-- ── Code viewer modal ───────────────────────────────────────── -->
+<div id="code-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+	<div id="modal-backdrop" class="modal-backdrop"></div>
+	<div class="modal-box">
+		<header class="modal-header">
+			<div class="modal-meta">
+				<span id="modal-title" class="modal-title-text"></span>
+				<span id="modal-filename" class="modal-filename"></span>
+			</div>
+			<div class="modal-actions">
+				<a id="modal-gh-link" class="modal-gh-link" href="#" target="_blank" rel="noopener noreferrer">↗ GitHub</a>
+				<button id="modal-close" class="modal-close" aria-label="Close">✕</button>
+			</div>
+		</header>
+		<div id="modal-filepicker" class="modal-filepicker" hidden>
+			<ul id="modal-filelist" class="modal-filelist"></ul>
+		</div>
+		<div class="modal-code-wrap">
+			<div id="modal-loading" class="modal-status">
+				<span class="i18n i18n--en">Loading…</span>
+				<span class="i18n i18n--ko">불러오는 중…</span>
+			</div>
+			<pre id="modal-pre" hidden><code id="modal-code"></code></pre>
+			<div id="modal-err" class="modal-status modal-status--err" hidden>
+				<span class="i18n i18n--en">Failed to load file.</span>
+				<span class="i18n i18n--ko">파일을 불러오지 못했습니다.</span>
+			</div>
+		</div>
+	</div>
+</div>
 </BaseLayout>
 
 <style is:global>
@@ -124,6 +165,11 @@ const repoUrl = REPO_URL;
 		letter-spacing: -0.03em; margin: 0 0 0.6rem; color: var(--prb-text);
 	}
 	.prb-subtitle { font-size: 0.92rem; color: #888; margin: 0 0 1.25rem; line-height: 1.6; }
+	.prb-repo-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
 	.prb-repo-btn {
 		display: inline-flex; align-items: center; gap: 0.45rem;
 		font-family: var(--prb-mono); font-size: 0.76rem; color: #888;
@@ -233,13 +279,93 @@ const repoUrl = REPO_URL;
 	/* ── Empty ───────────────────────────────────────────────── */
 	.prb-empty { padding: 1.5rem 0.85rem; font-family: var(--prb-mono); font-size: 0.8rem; color: #444; margin: 0; }
 
+	/* ── View button ─────────────────────────────────────────── */
+	.prb-view-btn {
+		font-family: var(--prb-mono); font-size: 0.7rem; color: #666;
+		background: transparent; border: 1px solid var(--prb-border);
+		border-radius: 3px; padding: 0.15rem 0.5rem; cursor: pointer;
+		transition: border-color 0.15s, color 0.15s; white-space: nowrap;
+	}
+	.prb-view-btn:hover { border-color: #555; color: var(--prb-text); }
+
+	/* ── Modal backdrop ──────────────────────────────────────── */
+	.modal-backdrop {
+		position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+		z-index: 900; cursor: pointer;
+	}
+	#code-modal {
+		position: fixed; inset: 0; z-index: 901;
+		display: flex; align-items: center; justify-content: center;
+		padding: 1.5rem;
+	}
+	#code-modal[hidden] { display: none; }
+
+	/* ── Modal box ───────────────────────────────────────────── */
+	.modal-box {
+		position: relative; z-index: 902;
+		background: #111; border: 1px solid #333; border-radius: 6px;
+		width: 100%; max-width: 760px; max-height: 82vh;
+		display: flex; flex-direction: column; overflow: hidden;
+		box-shadow: 0 24px 64px rgba(0,0,0,0.7);
+	}
+	.modal-header {
+		display: flex; align-items: center; justify-content: space-between;
+		padding: 0.7rem 1rem; border-bottom: 1px solid var(--prb-border);
+		flex-shrink: 0; gap: 0.75rem;
+	}
+	.modal-meta { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; flex: 1; }
+	.modal-title-text { font-family: var(--prb-mono); font-size: 0.8rem; color: #f0f0f0; font-weight: 700; }
+	.modal-filename   { font-family: var(--prb-mono); font-size: 0.7rem; color: #666; }
+	.modal-actions    { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+	.modal-gh-link {
+		font-family: var(--prb-mono); font-size: 0.68rem; color: #666;
+		text-decoration: none; padding: 0.2rem 0.5rem;
+		border: 1px solid var(--prb-border); border-radius: 3px;
+		transition: border-color 0.15s, color 0.15s;
+	}
+	.modal-gh-link:hover { border-color: #555; color: #aaa; }
+	.modal-close {
+		background: transparent; border: none; color: #666; cursor: pointer;
+		font-size: 0.85rem; padding: 0.2rem 0.4rem; border-radius: 3px;
+		line-height: 1; transition: color 0.15s;
+	}
+	.modal-close:hover { color: #f0f0f0; }
+
+	/* ── File picker ─────────────────────────────────────────── */
+	.modal-filepicker { border-bottom: 1px solid var(--prb-border); flex-shrink: 0; }
+	.modal-filelist   { list-style: none; margin: 0; padding: 0.35rem 0; }
+	.modal-filelist li button {
+		display: block; width: 100%; text-align: left; background: transparent;
+		border: none; color: #888; font-family: var(--prb-mono); font-size: 0.78rem;
+		padding: 0.3rem 1rem; cursor: pointer; transition: background 0.1s, color 0.1s;
+	}
+	.modal-filelist li button:hover  { background: #1a1a1a; color: #f0f0f0; }
+	.modal-filelist li button.active { background: #1e1e1e; color: #f0f0f0; }
+
+	/* ── Code area ───────────────────────────────────────────── */
+	.modal-code-wrap { flex: 1; overflow: auto; min-height: 0; }
+	.modal-status {
+		padding: 1.5rem 1rem; font-family: var(--prb-mono); font-size: 0.78rem; color: #555;
+	}
+	.modal-status--err { color: #cc4444; }
+	#modal-pre {
+		margin: 0; padding: 1rem 1.25rem;
+		font-family: var(--prb-mono); font-size: 0.8rem; line-height: 1.7;
+		color: #c8c8c8; white-space: pre; tab-size: 4;
+		counter-reset: line;
+	}
+	#modal-pre code { display: block; }
+
 	/* ── Responsive ──────────────────────────────────────────── */
 	@media (max-width: 760px) {
 		.prb-main td:nth-child(5), .prb-main th:nth-child(5),
 		.prb-main td:nth-child(6), .prb-main th:nth-child(6) { display: none; }
+		.modal-box { max-height: 92vh; }
 	}
 	@media (max-width: 540px) {
 		.prb-main td:nth-child(3), .prb-main th:nth-child(3) { display: none; }
+		#code-modal { padding: 0; align-items: flex-end; }
+		.modal-box  { max-width: 100%; border-radius: 12px 12px 0 0; max-height: 90vh; }
 	}
 </style>
 
@@ -295,8 +421,8 @@ const repoUrl = REPO_URL;
 		const ac   = p.solved
 			? `<span class="prb-ac">✓</span>`
 			: `<span class="prb-ac prb-ac--no">—</span>`;
-		const folder = fUrl
-			? `<a href="${fUrl}" target="_blank" rel="noopener noreferrer" class="prb-folder-link">${p.id}/</a>`
+		const folder = p.folderPath
+			? `<button class="prb-view-btn" data-cf-folder="${p.folderPath}" data-cf-id="${p.id}">${p.id}/</button>`
 			: `<span style="color:#333">—</span>`;
 
 		tr.innerHTML = `
@@ -320,11 +446,16 @@ const repoUrl = REPO_URL;
 			? `<div class="prb-tags">${p.tags.map((t) => `<span class="prb-tag">${t}</span>`).join('')}</div>`
 			: '<span style="color:#333">—</span>';
 
+		const fileHtml = p.filePath
+			? `<button class="prb-view-btn" data-lc-file="${p.filePath}" data-lc-id="${p.id}">${p.filePath}</button>`
+			: '<span style="color:#333">—</span>';
+
 		tr.innerHTML = `
 			<td><span class="prb-id prb-id--solved">${p.id}</span></td>
 			<td class="prb-title-cell"><a href="${url}" target="_blank" rel="noopener noreferrer">${p.title}</a></td>
 			<td><span class="prb-lc-diff" style="color:${color}">${p.difficulty}</span></td>
-			<td>${tags}</td>`;
+			<td>${tags}</td>
+			<td>${fileHtml}</td>`;
 		return tr;
 	}
 
@@ -397,4 +528,114 @@ const repoUrl = REPO_URL;
 
 	retryBtn.addEventListener('click', init);
 	init();
+
+	// ── Code viewer modal ────────────────────────────────────────
+	const modal       = document.getElementById('code-modal')!   as HTMLElement;
+	const backdrop    = document.getElementById('modal-backdrop')! as HTMLElement;
+	const modalTitle  = document.getElementById('modal-title')!   as HTMLElement;
+	const modalFname  = document.getElementById('modal-filename')! as HTMLElement;
+	const modalGhLink = document.getElementById('modal-gh-link')!  as HTMLAnchorElement;
+	const modalClose  = document.getElementById('modal-close')!   as HTMLButtonElement;
+	const modalPicker = document.getElementById('modal-filepicker')! as HTMLElement;
+	const modalList   = document.getElementById('modal-filelist')!  as HTMLElement;
+	const modalLoad   = document.getElementById('modal-loading')!  as HTMLElement;
+	const modalPre    = document.getElementById('modal-pre')!      as HTMLPreElement;
+	const modalCode   = document.getElementById('modal-code')!     as HTMLElement;
+	const modalErrEl  = document.getElementById('modal-err')!      as HTMLElement;
+
+	const CF_RAW  = 'https://raw.githubusercontent.com/pelu10075/codeforces/main';
+	const CF_API  = 'https://api.github.com/repos/pelu10075/codeforces/contents';
+	const CF_TREE = 'https://github.com/pelu10075/codeforces/tree/main';
+	const LC_RAW  = 'https://raw.githubusercontent.com/pelu10075/leetcode/main';
+	const LC_BLOB = 'https://github.com/pelu10075/leetcode/blob/main';
+
+	function openModal(title: string, ghHref: string) {
+		modalTitle.textContent  = title;
+		modalFname.textContent  = '';
+		modalGhLink.href        = ghHref;
+		modalPicker.hidden      = true;
+		modalList.innerHTML     = '';
+		modalLoad.hidden        = false;
+		modalPre.hidden         = true;
+		modalErrEl.hidden       = true;
+		modal.hidden            = false;
+		document.body.style.overflow = 'hidden';
+	}
+
+	function closeModal() {
+		modal.hidden = true;
+		document.body.style.overflow = '';
+	}
+
+	async function showRawFile(rawUrl: string, filename: string) {
+		modalFname.textContent = filename;
+		modalLoad.hidden = false;
+		modalPre.hidden  = true;
+		modalErrEl.hidden = true;
+		try {
+			const res = await fetch(rawUrl);
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
+			modalCode.textContent = await res.text();
+			modalLoad.hidden = true;
+			modalPre.hidden  = false;
+		} catch {
+			modalLoad.hidden  = true;
+			modalErrEl.hidden = false;
+		}
+	}
+
+	async function openCFFolder(id: string, folderPath: string) {
+		openModal(id, `${CF_TREE}/${folderPath}`);
+		try {
+			const res = await fetch(`${CF_API}/${folderPath}`, {
+				headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+			});
+			if (!res.ok) throw new Error();
+			const files = (await res.json()) as { name: string; type: string }[];
+			const code  = files.filter((f) => f.type === 'file' && !/note\.md$/i.test(f.name));
+			if (code.length === 0) throw new Error('no files');
+			if (code.length === 1) {
+				modalGhLink.href = `${CF_TREE}/${folderPath}`;
+				await showRawFile(`${CF_RAW}/${folderPath}/${code[0].name}`, code[0].name);
+			} else {
+				modalLoad.hidden    = true;
+				modalPicker.hidden  = false;
+				code.forEach((f, i) => {
+					const li  = document.createElement('li');
+					const btn = document.createElement('button');
+					btn.textContent = f.name;
+					btn.addEventListener('click', async () => {
+						modalList.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
+						btn.classList.add('active');
+						modalGhLink.href = `${CF_TREE}/${folderPath}`;
+						await showRawFile(`${CF_RAW}/${folderPath}/${f.name}`, f.name);
+					});
+					li.appendChild(btn);
+					modalList.appendChild(li);
+					if (i === 0) btn.click();
+				});
+			}
+		} catch {
+			modalLoad.hidden  = true;
+			modalErrEl.hidden = false;
+		}
+	}
+
+	async function openLCFile(id: string, filePath: string) {
+		openModal(`LC #${id}`, `${LC_BLOB}/${filePath}`);
+		await showRawFile(`${LC_RAW}/${filePath}`, filePath);
+	}
+
+	modalClose.addEventListener('click', closeModal);
+	backdrop.addEventListener('click', closeModal);
+	document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+	cfTbody.addEventListener('click', (e) => {
+		const btn = (e.target as Element).closest('[data-cf-folder]') as HTMLElement | null;
+		if (btn) openCFFolder(btn.dataset.cfId!, btn.dataset.cfFolder!);
+	});
+	lcTbody.addEventListener('click', (e) => {
+		const btn = (e.target as Element).closest('[data-lc-file]') as HTMLElement | null;
+		if (btn) openLCFile(btn.dataset.lcId!, btn.dataset.lcFile!);
+	});
 </script>

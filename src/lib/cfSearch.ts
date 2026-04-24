@@ -13,9 +13,13 @@ const GH_OWNER  = 'pelu10075';
 const GH_REPO   = 'codeforces';
 const GH_BRANCH = 'main';
 
-const CF_STATUS_API = `https://codeforces.com/api/user.status?handle=${CF_HANDLE}&from=1&count=10000`;
-const GH_TREE_API   = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/git/trees/${GH_BRANCH}?recursive=1`;
-const LC_GQL        = 'https://leetcode.com/graphql/';
+const CF_STATUS_API  = `https://codeforces.com/api/user.status?handle=${CF_HANDLE}&from=1&count=10000`;
+const GH_TREE_API    = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/git/trees/${GH_BRANCH}?recursive=1`;
+const LC_TREE_API    = `https://api.github.com/repos/${GH_OWNER}/leetcode/git/trees/${GH_BRANCH}?recursive=1`;
+const LC_GQL         = 'https://leetcode.com/graphql/';
+
+export const LC_REPO_URL  = `https://github.com/${GH_OWNER}/leetcode`;
+export const LC_BLOB_BASE = `https://github.com/${GH_OWNER}/leetcode/blob/${GH_BRANCH}`;
 
 export const TREE_BASE = `https://github.com/${GH_OWNER}/${GH_REPO}/tree/${GH_BRANCH}`;
 export const REPO_URL  = `https://github.com/${GH_OWNER}/${GH_REPO}`;
@@ -40,6 +44,7 @@ export type LCProblemEntry = {
 	title: string;
 	difficulty: 'Easy' | 'Medium' | 'Hard';
 	tags: string[];
+	filePath: string | null;                 // e.g. "1.py" — in pelu10075/leetcode repo
 };
 
 // ── 캐시 ─────────────────────────────────────────────────────────────────────
@@ -147,6 +152,22 @@ export async function loadLC(): Promise<LCProblemEntry[]> {
 	const raw = (acRes.data?.recentAcSubmissionList ?? []) as { titleSlug: string }[];
 	const slugs = [...new Set(raw.map((s) => s.titleSlug))];
 
+	// LC repo file set
+	const lcFileSet = new Set<string>();
+	try {
+		const tRes = await fetch(LC_TREE_API, {
+			headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+		});
+		if (tRes.ok) {
+			const { tree } = (await tRes.json()) as { tree: { path: string; type: string }[] };
+			for (const n of tree) {
+				if (n.type === 'blob' && /^\d+\.py$/.test(n.path)) {
+					lcFileSet.add(n.path.replace(/\.py$/, ''));
+				}
+			}
+		}
+	} catch { /* ignore */ }
+
 	const problems: LCProblemEntry[] = [];
 	const BATCH = 25;
 	for (let i = 0; i < slugs.length; i += BATCH) {
@@ -161,10 +182,12 @@ export async function loadLC(): Promise<LCProblemEntry[]> {
 					questionFrontendId: string; title: string; difficulty: string; topicTags: { name: string }[];
 				} | null;
 				if (!q) continue;
+				const qid = q.questionFrontendId;
 				problems.push({
-					type: 'lc_problem', id: q.questionFrontendId, titleSlug: chunk[j],
+					type: 'lc_problem', id: qid, titleSlug: chunk[j],
 					title: q.title, difficulty: q.difficulty as LCProblemEntry['difficulty'],
 					tags: q.topicTags.map((t) => t.name),
+					filePath: lcFileSet.has(qid) ? `${qid}.py` : null,
 				});
 			}
 		} catch { /* skip batch */ }

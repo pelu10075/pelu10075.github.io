@@ -17,11 +17,13 @@ const CF_HANDLE  = 'edward_10';
 const LC_HANDLE  = 'edward_10';
 const GH_OWNER   = 'pelu10075';
 const GH_REPO    = 'codeforces';
+const LC_REPO    = 'leetcode';
 const GH_BRANCH  = 'main';
 
-const CF_STATUS_API = `https://codeforces.com/api/user.status?handle=${CF_HANDLE}&from=1&count=10000`;
-const LC_GQL        = 'https://leetcode.com/graphql/';
-const TREE_API      = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/git/trees/${GH_BRANCH}?recursive=1`;
+const CF_STATUS_API  = `https://codeforces.com/api/user.status?handle=${CF_HANDLE}&from=1&count=10000`;
+const LC_GQL         = 'https://leetcode.com/graphql/';
+const CF_TREE_API    = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/git/trees/${GH_BRANCH}?recursive=1`;
+const LC_TREE_API    = `https://api.github.com/repos/${GH_OWNER}/${LC_REPO}/git/trees/${GH_BRANCH}?recursive=1`;
 
 const LC_HEADERS = {
 	'Content-Type': 'application/json',
@@ -44,11 +46,12 @@ type CFSubmission = {
 
 type LCProblem = {
 	type: 'lc_problem';
-	id: string;          // questionFrontendId e.g. "1"
+	id: string;               // questionFrontendId e.g. "1"
 	titleSlug: string;
 	title: string;
 	difficulty: 'Easy' | 'Medium' | 'Hard';
 	tags: string[];
+	filePath: string | null;  // e.g. "1.py" or null
 };
 
 // ── LeetCode 헬퍼 ─────────────────────────────────────────────────────────────
@@ -61,6 +64,24 @@ async function lcQuery(query: string, variables?: Record<string, unknown>) {
 	});
 	if (!res.ok) throw new Error(`LC GraphQL HTTP ${res.status}`);
 	return res.json() as Promise<{ data?: Record<string, unknown>; errors?: unknown[] }>;
+}
+
+async function fetchLCRepoFiles(): Promise<Set<string>> {
+	const fileSet = new Set<string>();
+	try {
+		const res = await fetch(LC_TREE_API, {
+			headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+		});
+		if (!res.ok) return fileSet;
+		const { tree } = (await res.json()) as { tree: { path: string; type: string }[] };
+		for (const node of tree) {
+			// 루트의 숫자.py 파일만 매핑 (예: 1.py, 42.py)
+			if (node.type === 'blob' && /^\d+\.py$/.test(node.path)) {
+				fileSet.add(node.path.replace(/\.py$/, '')); // "1", "42" 등
+			}
+		}
+	} catch { /* ignore */ }
+	return fileSet;
 }
 
 async function fetchLCProblems(logger: { info(m: string): void; warn(m: string): void }) {
@@ -83,7 +104,11 @@ async function fetchLCProblems(logger: { info(m: string): void; warn(m: string):
 	logger.info(`[cf-data] LC: ${slugs.length} unique solved problems`);
 	if (slugs.length === 0) return [];
 
-	// ── 2. 배치 alias 쿼리로 난이도·태그 조회 (25개씩) ────────────
+	// ── 2. LeetCode GitHub 레포 파일 목록 ─────────────────────────
+	const lcFileSet = await fetchLCRepoFiles();
+	logger.info(`[cf-data] LC repo files: ${lcFileSet.size} .py files found`);
+
+	// ── 3. 배치 alias 쿼리로 난이도·태그 조회 (25개씩) ────────────
 	const BATCH = 25;
 	const problems: LCProblem[] = [];
 
@@ -106,13 +131,15 @@ async function fetchLCProblems(logger: { info(m: string): void; warn(m: string):
 					topicTags: { name: string }[];
 				} | null;
 				if (!q) continue;
+				const qid = q.questionFrontendId;
 				problems.push({
 					type:       'lc_problem',
-					id:         q.questionFrontendId,
+					id:         qid,
 					titleSlug:  chunk[j],
 					title:      q.title,
 					difficulty: (q.difficulty as LCProblem['difficulty']) ?? 'Medium',
 					tags:       q.topicTags.map((t) => t.name),
+					filePath:   lcFileSet.has(qid) ? `${qid}.py` : null,
 				});
 			}
 		} catch (err) {
@@ -166,7 +193,7 @@ export function cfDataIntegration(): AstroIntegration {
 					// GitHub tree: folder set
 					const folderSet = new Set<string>();
 					try {
-						const tRes = await fetch(TREE_API, {
+						const tRes = await fetch(CF_TREE_API, {
 							headers: {
 								Accept: 'application/vnd.github+json',
 								'X-GitHub-Api-Version': '2022-11-28',
