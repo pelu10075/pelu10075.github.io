@@ -1,9 +1,9 @@
 /**
  * Codeforces 문제 풀이 저장소 — 런타임 데이터 페치 및 스마트 검색
  *
- * 저장소 구조
- *   problems/{id}/note.md
- *   contests/{roundSlug}/notes.md
+ * 데이터 로딩 전략 (N+1 → 1):
+ *   1순위: /cf-data.json  (빌드 시 cfDataIntegration이 생성한 정적 파일)
+ *   2순위: GitHub Trees API + raw.githubusercontent.com 직접 fetch (dev / fallback)
  */
 
 // ── 상수 ─────────────────────────────────────────────────────────────────────
@@ -15,6 +15,7 @@ const BRANCH = 'main';
 const TREE_API  = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
 const RAW_BASE  = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}`;
 export const BLOB_BASE = `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}`;
+export const TREE_BASE = `https://github.com/${OWNER}/${REPO}/tree/${BRANCH}`;
 export const REPO_URL  = `https://github.com/${OWNER}/${REPO}`;
 
 // ── 타입 ─────────────────────────────────────────────────────────────────────
@@ -26,9 +27,8 @@ export type ProblemEntry = {
 	round_name: string;
 	type: 'problem';
 	tags: string[];
+	/** 0 = unrated / unknown */
 	difficulty: number;
-	filePath: string;     // raw GitHub URL (note.md)
-	codeFilePath?: string; // repo-relative path of the actual solution file, e.g. "problems/2220A/2220A.cpp"
 };
 
 export type ContestEntry = {
@@ -37,7 +37,7 @@ export type ContestEntry = {
 	type: 'contest';
 	problems: string[];
 	date: string;
-	slug: string; // round folder name, e.g. "round_1094_div1+2"
+	slug: string;
 };
 
 export type Entry = ProblemEntry | ContestEntry;
@@ -84,14 +84,27 @@ let _cache: Entry[] | null = null;
 export async function loadEntries(): Promise<Entry[]> {
 	if (_cache) return _cache;
 
-	// 1. Trees API — 1회 fetch
+	// 1순위: 정적 JSON (빌드 시 생성, 1 fetch)
+	try {
+		const res = await fetch('/cf-data.json');
+		if (res.ok) {
+			const { entries } = (await res.json()) as { entries: Entry[] };
+			if (Array.isArray(entries) && entries.length > 0) {
+				_cache = entries;
+				return entries;
+			}
+		}
+	} catch {
+		// 정적 파일 없음 → live API fallback
+	}
+
+	// 2순위: GitHub API live fetch (dev 환경 또는 정적 파일 없는 경우)
 	const treeRes = await fetch(TREE_API, {
 		headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
 	});
 	if (!treeRes.ok) throw new Error(`Trees API ${treeRes.status}`);
 	const { tree } = (await treeRes.json()) as { tree: { path: string; type: string }[] };
 
-	// 2. note.md / notes.md 경로 추출
 	const notePaths = tree
 		.filter(
 			(n) =>
@@ -101,22 +114,6 @@ export async function loadEntries(): Promise<Entry[]> {
 		)
 		.map((n) => n.path);
 
-	// problems/{id}/ 폴더 내 첫 번째 코드 파일 경로 맵 (note.md 제외)
-	const CODE_EXTS = new Set(['py','cpp','cc','cxx','c','java','kt','js','ts','go','rs','rb','cs','swift','php','hs','d']);
-	const codeFileMap = new Map<string, string>(); // "problems/{id}" → path
-	for (const n of tree) {
-		if (n.type !== 'blob') continue;
-		const m = n.path.match(/^(problems\/[^/]+)\/([^/]+)$/);
-		if (!m) continue;
-		const folder = m[1];
-		const filename = m[2];
-		if (filename === 'note.md') continue;
-		const ext = filename.split('.').pop()?.toLowerCase() ?? '';
-		if (!CODE_EXTS.has(ext)) continue;
-		if (!codeFileMap.has(folder)) codeFileMap.set(folder, n.path);
-	}
-
-	// 3. 병렬 fetch (Promise.allSettled — 실패해도 계속)
 	const settled = await Promise.allSettled(
 		notePaths.map((p) => fetch(`${RAW_BASE}/${p}`).then((r) => ({ path: p, text: r.text() }))),
 	);
@@ -127,26 +124,20 @@ export async function loadEntries(): Promise<Entry[]> {
 		if (result.status === 'rejected') continue;
 		const { path, text: textPromise } = result.value;
 		let raw: string;
-		try {
-			raw = await textPromise;
-		} catch {
-			continue;
-		}
+		try { raw = await textPromise; } catch { continue; }
 		const fm = parseFrontmatter(raw);
 		if (!fm) continue;
 
 		if (fm.type === 'problem' && fm.id) {
-			const folder = path.split('/').slice(0, 2).join('/'); // "problems/{id}"
+			const d = Number(fm.difficulty);
 			entries.push({
-				type:         'problem',
-				id:           String(fm.id),
-				title:        String(fm.title ?? ''),
-				round:        Number(fm.round ?? 0),
-				round_name:   String(fm.round_name ?? ''),
-				tags:         Array.isArray(fm.tags) ? (fm.tags as string[]) : [],
-				difficulty:   Number(fm.difficulty ?? 0),
-				filePath:     `${RAW_BASE}/${path}`,
-				codeFilePath: codeFileMap.get(folder),
+				type:       'problem',
+				id:         String(fm.id),
+				title:      String(fm.title ?? ''),
+				round:      Number(fm.round ?? 0),
+				round_name: String(fm.round_name ?? ''),
+				tags:       Array.isArray(fm.tags) ? (fm.tags as string[]) : [],
+				difficulty: isNaN(d) ? 0 : d,
 			});
 		} else if (fm.type === 'contest') {
 			const parts = path.split('/');
@@ -161,7 +152,6 @@ export async function loadEntries(): Promise<Entry[]> {
 		}
 	}
 
-	// 정렬: problem은 id 오름차순, contest는 round 내림차순
 	entries.sort((a, b) => {
 		if (a.type === 'problem' && b.type === 'problem') return a.id.localeCompare(b.id);
 		if (a.type === 'contest' && b.type === 'contest') return b.round - a.round;
@@ -180,10 +170,8 @@ export function performSearch(query: string, entries: Entry[]): SearchResult {
 	const all  = entries.filter((e): e is ProblemEntry => e.type === 'problem');
 	const cons = entries.filter((e): e is ContestEntry => e.type === 'contest');
 
-	// empty
 	if (!q) return { problems: all, contests: cons, mode: 'merged' };
 
-	// numeric — round 일치 + id prefix 병행, split 모드
 	if (/^\d+$/.test(q)) {
 		const n = parseInt(q, 10);
 		return {
@@ -193,7 +181,6 @@ export function performSearch(query: string, entries: Entry[]): SearchResult {
 		};
 	}
 
-	// problemId — e.g. 2220A
 	if (/^\d+[A-Za-z][1-9]?$/.test(q)) {
 		return {
 			problems: all.filter((p) => p.id.toLowerCase().startsWith(ql)),
@@ -202,7 +189,6 @@ export function performSearch(query: string, entries: Entry[]): SearchResult {
 		};
 	}
 
-	// single letter — A–Z (optionally followed by 1-9)
 	if (/^[A-Za-z][1-9]?$/.test(q)) {
 		const letter = q.toUpperCase();
 		return {
@@ -212,7 +198,6 @@ export function performSearch(query: string, entries: Entry[]): SearchResult {
 		};
 	}
 
-	// text — tags + title
 	return {
 		problems: all.filter(
 			(p) =>

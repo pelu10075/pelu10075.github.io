@@ -1,9 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { REPO_URL, BLOB_BASE } from '../lib/cfSearch';
+import { REPO_URL } from '../lib/cfSearch';
 
-const repoUrl  = REPO_URL;
-const blobBase = BLOB_BASE;
+const repoUrl = REPO_URL;
 ---
 
 <BaseLayout title="Problems · pelu10075" description="Codeforces 문제 풀이 검색">
@@ -63,7 +62,7 @@ const blobBase = BLOB_BASE;
 					<th><span class="i18n i18n--en">Tags</span><span class="i18n i18n--ko">태그</span></th>
 					<th><span class="i18n i18n--en">Diff</span><span class="i18n i18n--ko">난이도</span></th>
 					<th><span class="i18n i18n--en">Round</span><span class="i18n i18n--ko">라운드</span></th>
-					<th><span class="i18n i18n--en">File</span><span class="i18n i18n--ko">파일</span></th>
+					<th><span class="i18n i18n--en">Folder</span><span class="i18n i18n--ko">폴더</span></th>
 				</tr>
 			</thead>
 			<tbody id="cf-tbody"></tbody>
@@ -102,7 +101,7 @@ const blobBase = BLOB_BASE;
 						<th><span class="i18n i18n--en">Title</span><span class="i18n i18n--ko">제목</span></th>
 						<th><span class="i18n i18n--en">Tags</span><span class="i18n i18n--ko">태그</span></th>
 						<th><span class="i18n i18n--en">Diff</span><span class="i18n i18n--ko">난이도</span></th>
-						<th><span class="i18n i18n--en">File</span><span class="i18n i18n--ko">파일</span></th>
+						<th><span class="i18n i18n--en">Folder</span><span class="i18n i18n--ko">폴더</span></th>
 					</tr>
 				</thead>
 				<tbody id="cf-problem-tbody"></tbody>
@@ -393,7 +392,7 @@ const blobBase = BLOB_BASE;
 		loadEntries,
 		performSearch,
 		difficultyColor,
-		BLOB_BASE,
+		TREE_BASE,
 	} from '../lib/cfSearch';
 	import type { ProblemEntry, ContestEntry, Entry } from '../lib/cfSearch';
 
@@ -419,40 +418,32 @@ const blobBase = BLOB_BASE;
 		const tr = document.createElement('tr');
 		const color = difficultyColor(p.difficulty);
 
-		// 코드 파일 링크 우선, 없으면 note.md 폴더 링크
-		const fileUrl = p.codeFilePath
-			? `${BLOB_BASE}/${p.codeFilePath}`
-			: p.filePath.replace('raw.githubusercontent.com', 'github.com').replace(/\/main\//, '/blob/main/');
-		const fileName = p.codeFilePath
-			? p.codeFilePath.split('/').pop()!
-			: 'note.md';
-
-		// 제목 링크: 코드 파일이 있으면 코드 파일로, 없으면 note.md
-		const titleUrl = fileUrl;
+		const folderUrl  = `${TREE_BASE}/problems/${p.id}`;
+		const folderName = `${p.id}/`;
 
 		const tags = p.tags.length
 			? `<div class="prb-tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join('')}</div>`
 			: '—';
 		const diff = p.difficulty
 			? `<span class="prb-diff" style="color:${color}">*${p.difficulty}</span>`
-			: `<span class="prb-diff" style="color:#555">—</span>`;
+			: `<span class="prb-diff" style="color:#808080">?</span>`;
 
 		tr.innerHTML = `
 			<td><span class="prb-id">${p.id}</span></td>
 			<td class="prb-title-cell">
-				<a href="${titleUrl}" target="_blank" rel="noopener noreferrer">${p.title || p.id}</a>
+				<a href="${folderUrl}" target="_blank" rel="noopener noreferrer">${p.title || p.id}</a>
 			</td>
 			<td>${tags}</td>
 			<td>${diff}</td>
 			${showRound ? `<td class="prb-round">${p.round_name || '—'}</td>` : ''}
-			<td><a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="prb-file-link">${fileName}</a></td>
+			<td><a href="${folderUrl}" target="_blank" rel="noopener noreferrer" class="prb-file-link">${folderName}</a></td>
 		`;
 		return tr;
 	}
 
 	function renderContestRow(c: ContestEntry): HTMLTableRowElement {
 		const tr = document.createElement('tr');
-		const blobUrl = `https://github.com/pelu10075/codeforces/tree/main/contests/${c.slug}`;
+		const blobUrl = `${TREE_BASE}/contests/${c.slug}`;
 		tr.innerHTML = `
 			<td>
 				<div class="prb-contest-name">

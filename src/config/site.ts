@@ -251,9 +251,9 @@ export const codeforcesSolutionsSection = {
 	paragraphsHtml: [
 		{
 			en: `A dedicated GitHub repo for <strong>Codeforces</strong> practice: <code>problems/</code> for single tasks,
-				<code>contests/</code> for full rounds (e.g. Div. 1+2), and <code>templates/</code> in <strong>Python</strong> for on-site speed.`,
+				<code>contests/</code> for full rounds (e.g. Div. 1+2)`,
 			ko: `<strong>Codeforces</strong> 연습용 GitHub 저장소입니다. 단일 문제는 <code>problems/</code>,
-				라운드 전체는 <code>contests/</code>(Div. 1+2 등), 현장 속도를 위해 <strong>Python</strong> <code>templates/</code>를 두었습니다.`,
+				라운드 전체는 <code>contests/</code>(Div. 1+2 등)로 두었습니다.`,
 		},
 	] satisfies LocaleText[],
 	repoUrl: 'https://github.com/pelu10075/codeforces',
@@ -266,8 +266,8 @@ export const codeforcesSolutionsSection = {
 			path: 'problems',
 			title: { en: 'Individual problems', ko: '개별 문제' },
 			description: {
-				en: 'Solutions grouped by problem id — quick lookup and clean diffs when revisiting.',
-				ko: '문제 ID 기준으로 풀이를 모았습니다. 복습할 때 찾기 쉽고 diff도 깔끔합니다.',
+				en: 'Solutions grouped by problem id',
+				ko: '문제 ID 기준으로 풀이를 모았습니다.',
 			},
 		},
 		{
