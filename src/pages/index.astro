@@ -323,7 +323,15 @@ const contactLinksResolved = contactSection.links.map((link) => {
 					</div>
 				</div>
 				<div class="cp-badges-column reveal reveal-delay-2">
-					<div class="cf-card">
+					<!-- ── Platform tabs ─────────────────────────── -->
+					<div class="cp-stat-tabs" role="tablist" aria-label="Platform stats">
+						<button class="cp-stat-tab cp-stat-tab--active" role="tab" aria-selected="true"  data-stat-tab="cf"  aria-controls="stat-cf">Codeforces</button>
+						<button class="cp-stat-tab"                      role="tab" aria-selected="false" data-stat-tab="lc"  aria-controls="stat-lc">LeetCode</button>
+						<button class="cp-stat-tab"                      role="tab" aria-selected="false" data-stat-tab="boj" aria-controls="stat-boj">Solved.ac</button>
+					</div>
+
+					<!-- Codeforces panel -->
+					<div id="stat-cf" role="tabpanel" class="cf-card cp-stat-panel">
 						<div class="cf-card-title">Codeforces</div>
 						<div class="cf-handle">{integrations.codeforcesHandle}</div>
 						{
@@ -365,16 +373,13 @@ const contactLinksResolved = contactSection.links.map((link) => {
 								</>
 							)
 						}
-						<a
-							href={competitive.codeforces.profileUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="cp-link cf-card-link"
-						>
+						<a href={competitive.codeforces.profileUrl} target="_blank" rel="noopener noreferrer" class="cp-link cf-card-link">
 							codeforces.com/profile/{integrations.codeforcesHandle}
 						</a>
 					</div>
-					<div class="cf-card">
+
+					<!-- LeetCode panel -->
+					<div id="stat-lc" role="tabpanel" class="cf-card cp-stat-panel" hidden>
 						<div class="cf-card-title">LeetCode</div>
 						<div class="cf-handle">edward_10</div>
 						{
@@ -404,16 +409,13 @@ const contactLinksResolved = contactSection.links.map((link) => {
 								</>
 							)
 						}
-						<a
-							href={competitive.leetcode.profileUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="cp-link cf-card-link"
-						>
+						<a href={competitive.leetcode.profileUrl} target="_blank" rel="noopener noreferrer" class="cp-link cf-card-link">
 							leetcode.com/edward_10
 						</a>
 					</div>
-					<div class="cp-badge-wrap">
+
+					<!-- Solved.ac panel -->
+					<div id="stat-boj" role="tabpanel" class="cp-badge-wrap cp-stat-panel" hidden>
 						<img
 							src={competitive.badge.imageUrl}
 							alt={competitive.badge.alt}
@@ -422,12 +424,7 @@ const contactLinksResolved = contactSection.links.map((link) => {
 							loading="lazy"
 						/>
 						<div class="cp-badge-foot">
-							<a
-								href={competitive.badge.profileUrl}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="cp-link"
-							>
+							<a href={competitive.badge.profileUrl} target="_blank" rel="noopener noreferrer" class="cp-link">
 								{competitive.badge.handle}
 							</a>
 						</div>
@@ -707,6 +704,8 @@ const contactLinksResolved = contactSection.links.map((link) => {
 </BaseLayout>
 
 <style>
+	:global([hidden]) { display: none !important; }
+
 	.hero {
 		min-height: 100vh;
 		display: flex;
@@ -1289,12 +1288,16 @@ const contactLinksResolved = contactSection.links.map((link) => {
 
 	.cf-folder-desc code {
 		font-family: var(--font-mono);
-		font-size: 0.92em;
+		font-size: 0.82em;
 		padding: 0.08em 0.3em;
 		border-radius: 3px;
 		background: var(--bg3);
 		border: 1px solid var(--border);
 		color: var(--text-muted);
+		word-break: break-all;
+		overflow-wrap: break-word;
+		display: inline-block;
+		max-width: 100%;
 	}
 
 	.cf-folder-link {
@@ -1350,9 +1353,37 @@ const contactLinksResolved = contactSection.links.map((link) => {
 	.cp-badges-column {
 		display: flex;
 		flex-direction: column;
-		gap: 1.25rem;
+		gap: 0;
 		min-width: min(100%, 20rem);
 	}
+
+	/* ── Platform stat tabs ───────────────────────────── */
+	.cp-stat-tabs {
+		display: flex;
+		border-bottom: 1px solid var(--border);
+		margin-bottom: 0;
+	}
+	.cp-stat-tab {
+		flex: 1;
+		font-family: var(--font-mono);
+		font-size: 0.66rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		background: transparent;
+		border: none;
+		color: #555;
+		padding: 0.55rem 0.5rem;
+		cursor: pointer;
+		border-bottom: 2px solid transparent;
+		margin-bottom: -1px;
+		transition: color 0.15s, border-color 0.15s;
+	}
+	.cp-stat-tab:hover { color: var(--text-muted); }
+	.cp-stat-tab--active {
+		color: var(--text);
+		border-bottom-color: var(--accent);
+	}
+	.cp-stat-panel { border-top: none; border-radius: 0 0 var(--radius) var(--radius); }
 
 	.cf-card {
 		border: 1px solid var(--border);
@@ -1681,4 +1712,24 @@ const contactLinksResolved = contactSection.links.map((link) => {
 
 	initHome();
 	document.addEventListener('astro:page-load', initHome);
+
+	// ── Platform stat tabs ────────────────────────────────────────
+	function initStatTabs() {
+		const tabs   = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-stat-tab]'));
+		const panels = Array.from(document.querySelectorAll<HTMLElement>('[id^="stat-"]'));
+		if (!tabs.length) return;
+		tabs.forEach((tab) => {
+			tab.addEventListener('click', () => {
+				const target = tab.dataset.statTab!;
+				tabs.forEach((t) => {
+					const active = t.dataset.statTab === target;
+					t.classList.toggle('cp-stat-tab--active', active);
+					t.setAttribute('aria-selected', String(active));
+				});
+				panels.forEach((p) => { p.hidden = p.id !== `stat-${target}`; });
+			});
+		});
+	}
+	initStatTabs();
+	document.addEventListener('astro:page-load', initStatTabs);
 </script>
