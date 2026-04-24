@@ -43,7 +43,6 @@ const blobBase = BLOB_BASE;
 
 	<!-- ── Loading ──────────────────────────────────────────── -->
 	<div id="cf-loading" class="prb-status">
-		<span class="prb-spinner"></span>
 		<span class="i18n i18n--en">Loading…</span>
 		<span class="i18n i18n--ko">불러오는 중…</span>
 	</div>
@@ -237,17 +236,6 @@ const blobBase = BLOB_BASE;
 		font-size: 0.8rem;
 		color: #555;
 	}
-
-	.prb-spinner {
-		width: 14px;
-		height: 14px;
-		border: 1.5px solid #2a2a2a;
-		border-top-color: #666;
-		border-radius: 50%;
-		animation: spin 0.75s linear infinite;
-		flex-shrink: 0;
-	}
-	@keyframes spin { to { transform: rotate(360deg); } }
 
 	.prb-error { color: #cc4444; }
 
