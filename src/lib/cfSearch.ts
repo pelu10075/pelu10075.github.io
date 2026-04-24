@@ -1,259 +1,220 @@
 /**
- * Codeforces 문제 풀이 저장소 — 런타임 데이터 페치 및 스마트 검색 로직
+ * Codeforces 문제 풀이 저장소 — 런타임 데이터 페치 및 스마트 검색
  *
- * 저장소 구조:
- *   problems/{id}/          note.md + solution.*
- *   contests/{roundSlug}/   notes.md + A.cpp …
- *   templates/              template.*
+ * 저장소 구조
+ *   problems/{id}/note.md
+ *   contests/{roundSlug}/notes.md
  */
 
-// ── Config ───────────────────────────────────────────────────────────────────
+// ── 상수 ─────────────────────────────────────────────────────────────────────
 
-export const CF_REPO = {
-	owner: 'pelu10075',
-	name: 'codeforces',
-	branch: 'main',
-} as const;
+const OWNER  = 'pelu10075';
+const REPO   = 'codeforces';
+const BRANCH = 'main';
 
-const TREE_API = `https://api.github.com/repos/${CF_REPO.owner}/${CF_REPO.name}/git/trees/${CF_REPO.branch}?recursive=1`;
-const RAW_BASE = `https://raw.githubusercontent.com/${CF_REPO.owner}/${CF_REPO.name}/${CF_REPO.branch}`;
-export const BLOB_BASE = `https://github.com/${CF_REPO.owner}/${CF_REPO.name}/blob/${CF_REPO.branch}`;
-export const REPO_URL = `https://github.com/${CF_REPO.owner}/${CF_REPO.name}`;
+const TREE_API  = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+const RAW_BASE  = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}`;
+export const BLOB_BASE = `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}`;
+export const REPO_URL  = `https://github.com/${OWNER}/${REPO}`;
 
-const GH_HEADERS: HeadersInit = {
-	Accept: 'application/vnd.github+json',
-	'X-GitHub-Api-Version': '2022-11-28',
-};
+// ── 타입 ─────────────────────────────────────────────────────────────────────
 
-// ── Types ────────────────────────────────────────────────────────────────────
-
-export type SolutionFile = { name: string; url: string };
-
-export type ProblemItem = {
-	type: 'problem';
+export type ProblemEntry = {
 	id: string;
 	title: string;
 	round: number;
-	roundName: string;
+	round_name: string;
+	type: 'problem';
 	tags: string[];
-	difficulty?: number;
-	path: string;
-	solutions: SolutionFile[];
+	difficulty: number;
+	filePath: string; // raw GitHub URL (note.md)
 };
 
-export type ContestItem = {
-	type: 'contest';
+export type ContestEntry = {
 	round: number;
-	roundName: string;
+	round_name: string;
+	type: 'contest';
 	problems: string[];
-	date?: string;
-	path: string;
-	solutions: SolutionFile[];
+	date: string;
+	slug: string; // round folder name, e.g. "round_1094_div1+2"
 };
 
-export type CfItem = ProblemItem | ContestItem;
+export type Entry = ProblemEntry | ContestEntry;
 
 export type SearchResult = {
-	rounds: ContestItem[];
-	problems: ProblemItem[];
+	problems: ProblemEntry[];
+	contests: ContestEntry[];
+	mode: 'split' | 'merged';
 };
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── parseFrontmatter ──────────────────────────────────────────────────────────
 
-const CODE_EXTS = new Set(['py', 'cpp', 'cc', 'cxx', 'c', 'java', 'kt', 'js', 'ts', 'go', 'rs', 'rb', 'cs', 'd']);
-
-export function isCodeFile(name: string): boolean {
-	if (name.startsWith('.')) return false;
-	const ext = name.split('.').pop()?.toLowerCase() ?? '';
-	return CODE_EXTS.has(ext);
-}
-
-/** 간단한 YAML frontmatter 파서 (gray-matter 불필요) */
-export function parseFrontmatter(content: string): Record<string, unknown> {
-	const m = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-	if (!m) return {};
+export function parseFrontmatter(raw: string): Record<string, unknown> | null {
+	const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+	if (!m) return null;
 	const result: Record<string, unknown> = {};
-	for (const line of m[1].split('\n')) {
+	for (const line of m[1].split(/\r?\n/)) {
 		const ci = line.indexOf(':');
 		if (ci === -1) continue;
 		const key = line.slice(0, ci).trim();
 		const val = line.slice(ci + 1).trim();
 		if (!key) continue;
-		if (val.startsWith('[')) {
+		if (/^\[.*\]$/.test(val)) {
 			result[key] = val
 				.slice(1, -1)
 				.split(',')
 				.map((s) => s.trim().replace(/^["']|["']$/g, ''))
 				.filter(Boolean);
-		} else if (/^\d+$/.test(val)) {
-			result[key] = parseInt(val, 10);
+		} else if (/^-?\d+(\.\d+)?$/.test(val)) {
+			result[key] = Number(val);
 		} else {
 			result[key] = val.replace(/^["']|["']$/g, '');
 		}
 	}
-	return result;
+	return Object.keys(result).length ? result : null;
 }
 
-// ── Data Loading ─────────────────────────────────────────────────────────────
+// ── 모듈 캐시 ─────────────────────────────────────────────────────────────────
 
-export type RepoLoadState =
-	| { status: 'idle' }
-	| { status: 'loading' }
-	| { status: 'ok'; items: CfItem[] }
-	| { status: 'error'; message: string };
+let _cache: Entry[] | null = null;
 
-export async function loadRepoData(): Promise<CfItem[]> {
-	const treeRes = await fetch(TREE_API, { headers: GH_HEADERS });
-	if (!treeRes.ok) throw new Error(`Tree API ${treeRes.status}`);
+// ── loadEntries ───────────────────────────────────────────────────────────────
+
+export async function loadEntries(): Promise<Entry[]> {
+	if (_cache) return _cache;
+
+	// 1. Trees API — 1회 fetch
+	const treeRes = await fetch(TREE_API, {
+		headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+	});
+	if (!treeRes.ok) throw new Error(`Trees API ${treeRes.status}`);
 	const { tree } = (await treeRes.json()) as { tree: { path: string; type: string }[] };
 
-	// Bucket by directory (only depth-3 files: problems/{id}/{file})
-	const problemDirs = new Map<string, string[]>();
-	const contestDirs = new Map<string, string[]>();
+	// 2. note.md / notes.md 경로 추출
+	const notePaths = tree
+		.filter(
+			(n) =>
+				n.type === 'blob' &&
+				(n.path.match(/^problems\/[^/]+\/note\.md$/) ||
+					n.path.match(/^contests\/[^/]+\/notes\.md$/)),
+		)
+		.map((n) => n.path);
 
-	for (const node of tree) {
-		if (node.type !== 'blob') continue;
-		const parts = node.path.split('/');
-		if (parts[0] === 'problems' && parts.length === 3) {
-			const dir = `${parts[0]}/${parts[1]}`;
-			if (!problemDirs.has(dir)) problemDirs.set(dir, []);
-			problemDirs.get(dir)!.push(parts[2]);
-		} else if (parts[0] === 'contests' && parts.length === 3) {
-			const dir = `${parts[0]}/${parts[1]}`;
-			if (!contestDirs.has(dir)) contestDirs.set(dir, []);
-			contestDirs.get(dir)!.push(parts[2]);
+	// 3. 병렬 fetch (Promise.allSettled — 실패해도 계속)
+	const settled = await Promise.allSettled(
+		notePaths.map((p) => fetch(`${RAW_BASE}/${p}`).then((r) => ({ path: p, text: r.text() }))),
+	);
+
+	const entries: Entry[] = [];
+
+	for (const result of settled) {
+		if (result.status === 'rejected') continue;
+		const { path, text: textPromise } = result.value;
+		let raw: string;
+		try {
+			raw = await textPromise;
+		} catch {
+			continue;
+		}
+		const fm = parseFrontmatter(raw);
+		if (!fm) continue;
+
+		if (fm.type === 'problem' && fm.id) {
+			entries.push({
+				type:       'problem',
+				id:         String(fm.id),
+				title:      String(fm.title ?? ''),
+				round:      Number(fm.round ?? 0),
+				round_name: String(fm.round_name ?? ''),
+				tags:       Array.isArray(fm.tags) ? (fm.tags as string[]) : [],
+				difficulty: Number(fm.difficulty ?? 0),
+				filePath:   `${RAW_BASE}/${path}`,
+			});
+		} else if (fm.type === 'contest') {
+			const parts = path.split('/');
+			entries.push({
+				type:       'contest',
+				round:      Number(fm.round ?? 0),
+				round_name: String(fm.round_name ?? ''),
+				problems:   Array.isArray(fm.problems) ? (fm.problems as string[]) : [],
+				date:       String(fm.date ?? ''),
+				slug:       parts[1] ?? '',
+			});
 		}
 	}
 
-	const items: CfItem[] = [];
-
-	// Fetch all note.md files in parallel via raw.githubusercontent.com (no rate limit)
-	const fetches: Promise<void>[] = [];
-
-	for (const [dir, files] of problemDirs) {
-		if (!files.includes('note.md')) continue;
-		fetches.push(
-			fetch(`${RAW_BASE}/${dir}/note.md`)
-				.then((r) => r.text())
-				.then((raw) => {
-					const fm = parseFrontmatter(raw);
-					if (fm.type !== 'problem' || !fm.id) return;
-					items.push({
-						type: 'problem',
-						id: String(fm.id),
-						title: String(fm.title ?? ''),
-						round: Number(fm.round ?? 0),
-						roundName: String(fm.round_name ?? ''),
-						tags: Array.isArray(fm.tags) ? (fm.tags as string[]) : [],
-						difficulty: fm.difficulty != null ? Number(fm.difficulty) : undefined,
-						path: dir,
-						solutions: files
-							.filter(isCodeFile)
-							.map((f) => ({ name: f, url: `${BLOB_BASE}/${dir}/${f}` })),
-					});
-				})
-				.catch(() => {}),
-		);
-	}
-
-	for (const [dir, files] of contestDirs) {
-		if (!files.includes('notes.md')) continue;
-		fetches.push(
-			fetch(`${RAW_BASE}/${dir}/notes.md`)
-				.then((r) => r.text())
-				.then((raw) => {
-					const fm = parseFrontmatter(raw);
-					if (fm.type !== 'contest') return;
-					items.push({
-						type: 'contest',
-						round: Number(fm.round ?? 0),
-						roundName: String(fm.round_name ?? ''),
-						problems: Array.isArray(fm.problems) ? (fm.problems as string[]) : [],
-						date: fm.date ? String(fm.date) : undefined,
-						path: dir,
-						solutions: files
-							.filter(isCodeFile)
-							.map((f) => ({ name: f, url: `${BLOB_BASE}/${dir}/${f}` })),
-					});
-				})
-				.catch(() => {}),
-		);
-	}
-
-	await Promise.all(fetches);
-
-	// Sort: problems by id, contests by round desc
-	items.sort((a, b) => {
+	// 정렬: problem은 id 오름차순, contest는 round 내림차순
+	entries.sort((a, b) => {
 		if (a.type === 'problem' && b.type === 'problem') return a.id.localeCompare(b.id);
 		if (a.type === 'contest' && b.type === 'contest') return b.round - a.round;
 		return a.type === 'contest' ? -1 : 1;
 	});
 
-	return items;
+	_cache = entries;
+	return entries;
 }
 
-// ── Search ───────────────────────────────────────────────────────────────────
+// ── performSearch ─────────────────────────────────────────────────────────────
 
-type TokenType = 'round' | 'problemId' | 'problemLetter' | 'text';
+export function performSearch(query: string, entries: Entry[]): SearchResult {
+	const q    = query.trim();
+	const ql   = q.toLowerCase();
+	const all  = entries.filter((e): e is ProblemEntry => e.type === 'problem');
+	const cons = entries.filter((e): e is ContestEntry => e.type === 'contest');
 
-function classifyToken(q: string): TokenType {
-	if (/^\d+$/.test(q)) return 'round';
-	if (/^\d+[A-Za-z][1-9]?$/.test(q)) return 'problemId';
-	if (/^[A-Za-z][1-9]?$/.test(q)) return 'problemLetter';
-	return 'text';
-}
+	// empty
+	if (!q) return { problems: all, contests: cons, mode: 'merged' };
 
-export function performSearch(items: CfItem[], query: string): SearchResult {
-	const q = query.trim();
-	const allProblems = items.filter((i): i is ProblemItem => i.type === 'problem');
-	const allContests = items.filter((i): i is ContestItem => i.type === 'contest');
-
-	if (!q) return { rounds: allContests, problems: allProblems };
-
-	const ql = q.toLowerCase();
-	const kind = classifyToken(q);
-
-	if (kind === 'round') {
+	// numeric — round 일치 + id prefix 병행, split 모드
+	if (/^\d+$/.test(q)) {
 		const n = parseInt(q, 10);
 		return {
-			rounds: allContests.filter((c) => c.round === n),
-			problems: allProblems.filter((p) => p.round === n || p.id.toLowerCase().startsWith(ql)),
+			contests: cons.filter((c) => c.round === n),
+			problems: all.filter((p) => p.round === n || p.id.toLowerCase().startsWith(ql)),
+			mode: 'split',
 		};
 	}
-	if (kind === 'problemId') {
+
+	// problemId — e.g. 2220A
+	if (/^\d+[A-Za-z][1-9]?$/.test(q)) {
 		return {
-			rounds: [],
-			problems: allProblems.filter((p) => p.id.toUpperCase().startsWith(q.toUpperCase())),
+			problems: all.filter((p) => p.id.toLowerCase().startsWith(ql)),
+			contests: [],
+			mode: 'merged',
 		};
 	}
-	if (kind === 'problemLetter') {
+
+	// single letter — A–Z (optionally followed by 1-9)
+	if (/^[A-Za-z][1-9]?$/.test(q)) {
+		const letter = q.toUpperCase();
 		return {
-			rounds: [],
-			problems: allProblems.filter((p) => {
-				const letter = p.id.replace(/^\d+/, '').toUpperCase();
-				return letter === q.toUpperCase();
-			}),
+			problems: all.filter((p) => p.id.replace(/^\d+/, '').toUpperCase() === letter),
+			contests: [],
+			mode: 'merged',
 		};
 	}
-	// text: tags + title
+
+	// text — tags + title
 	return {
-		rounds: [],
-		problems: allProblems.filter(
+		problems: all.filter(
 			(p) =>
-				p.title.toLowerCase().includes(ql) || p.tags.some((t) => t.toLowerCase().includes(ql)),
+				p.title.toLowerCase().includes(ql) ||
+				p.tags.some((t) => t.toLowerCase().includes(ql)),
 		),
+		contests: [],
+		mode: 'merged',
 	};
 }
 
-// ── Difficulty color ─────────────────────────────────────────────────────────
+// ── difficultyColor ───────────────────────────────────────────────────────────
 
-export function difficultyClass(d: number | undefined): string {
-	if (d == null) return 'diff-none';
-	if (d < 1200) return 'diff-grey';
-	if (d < 1400) return 'diff-green';
-	if (d < 1600) return 'diff-cyan';
-	if (d < 1900) return 'diff-blue';
-	if (d < 2100) return 'diff-purple';
-	if (d < 2400) return 'diff-orange';
-	return 'diff-red';
+export function difficultyColor(d: number): string {
+	if (!d || d < 1) return '#808080';
+	if (d < 1200)    return '#808080';
+	if (d < 1400)    return '#008000';
+	if (d < 1600)    return '#03a89e';
+	if (d < 1900)    return '#0000ff';
+	if (d < 2100)    return '#aa00aa';
+	if (d < 2400)    return '#ff8c00';
+	return '#ff0000';
 }

@@ -1,0 +1,549 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { REPO_URL, BLOB_BASE } from '../lib/cfSearch';
+
+const repoUrl  = REPO_URL;
+const blobBase = BLOB_BASE;
+---
+
+<BaseLayout title="Problems · pelu10075" description="Codeforces 문제 풀이 검색">
+<main class="prb-main">
+
+	<!-- ── Hero ─────────────────────────────────────────────── -->
+	<header class="prb-hero">
+		<nav class="prb-nav">
+			<a href="/">← portfolio</a>
+			<span class="prb-nav-sep">/</span>
+			<a href="/problems">problems</a>
+		</nav>
+		<h1>Problems</h1>
+		<p class="prb-subtitle">
+			<span class="i18n i18n--en">Search solved Codeforces problems by ID, round, tag, or difficulty.</span>
+			<span class="i18n i18n--ko">문제 ID, 라운드, 태그, 난이도로 풀이를 검색합니다.</span>
+		</p>
+		<a href={repoUrl} target="_blank" rel="noopener noreferrer" class="prb-repo-btn">
+			<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+				<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+			</svg>
+			pelu10075/codeforces
+		</a>
+	</header>
+
+	<!-- ── Search bar ───────────────────────────────────────── -->
+	<div class="search-bar">
+		<input
+			id="cf-search"
+			type="text"
+			placeholder="Search by ID or round…  e.g. 1094, A, 2220A, greedy"
+			autocomplete="off"
+			spellcheck="false"
+		/>
+		<span id="cf-count"></span>
+	</div>
+
+	<!-- ── Loading ──────────────────────────────────────────── -->
+	<div id="cf-loading" class="prb-status">
+		<span class="prb-spinner"></span>
+		<span class="i18n i18n--en">Loading…</span>
+		<span class="i18n i18n--ko">불러오는 중…</span>
+	</div>
+
+	<!-- ── Error ────────────────────────────────────────────── -->
+	<div id="cf-error" class="prb-status prb-error" hidden>
+		<span id="cf-error-msg"></span>
+		<button id="cf-retry" class="prb-retry-btn">Retry</button>
+	</div>
+
+	<!-- ── Merged results ───────────────────────────────────── -->
+	<div id="cf-table-wrap" hidden>
+		<table id="cf-table">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th><span class="i18n i18n--en">Title</span><span class="i18n i18n--ko">제목</span></th>
+					<th><span class="i18n i18n--en">Tags</span><span class="i18n i18n--ko">태그</span></th>
+					<th><span class="i18n i18n--en">Diff</span><span class="i18n i18n--ko">난이도</span></th>
+					<th><span class="i18n i18n--en">Round</span><span class="i18n i18n--ko">라운드</span></th>
+					<th><span class="i18n i18n--en">File</span><span class="i18n i18n--ko">파일</span></th>
+				</tr>
+			</thead>
+			<tbody id="cf-tbody"></tbody>
+		</table>
+		<p id="cf-no-results" class="prb-empty" hidden>
+			<span class="i18n i18n--en">No matches.</span>
+			<span class="i18n i18n--ko">결과 없음.</span>
+		</p>
+	</div>
+
+	<!-- ── Split results (numeric query) ────────────────────── -->
+	<div id="cf-split" hidden>
+		<h2 class="prb-section-hd">[대회]</h2>
+		<div id="cf-contest-wrap">
+			<table id="cf-contest-table">
+				<thead>
+					<tr>
+						<th><span class="i18n i18n--en">Round</span><span class="i18n i18n--ko">라운드</span></th>
+						<th><span class="i18n i18n--en">Problems</span><span class="i18n i18n--ko">문제 목록</span></th>
+						<th><span class="i18n i18n--en">Date</span><span class="i18n i18n--ko">날짜</span></th>
+					</tr>
+				</thead>
+				<tbody id="cf-contest-tbody"></tbody>
+			</table>
+			<p id="cf-contest-empty" class="prb-empty" hidden>
+				<span class="i18n i18n--en">No contests.</span>
+				<span class="i18n i18n--ko">대회 없음.</span>
+			</p>
+		</div>
+		<h2 class="prb-section-hd">[문제]</h2>
+		<div id="cf-split-problem-wrap">
+			<table id="cf-problem-table">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th><span class="i18n i18n--en">Title</span><span class="i18n i18n--ko">제목</span></th>
+						<th><span class="i18n i18n--en">Tags</span><span class="i18n i18n--ko">태그</span></th>
+						<th><span class="i18n i18n--en">Diff</span><span class="i18n i18n--ko">난이도</span></th>
+						<th><span class="i18n i18n--en">File</span><span class="i18n i18n--ko">파일</span></th>
+					</tr>
+				</thead>
+				<tbody id="cf-problem-tbody"></tbody>
+			</table>
+			<p id="cf-split-problem-empty" class="prb-empty" hidden>
+				<span class="i18n i18n--en">No problems.</span>
+				<span class="i18n i18n--ko">문제 없음.</span>
+			</p>
+		</div>
+	</div>
+
+</main>
+</BaseLayout>
+
+<style>
+	/* ── Variables (supplement global) ──────────────────────── */
+	:root {
+		--font-mono: 'Space Mono', monospace;
+		--font-sans: 'Space Grotesk', sans-serif;
+		--color-bg:         #0d0d0d;
+		--color-text:       #f0f0f0;
+		--color-border:     #2a2a2a;
+		--color-tag-bg:     transparent;
+		--color-tag-border: #444;
+	}
+
+	/* ── Layout ─────────────────────────────────────────────── */
+	.prb-main {
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 2rem 1.5rem 6rem;
+	}
+
+	/* ── Hero ───────────────────────────────────────────────── */
+	.prb-hero {
+		padding: 2.5rem 0 2rem;
+		border-bottom: 1px solid var(--color-border);
+		margin-bottom: 0;
+	}
+
+	.prb-nav {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-dim, #555);
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-bottom: 1.25rem;
+		letter-spacing: 0.06em;
+	}
+	.prb-nav a {
+		color: var(--text-muted, #888);
+		text-decoration: none;
+		transition: color 0.15s;
+	}
+	.prb-nav a:hover { color: var(--color-text); }
+	.prb-nav-sep { color: var(--color-border); }
+
+	.prb-hero h1 {
+		font-size: clamp(1.9rem, 4vw, 2.8rem);
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		margin: 0 0 0.6rem;
+		color: var(--color-text);
+	}
+
+	.prb-subtitle {
+		font-size: 0.92rem;
+		color: var(--text-muted, #888);
+		margin: 0 0 1.25rem;
+		font-weight: 300;
+		line-height: 1.6;
+	}
+
+	.prb-repo-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		font-family: var(--font-mono);
+		font-size: 0.76rem;
+		color: var(--text-muted, #888);
+		text-decoration: none;
+		padding: 0.4rem 0.85rem;
+		border: 1px solid var(--color-border);
+		border-radius: 4px;
+		transition: border-color 0.2s, color 0.2s;
+	}
+	.prb-repo-btn:hover { border-color: #555; color: var(--color-text); }
+
+	/* ── Search bar ─────────────────────────────────────────── */
+	.search-bar {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		padding: 0.9rem 0;
+		border-bottom: 1px solid var(--color-border);
+		margin-bottom: 0;
+	}
+
+	#cf-search {
+		flex: 1;
+		width: 100%;
+		background: transparent;
+		border: 1px solid var(--color-border);
+		border-radius: 4px;
+		color: var(--color-text);
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
+		padding: 0.6rem 0.9rem;
+		outline: none;
+		transition: border-color 0.2s;
+	}
+	#cf-search:focus { border-color: #666; }
+	#cf-search::placeholder { color: #444; }
+
+	#cf-count {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		color: #555;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	/* ── Status (loading / error) ───────────────────────────── */
+	.prb-status {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 2.25rem 0;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: #555;
+	}
+
+	.prb-spinner {
+		width: 14px;
+		height: 14px;
+		border: 1.5px solid #2a2a2a;
+		border-top-color: #666;
+		border-radius: 50%;
+		animation: spin 0.75s linear infinite;
+		flex-shrink: 0;
+	}
+	@keyframes spin { to { transform: rotate(360deg); } }
+
+	.prb-error { color: #cc4444; }
+
+	.prb-retry-btn {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		background: transparent;
+		border: 1px solid #cc4444;
+		color: #cc4444;
+		border-radius: 3px;
+		padding: 0.25rem 0.65rem;
+		cursor: pointer;
+		transition: background 0.15s;
+	}
+	.prb-retry-btn:hover { background: rgba(204,68,68,0.12); }
+
+	/* ── Section headers (split mode) ───────────────────────── */
+	.prb-section-hd {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: #555;
+		padding: 0.9rem 0 0.4rem;
+		border-bottom: 1px solid var(--color-border);
+		margin: 0 0 0;
+		font-weight: 400;
+	}
+
+	/* ── Tables ─────────────────────────────────────────────── */
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-family: var(--font-mono);
+	}
+
+	th {
+		font-size: 0.6rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: #555;
+		font-weight: 400;
+		padding: 0.5rem 0.85rem;
+		text-align: left;
+		border-bottom: 1px solid var(--color-border);
+		white-space: nowrap;
+		background: var(--bg2, #111);
+	}
+
+	td {
+		padding: 0.6rem 0.85rem;
+		border-bottom: 1px solid var(--color-border);
+		vertical-align: middle;
+		font-size: 0.84rem;
+	}
+
+	tbody tr:last-child td { border-bottom: none; }
+	tbody tr { transition: background 0.1s; }
+	tbody tr:hover { background: var(--bg3, #1a1a1a); }
+
+	/* ── Problem ID ─────────────────────────────────────────── */
+	.prb-id {
+		font-family: var(--font-mono);
+		font-weight: 700;
+		font-size: 0.88rem;
+		color: var(--color-text);
+		letter-spacing: 0.05em;
+	}
+
+	/* ── Tags ───────────────────────────────────────────────── */
+	.prb-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+	}
+	.tag {
+		padding: 2px 6px;
+		border: 1px solid var(--color-tag-border);
+		font-size: 0.75rem;
+		font-family: var(--font-mono);
+		background: var(--color-tag-bg);
+		border-radius: 3px;
+		color: #888;
+		white-space: nowrap;
+	}
+
+	/* ── Difficulty ─────────────────────────────────────────── */
+	.prb-diff {
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		font-weight: 700;
+		white-space: nowrap;
+	}
+
+	/* ── Round / title cells ────────────────────────────────── */
+	.prb-round {
+		font-family: var(--font-mono);
+		font-size: 0.76rem;
+		color: #666;
+		white-space: nowrap;
+	}
+	.prb-title-cell {
+		font-size: 0.84rem;
+		color: #aaa;
+	}
+	.prb-title-cell a {
+		color: inherit;
+		text-decoration: none;
+		transition: color 0.15s;
+	}
+	.prb-title-cell a:hover { color: var(--color-text); }
+
+	/* ── File link ──────────────────────────────────────────── */
+	.prb-file-link {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: #666;
+		text-decoration: none;
+		padding: 0.15rem 0.45rem;
+		border: 1px solid var(--color-border);
+		border-radius: 3px;
+		transition: border-color 0.15s, color 0.15s;
+		white-space: nowrap;
+	}
+	.prb-file-link:hover { border-color: #555; color: var(--color-text); }
+
+	/* ── Contest row ────────────────────────────────────────── */
+	.prb-contest-name {
+		font-weight: 700;
+		color: var(--color-text);
+	}
+	.prb-contest-probs {
+		font-size: 0.72rem;
+		color: #555;
+		margin-top: 0.2rem;
+	}
+
+	/* ── Empty ──────────────────────────────────────────────── */
+	.prb-empty {
+		padding: 1.5rem 0.85rem;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: #444;
+		margin: 0;
+	}
+
+	/* ── Responsive ─────────────────────────────────────────── */
+	@media (max-width: 680px) {
+		td:nth-child(5), th:nth-child(5) { display: none; }
+	}
+</style>
+
+<script>
+	import {
+		loadEntries,
+		performSearch,
+		difficultyColor,
+		BLOB_BASE,
+	} from '../lib/cfSearch';
+	import type { ProblemEntry, ContestEntry, Entry } from '../lib/cfSearch';
+
+	// ── DOM refs ───────────────────────────────────────────────
+	const input        = document.getElementById('cf-search')          as HTMLInputElement;
+	const countEl      = document.getElementById('cf-count')           as HTMLElement;
+	const loadingEl    = document.getElementById('cf-loading')         as HTMLElement;
+	const errorEl      = document.getElementById('cf-error')           as HTMLElement;
+	const errorMsg     = document.getElementById('cf-error-msg')       as HTMLElement;
+	const retryBtn     = document.getElementById('cf-retry')           as HTMLButtonElement;
+	const tableWrap    = document.getElementById('cf-table-wrap')      as HTMLElement;
+	const tbody        = document.getElementById('cf-tbody')           as HTMLTableSectionElement;
+	const noResults    = document.getElementById('cf-no-results')      as HTMLElement;
+	const splitEl      = document.getElementById('cf-split')           as HTMLElement;
+	const contestTbody = document.getElementById('cf-contest-tbody')   as HTMLTableSectionElement;
+	const contestEmpty = document.getElementById('cf-contest-empty')   as HTMLElement;
+	const problemTbody = document.getElementById('cf-problem-tbody')   as HTMLTableSectionElement;
+	const splitEmpty   = document.getElementById('cf-split-problem-empty') as HTMLElement;
+
+	// ── Render helpers ─────────────────────────────────────────
+
+	function renderProblemRow(p: ProblemEntry, showRound = true): HTMLTableRowElement {
+		const tr = document.createElement('tr');
+		const color = difficultyColor(p.difficulty);
+		const noteUrl = `${BLOB_BASE}/${p.filePath.split('/').slice(-3).join('/')}`
+			.replace('raw.githubusercontent.com', 'github.com')
+			.replace(`/${import.meta.env.PUBLIC_BRANCH ?? 'main'}/`, '/blob/main/');
+
+		// Compute blob URL from raw URL
+		const blobUrl = p.filePath
+			.replace('raw.githubusercontent.com', 'github.com')
+			.replace(/\/main\//, '/blob/main/');
+
+		const tags = p.tags.length
+			? `<div class="prb-tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join('')}</div>`
+			: '—';
+		const diff = p.difficulty
+			? `<span class="prb-diff" style="color:${color}">*${p.difficulty}</span>`
+			: `<span class="prb-diff" style="color:#555">—</span>`;
+
+		tr.innerHTML = `
+			<td><span class="prb-id">${p.id}</span></td>
+			<td class="prb-title-cell">
+				<a href="${blobUrl}" target="_blank" rel="noopener noreferrer">${p.title || p.id}</a>
+			</td>
+			<td>${tags}</td>
+			<td>${diff}</td>
+			${showRound ? `<td class="prb-round">${p.round_name || '—'}</td>` : ''}
+			<td><a href="${blobUrl}" target="_blank" rel="noopener noreferrer" class="prb-file-link">note.md</a></td>
+		`;
+		return tr;
+	}
+
+	function renderContestRow(c: ContestEntry): HTMLTableRowElement {
+		const tr = document.createElement('tr');
+		const blobUrl = `https://github.com/pelu10075/codeforces/tree/main/contests/${c.slug}`;
+		tr.innerHTML = `
+			<td>
+				<div class="prb-contest-name">
+					<a href="${blobUrl}" target="_blank" rel="noopener noreferrer" class="prb-title-cell">
+						${c.round_name || `Round ${c.round}`}
+					</a>
+				</div>
+			</td>
+			<td><div class="prb-contest-probs">${c.problems.join(', ') || '—'}</div></td>
+			<td class="prb-round">${c.date || '—'}</td>
+		`;
+		return tr;
+	}
+
+	function updateCount(visible: number, total: number, query: string) {
+		countEl.textContent = query
+			? `${visible} / ${total} results`
+			: `${total} problems`;
+	}
+
+	// ── Render ─────────────────────────────────────────────────
+
+	function render(entries: Entry[], query: string) {
+		const { problems, contests, mode } = performSearch(query, entries);
+		const totalProblems = entries.filter((e) => e.type === 'problem').length;
+		const visibleCount  = problems.length + (mode === 'split' ? contests.length : 0);
+
+		updateCount(problems.length, totalProblems, query);
+
+		if (mode === 'split') {
+			tableWrap.hidden = true;
+			splitEl.hidden   = false;
+
+			// Contests
+			contestTbody.innerHTML = '';
+			contests.forEach((c) => contestTbody.appendChild(renderContestRow(c)));
+			contestEmpty.hidden = contests.length > 0;
+
+			// Problems (split — no round column)
+			problemTbody.innerHTML = '';
+			problems.forEach((p) => problemTbody.appendChild(renderProblemRow(p, false)));
+			splitEmpty.hidden = problems.length > 0;
+
+		} else {
+			splitEl.hidden   = true;
+			tableWrap.hidden = false;
+
+			tbody.innerHTML = '';
+			problems.forEach((p) => tbody.appendChild(renderProblemRow(p, true)));
+			noResults.hidden = problems.length > 0 || !query;
+		}
+	}
+
+	// ── Init & retry ───────────────────────────────────────────
+
+	async function init() {
+		loadingEl.hidden  = false;
+		errorEl.hidden    = true;
+		tableWrap.hidden  = true;
+		splitEl.hidden    = true;
+
+		let entries: Entry[];
+		try {
+			entries = await loadEntries();
+		} catch (e) {
+			loadingEl.hidden = true;
+			errorEl.hidden   = false;
+			errorMsg.textContent = e instanceof Error ? e.message : 'Failed to load data.';
+			return;
+		}
+
+		loadingEl.hidden = true;
+		render(entries, '');
+
+		// Debounced search
+		let timer: ReturnType<typeof setTimeout> | null = null;
+		input.addEventListener('input', () => {
+			if (timer) clearTimeout(timer);
+			timer = setTimeout(() => render(entries, input.value), 150);
+		});
+	}
+
+	retryBtn.addEventListener('click', init);
+	init();
+</script>
