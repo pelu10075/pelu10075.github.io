@@ -5,7 +5,7 @@ import { REPO_URL } from '../lib/cfSearch';
 const repoUrl = REPO_URL;
 ---
 
-<BaseLayout title="Problems · pelu10075" description="Codeforces 문제 풀이 검색">
+<BaseLayout title="Problems · pelu10075" description="Codeforces / LeetCode 문제 풀이 검색">
 <main class="prb-main">
 
 	<!-- ── Hero ─────────────────────────────────────────────── -->
@@ -17,8 +17,8 @@ const repoUrl = REPO_URL;
 		</nav>
 		<h1>Problems</h1>
 		<p class="prb-subtitle">
-			<span class="i18n i18n--en">All Codeforces submissions — solved status &amp; solution folder.</span>
-			<span class="i18n i18n--ko">코드포스 제출 이력 — solved 여부 및 풀이 폴더를 확인합니다.</span>
+			<span class="i18n i18n--en">Solved problems from Codeforces &amp; LeetCode — with difficulty, tags, and solution folders.</span>
+			<span class="i18n i18n--ko">Codeforces · LeetCode 풀이 이력 — 난이도, 태그, 풀이 폴더를 확인합니다.</span>
 		</p>
 		<a href={repoUrl} target="_blank" rel="noopener noreferrer" class="prb-repo-btn">
 			<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -28,32 +28,34 @@ const repoUrl = REPO_URL;
 		</a>
 	</header>
 
+	<!-- ── Source tabs ──────────────────────────────────────── -->
+	<div class="prb-tabs" role="tablist">
+		<button id="tab-cf" class="prb-tab prb-tab--active" role="tab" aria-selected="true">
+			Codeforces
+		</button>
+		<button id="tab-lc" class="prb-tab" role="tab" aria-selected="false">
+			LeetCode
+		</button>
+	</div>
+
 	<!-- ── Search bar ───────────────────────────────────────── -->
 	<div class="search-bar">
-		<input
-			id="cf-search"
-			type="text"
-			placeholder="Search by ID, contest, tag…  e.g. 2220, A, 2220A, greedy"
-			autocomplete="off"
-			spellcheck="false"
-		/>
+		<input id="cf-search" type="text" autocomplete="off" spellcheck="false" />
 		<span id="cf-count"></span>
 	</div>
 
-	<!-- ── Loading ──────────────────────────────────────────── -->
+	<!-- ── Loading / Error ──────────────────────────────────── -->
 	<div id="cf-loading" class="prb-status">
 		<span class="i18n i18n--en">Loading…</span>
 		<span class="i18n i18n--ko">불러오는 중…</span>
 	</div>
-
-	<!-- ── Error ────────────────────────────────────────────── -->
 	<div id="cf-error" class="prb-status prb-error" hidden>
 		<span id="cf-error-msg"></span>
 		<button id="cf-retry" class="prb-retry-btn">Retry</button>
 	</div>
 
-	<!-- ── Results table ────────────────────────────────────── -->
-	<div id="cf-table-wrap" hidden>
+	<!-- ── Codeforces table ──────────────────────────────────── -->
+	<div id="cf-panel" hidden>
 		<table>
 			<thead>
 				<tr>
@@ -74,360 +76,308 @@ const repoUrl = REPO_URL;
 		</p>
 	</div>
 
+	<!-- ── LeetCode table ────────────────────────────────────── -->
+	<div id="lc-panel" hidden>
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					<th><span class="i18n i18n--en">Title</span><span class="i18n i18n--ko">제목</span></th>
+					<th><span class="i18n i18n--en">Difficulty</span><span class="i18n i18n--ko">난이도</span></th>
+					<th><span class="i18n i18n--en">Tags</span><span class="i18n i18n--ko">태그</span></th>
+				</tr>
+			</thead>
+			<tbody id="lc-tbody"></tbody>
+		</table>
+		<p id="lc-no-results" class="prb-empty" hidden>
+			<span class="i18n i18n--en">No matches.</span>
+			<span class="i18n i18n--ko">결과 없음.</span>
+		</p>
+	</div>
+
 </main>
 </BaseLayout>
 
-<!-- is:global — 동적으로 생성된 DOM 요소에도 스타일 적용 -->
 <style is:global>
 	/* ── Variables ───────────────────────────────────────────── */
 	:root {
 		--prb-mono:       'Space Mono', monospace;
-		--prb-sans:       'Space Grotesk', sans-serif;
-		--prb-bg:         #0d0d0d;
-		--prb-text:       #f0f0f0;
 		--prb-border:     #2a2a2a;
-		--prb-tag-bg:     transparent;
+		--prb-text:       #f0f0f0;
 		--prb-tag-border: #3a3a3a;
 	}
 
 	/* ── Layout ──────────────────────────────────────────────── */
-	.prb-main {
-		max-width: 960px;
-		margin: 0 auto;
-		padding: 2rem 1.5rem 6rem;
-	}
+	.prb-main { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem 6rem; }
 
 	/* ── Hero ────────────────────────────────────────────────── */
-	.prb-hero {
-		padding: 2.5rem 0 2rem;
-		border-bottom: 1px solid var(--prb-border);
-	}
-
+	.prb-hero { padding: 2.5rem 0 1.75rem; border-bottom: 1px solid var(--prb-border); }
 	.prb-nav {
-		font-family: var(--prb-mono);
-		font-size: 0.7rem;
-		color: #555;
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-		margin-bottom: 1.25rem;
-		letter-spacing: 0.06em;
+		font-family: var(--prb-mono); font-size: 0.7rem; color: #555;
+		display: flex; align-items: center; gap: 0.4rem; margin-bottom: 1.25rem;
 	}
 	.prb-nav a { color: #888; text-decoration: none; transition: color 0.15s; }
 	.prb-nav a:hover { color: var(--prb-text); }
 	.prb-nav-sep { color: var(--prb-border); }
-
 	.prb-hero h1 {
-		font-size: clamp(1.9rem, 4vw, 2.8rem);
-		font-weight: 700;
-		letter-spacing: -0.03em;
-		margin: 0 0 0.6rem;
-		color: var(--prb-text);
+		font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 700;
+		letter-spacing: -0.03em; margin: 0 0 0.6rem; color: var(--prb-text);
 	}
-
-	.prb-subtitle {
-		font-size: 0.92rem;
-		color: #888;
-		margin: 0 0 1.25rem;
-		line-height: 1.6;
-	}
-
+	.prb-subtitle { font-size: 0.92rem; color: #888; margin: 0 0 1.25rem; line-height: 1.6; }
 	.prb-repo-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		font-family: var(--prb-mono);
-		font-size: 0.76rem;
-		color: #888;
-		text-decoration: none;
-		padding: 0.4rem 0.85rem;
-		border: 1px solid var(--prb-border);
-		border-radius: 4px;
+		display: inline-flex; align-items: center; gap: 0.45rem;
+		font-family: var(--prb-mono); font-size: 0.76rem; color: #888;
+		text-decoration: none; padding: 0.4rem 0.85rem;
+		border: 1px solid var(--prb-border); border-radius: 4px;
 		transition: border-color 0.2s, color 0.2s;
 	}
 	.prb-repo-btn:hover { border-color: #555; color: var(--prb-text); }
 
+	/* ── Tabs ────────────────────────────────────────────────── */
+	.prb-tabs {
+		display: flex; gap: 0; border-bottom: 1px solid var(--prb-border);
+		margin-top: 1.5rem;
+	}
+	.prb-tab {
+		font-family: var(--prb-mono); font-size: 0.72rem; letter-spacing: 0.08em;
+		text-transform: uppercase; background: transparent; border: none;
+		color: #555; padding: 0.6rem 1.1rem; cursor: pointer;
+		border-bottom: 2px solid transparent; margin-bottom: -1px;
+		transition: color 0.15s, border-color 0.15s;
+	}
+	.prb-tab:hover { color: #aaa; }
+	.prb-tab--active { color: var(--prb-text); border-bottom-color: var(--prb-text); }
+
 	/* ── Search bar ──────────────────────────────────────────── */
 	.search-bar {
-		display: flex;
-		align-items: center;
-		gap: 0.85rem;
-		padding: 0.9rem 0;
-		border-bottom: 1px solid var(--prb-border);
+		display: flex; align-items: center; gap: 0.85rem;
+		padding: 0.9rem 0; border-bottom: 1px solid var(--prb-border);
 	}
-
 	#cf-search {
-		flex: 1;
-		background: transparent;
-		border: 1px solid var(--prb-border);
-		border-radius: 4px;
-		color: var(--prb-text);
-		font-family: var(--prb-mono);
-		font-size: 0.875rem;
-		padding: 0.6rem 0.9rem;
-		outline: none;
+		flex: 1; background: transparent; border: 1px solid var(--prb-border);
+		border-radius: 4px; color: var(--prb-text); font-family: var(--prb-mono);
+		font-size: 0.875rem; padding: 0.6rem 0.9rem; outline: none;
 		transition: border-color 0.2s;
 	}
 	#cf-search:focus { border-color: #666; }
 	#cf-search::placeholder { color: #444; }
-
-	#cf-count {
-		font-family: var(--prb-mono);
-		font-size: 0.68rem;
-		color: #555;
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
+	#cf-count { font-family: var(--prb-mono); font-size: 0.68rem; color: #555; white-space: nowrap; flex-shrink: 0; }
 
 	/* ── Status ──────────────────────────────────────────────── */
 	.prb-status {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 2.25rem 0;
-		font-family: var(--prb-mono);
-		font-size: 0.8rem;
-		color: #555;
+		display: flex; align-items: center; gap: 0.75rem;
+		padding: 2.25rem 0; font-family: var(--prb-mono); font-size: 0.8rem; color: #555;
 	}
 	.prb-error { color: #cc4444; }
 	.prb-retry-btn {
-		font-family: var(--prb-mono);
-		font-size: 0.72rem;
-		background: transparent;
-		border: 1px solid #cc4444;
-		color: #cc4444;
-		border-radius: 3px;
-		padding: 0.25rem 0.65rem;
-		cursor: pointer;
-		transition: background 0.15s;
+		font-family: var(--prb-mono); font-size: 0.72rem; background: transparent;
+		border: 1px solid #cc4444; color: #cc4444; border-radius: 3px;
+		padding: 0.25rem 0.65rem; cursor: pointer; transition: background 0.15s;
 	}
 	.prb-retry-btn:hover { background: rgba(204,68,68,0.12); }
 
 	/* ── Table ───────────────────────────────────────────────── */
-	.prb-main table {
-		width: 100%;
-		border-collapse: collapse;
-		font-family: var(--prb-mono);
-	}
+	.prb-main table { width: 100%; border-collapse: collapse; font-family: var(--prb-mono); }
 	.prb-main th {
-		font-size: 0.6rem;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: #555;
-		font-weight: 400;
-		padding: 0.5rem 0.85rem;
-		text-align: left;
-		border-bottom: 1px solid var(--prb-border);
-		white-space: nowrap;
-		background: #111;
+		font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+		color: #555; font-weight: 400; padding: 0.5rem 0.85rem; text-align: left;
+		border-bottom: 1px solid var(--prb-border); white-space: nowrap; background: #111;
 	}
 	.prb-main td {
-		padding: 0.6rem 0.85rem;
-		border-bottom: 1px solid var(--prb-border);
-		vertical-align: middle;
-		font-size: 0.84rem;
+		padding: 0.6rem 0.85rem; border-bottom: 1px solid var(--prb-border);
+		vertical-align: middle; font-size: 0.84rem;
 	}
 	.prb-main tbody tr:last-child td { border-bottom: none; }
 	.prb-main tbody tr { transition: background 0.1s; }
 	.prb-main tbody tr:hover { background: #1a1a1a; }
 
-	/* ── Problem ID ──────────────────────────────────────────── */
-	.prb-id {
-		font-family: var(--prb-mono);
-		font-weight: 700;
-		font-size: 0.88rem;
-		letter-spacing: 0.05em;
-	}
-	.prb-id--solved { color: #f0f0f0; }
+	/* ── ID ──────────────────────────────────────────────────── */
+	.prb-id { font-family: var(--prb-mono); font-weight: 700; font-size: 0.88rem; letter-spacing: 0.05em; }
+	.prb-id--solved   { color: #f0f0f0; }
 	.prb-id--unsolved { color: #555; }
 
-	/* ── Title cell ──────────────────────────────────────────── */
-	.prb-title-cell {
-		font-size: 0.84rem;
-		color: #aaa;
-	}
-	.prb-title-cell a {
-		color: inherit;
-		text-decoration: none;
-		transition: color 0.15s;
-	}
+	/* ── Title ───────────────────────────────────────────────── */
+	.prb-title-cell { font-size: 0.84rem; color: #aaa; }
+	.prb-title-cell a { color: inherit; text-decoration: none; transition: color 0.15s; }
 	.prb-title-cell a:hover { color: var(--prb-text); }
 
 	/* ── Tags ────────────────────────────────────────────────── */
-	.prb-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.3rem;
-		min-width: 0;
-	}
+	.prb-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; min-width: 0; }
 	.prb-tag {
-		display: inline-block;
-		padding: 2px 7px;
-		border: 1px solid var(--prb-tag-border);
-		font-size: 0.7rem;
-		font-family: var(--prb-mono);
-		background: transparent;
-		border-radius: 3px;
-		color: #777;
-		white-space: nowrap;
-		line-height: 1.5;
+		display: inline-block; padding: 2px 7px;
+		border: 1px solid var(--prb-tag-border); font-size: 0.7rem;
+		font-family: var(--prb-mono); background: transparent;
+		border-radius: 3px; color: #777; white-space: nowrap; line-height: 1.5;
 	}
 
 	/* ── Difficulty ──────────────────────────────────────────── */
-	.prb-diff {
-		font-family: var(--prb-mono);
-		font-size: 0.8rem;
-		font-weight: 700;
-		white-space: nowrap;
-	}
+	.prb-diff { font-family: var(--prb-mono); font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
 
-	/* ── Contest cell ────────────────────────────────────────── */
-	.prb-contest-link {
-		font-family: var(--prb-mono);
-		font-size: 0.76rem;
-		color: #666;
-		text-decoration: none;
-		white-space: nowrap;
-		transition: color 0.15s;
-	}
+	/* ── CF-specific ─────────────────────────────────────────── */
+	.prb-contest-link { font-family: var(--prb-mono); font-size: 0.76rem; color: #666; text-decoration: none; white-space: nowrap; transition: color 0.15s; }
 	.prb-contest-link:hover { color: #aaa; }
-
-	/* ── AC status ───────────────────────────────────────────── */
-	.prb-ac {
-		font-family: var(--prb-mono);
-		font-size: 0.78rem;
-		font-weight: 700;
-		color: #4caf50;
-	}
-	.prb-ac--no { color: #444; }
-
-	/* ── Folder link ─────────────────────────────────────────── */
+	.prb-ac { font-family: var(--prb-mono); font-size: 0.78rem; font-weight: 700; color: #4caf50; }
+	.prb-ac--no { color: #333; }
 	.prb-folder-link {
-		font-family: var(--prb-mono);
-		font-size: 0.7rem;
-		color: #666;
-		text-decoration: none;
-		padding: 0.15rem 0.45rem;
-		border: 1px solid var(--prb-border);
-		border-radius: 3px;
-		transition: border-color 0.15s, color 0.15s;
-		white-space: nowrap;
+		font-family: var(--prb-mono); font-size: 0.7rem; color: #666; text-decoration: none;
+		padding: 0.15rem 0.45rem; border: 1px solid var(--prb-border); border-radius: 3px;
+		transition: border-color 0.15s, color 0.15s; white-space: nowrap;
 	}
 	.prb-folder-link:hover { border-color: #555; color: var(--prb-text); }
 
-	/* ── Empty ───────────────────────────────────────────────── */
-	.prb-empty {
-		padding: 1.5rem 0.85rem;
-		font-family: var(--prb-mono);
-		font-size: 0.8rem;
-		color: #444;
-		margin: 0;
+	/* ── LC difficulty badge ─────────────────────────────────── */
+	.prb-lc-diff {
+		font-family: var(--prb-mono); font-size: 0.78rem; font-weight: 700; white-space: nowrap;
 	}
+
+	/* ── Empty ───────────────────────────────────────────────── */
+	.prb-empty { padding: 1.5rem 0.85rem; font-family: var(--prb-mono); font-size: 0.8rem; color: #444; margin: 0; }
 
 	/* ── Responsive ──────────────────────────────────────────── */
 	@media (max-width: 760px) {
-		/* Contest, AC 컬럼 숨김 */
-		.prb-main td:nth-child(5),
-		.prb-main th:nth-child(5),
-		.prb-main td:nth-child(6),
-		.prb-main th:nth-child(6) { display: none; }
+		.prb-main td:nth-child(5), .prb-main th:nth-child(5),
+		.prb-main td:nth-child(6), .prb-main th:nth-child(6) { display: none; }
 	}
 	@media (max-width: 540px) {
-		/* Tags 컬럼도 숨김 */
-		.prb-main td:nth-child(3),
-		.prb-main th:nth-child(3) { display: none; }
+		.prb-main td:nth-child(3), .prb-main th:nth-child(3) { display: none; }
 	}
 </style>
 
 <script>
 	import {
-		loadEntries,
-		performSearch,
-		difficultyColor,
+		loadCF, loadLC,
+		searchCF, searchLC,
+		cfDiffColor, lcDiffColor,
 		TREE_BASE,
 	} from '../lib/cfSearch';
-	import type { ProblemEntry } from '../lib/cfSearch';
+	import type { ProblemEntry, LCProblemEntry } from '../lib/cfSearch';
 
-	// ── DOM refs ────────────────────────────────────────────────
-	const input     = document.getElementById('cf-search')      as HTMLInputElement;
-	const countEl   = document.getElementById('cf-count')       as HTMLElement;
-	const loadingEl = document.getElementById('cf-loading')     as HTMLElement;
-	const errorEl   = document.getElementById('cf-error')       as HTMLElement;
-	const errorMsg  = document.getElementById('cf-error-msg')   as HTMLElement;
-	const retryBtn  = document.getElementById('cf-retry')       as HTMLButtonElement;
-	const tableWrap = document.getElementById('cf-table-wrap')  as HTMLElement;
-	const tbody     = document.getElementById('cf-tbody')       as HTMLTableSectionElement;
-	const noResults = document.getElementById('cf-no-results')  as HTMLElement;
+	// ── DOM ─────────────────────────────────────────────────────
+	const input     = document.getElementById('cf-search')     as HTMLInputElement;
+	const countEl   = document.getElementById('cf-count')      as HTMLElement;
+	const loadingEl = document.getElementById('cf-loading')    as HTMLElement;
+	const errorEl   = document.getElementById('cf-error')      as HTMLElement;
+	const errorMsg  = document.getElementById('cf-error-msg')  as HTMLElement;
+	const retryBtn  = document.getElementById('cf-retry')      as HTMLButtonElement;
+	const tabCF     = document.getElementById('tab-cf')        as HTMLButtonElement;
+	const tabLC     = document.getElementById('tab-lc')        as HTMLButtonElement;
+	const cfPanel   = document.getElementById('cf-panel')      as HTMLElement;
+	const lcPanel   = document.getElementById('lc-panel')      as HTMLElement;
+	const cfTbody   = document.getElementById('cf-tbody')      as HTMLTableSectionElement;
+	const lcTbody   = document.getElementById('lc-tbody')      as HTMLTableSectionElement;
+	const cfEmpty   = document.getElementById('cf-no-results') as HTMLElement;
+	const lcEmpty   = document.getElementById('lc-no-results') as HTMLElement;
 
-	// ── Render ──────────────────────────────────────────────────
+	let cfEntries: ProblemEntry[] = [];
+	let lcEntries: LCProblemEntry[] = [];
+	let activeTab: 'cf' | 'lc' = 'cf';
 
-	function renderRow(p: ProblemEntry): HTMLTableRowElement {
-		const tr    = document.createElement('tr');
-		const color = difficultyColor(p.difficulty);
+	// ── Placeholders per tab ─────────────────────────────────────
+	const PLACEHOLDER = {
+		cf: 'Search by ID, contest, tag…  e.g. 2220, A, 2220A, greedy',
+		lc: 'Search by #, title, tag, difficulty…  e.g. 1, two sum, easy',
+	};
 
-		const cfUrl     = `https://codeforces.com/contest/${p.contestId}/problem/${p.id.replace(/^\d+/, '')}`;
-		const contestUrl = `https://codeforces.com/contest/${p.contestId}`;
-		const folderUrl  = p.folderPath ? `${TREE_BASE}/${p.folderPath}` : null;
+	// ── Render: Codeforces ───────────────────────────────────────
+	function renderCFRow(p: ProblemEntry): HTMLTableRowElement {
+		const tr     = document.createElement('tr');
+		const color  = cfDiffColor(p.difficulty);
+		const cfUrl  = `https://codeforces.com/contest/${p.contestId}/problem/${p.id.replace(/^\d+/, '')}`;
+		const conUrl = `https://codeforces.com/contest/${p.contestId}`;
+		const fUrl   = p.folderPath ? `${TREE_BASE}/${p.folderPath}` : null;
 
-		// ID
-		const idClass = p.solved ? 'prb-id prb-id--solved' : 'prb-id prb-id--unsolved';
-
-		// Tags — 개별 chip으로 렌더
-		const tagsHtml = p.tags.length
+		const tags = p.tags.length
 			? `<div class="prb-tags">${p.tags.map((t) => `<span class="prb-tag">${t}</span>`).join('')}</div>`
-			: '<span style="color:#444">—</span>';
-
-		// Difficulty
-		const diffHtml = p.difficulty
+			: '<span style="color:#333">—</span>';
+		const diff = p.difficulty
 			? `<span class="prb-diff" style="color:${color}">*${p.difficulty}</span>`
-			: `<span class="prb-diff" style="color:#808080">?</span>`;
-
-		// AC badge
-		const acHtml = p.solved
+			: `<span class="prb-diff" style="color:#555">?</span>`;
+		const ac   = p.solved
 			? `<span class="prb-ac">✓</span>`
 			: `<span class="prb-ac prb-ac--no">—</span>`;
-
-		// Folder link
-		const folderHtml = folderUrl
-			? `<a href="${folderUrl}" target="_blank" rel="noopener noreferrer" class="prb-folder-link">${p.id}/</a>`
+		const folder = fUrl
+			? `<a href="${fUrl}" target="_blank" rel="noopener noreferrer" class="prb-folder-link">${p.id}/</a>`
 			: `<span style="color:#333">—</span>`;
 
 		tr.innerHTML = `
-			<td><span class="${idClass}">${p.id}</span></td>
-			<td class="prb-title-cell">
-				<a href="${cfUrl}" target="_blank" rel="noopener noreferrer">${p.title || p.id}</a>
-			</td>
-			<td>${tagsHtml}</td>
-			<td>${diffHtml}</td>
-			<td><a href="${contestUrl}" target="_blank" rel="noopener noreferrer" class="prb-contest-link">#${p.contestId}</a></td>
-			<td>${acHtml}</td>
-			<td>${folderHtml}</td>
-		`;
+			<td><span class="prb-id ${p.solved ? 'prb-id--solved' : 'prb-id--unsolved'}">${p.id}</span></td>
+			<td class="prb-title-cell"><a href="${cfUrl}" target="_blank" rel="noopener noreferrer">${p.title || p.id}</a></td>
+			<td>${tags}</td>
+			<td>${diff}</td>
+			<td><a href="${conUrl}" target="_blank" rel="noopener noreferrer" class="prb-contest-link">#${p.contestId}</a></td>
+			<td>${ac}</td>
+			<td>${folder}</td>`;
 		return tr;
 	}
 
-	function render(entries: ProblemEntry[], query: string) {
-		const results = performSearch(query, entries);
-		countEl.textContent = query
-			? `${results.length} / ${entries.length}`
-			: `${entries.length} problems`;
+	// ── Render: LeetCode ─────────────────────────────────────────
+	function renderLCRow(p: LCProblemEntry): HTMLTableRowElement {
+		const tr    = document.createElement('tr');
+		const color = lcDiffColor(p.difficulty);
+		const url   = `https://leetcode.com/problems/${p.titleSlug}/`;
 
-		tbody.innerHTML = '';
-		results.forEach((p) => tbody.appendChild(renderRow(p)));
-		noResults.hidden = results.length > 0 || !query;
-		tableWrap.hidden = false;
+		const tags = p.tags.length
+			? `<div class="prb-tags">${p.tags.map((t) => `<span class="prb-tag">${t}</span>`).join('')}</div>`
+			: '<span style="color:#333">—</span>';
+
+		tr.innerHTML = `
+			<td><span class="prb-id prb-id--solved">${p.id}</span></td>
+			<td class="prb-title-cell"><a href="${url}" target="_blank" rel="noopener noreferrer">${p.title}</a></td>
+			<td><span class="prb-lc-diff" style="color:${color}">${p.difficulty}</span></td>
+			<td>${tags}</td>`;
+		return tr;
 	}
 
-	// ── Init ────────────────────────────────────────────────────
+	// ── Render dispatcher ────────────────────────────────────────
+	function renderCF(query: string) {
+		const results = searchCF(query, cfEntries);
+		cfTbody.innerHTML = '';
+		results.forEach((p) => cfTbody.appendChild(renderCFRow(p)));
+		cfEmpty.hidden   = results.length > 0 || !query;
+		countEl.textContent = query ? `${results.length} / ${cfEntries.length}` : `${cfEntries.length} problems`;
+	}
 
+	function renderLC(query: string) {
+		const results = searchLC(query, lcEntries);
+		lcTbody.innerHTML = '';
+		results.forEach((p) => lcTbody.appendChild(renderLCRow(p)));
+		lcEmpty.hidden   = results.length > 0 || !query;
+		countEl.textContent = query ? `${results.length} / ${lcEntries.length}` : `${lcEntries.length} solved`;
+	}
+
+	function rerender() {
+		const q = input.value;
+		if (activeTab === 'cf') renderCF(q);
+		else renderLC(q);
+	}
+
+	// ── Tab switching ────────────────────────────────────────────
+	function switchTab(tab: 'cf' | 'lc') {
+		activeTab = tab;
+		tabCF.classList.toggle('prb-tab--active', tab === 'cf');
+		tabLC.classList.toggle('prb-tab--active', tab === 'lc');
+		tabCF.setAttribute('aria-selected', String(tab === 'cf'));
+		tabLC.setAttribute('aria-selected', String(tab === 'lc'));
+		cfPanel.hidden = tab !== 'cf';
+		lcPanel.hidden = tab !== 'lc';
+		input.value = '';
+		input.placeholder = PLACEHOLDER[tab];
+		rerender();
+	}
+
+	tabCF.addEventListener('click', () => switchTab('cf'));
+	tabLC.addEventListener('click', () => switchTab('lc'));
+
+	// ── Init ─────────────────────────────────────────────────────
 	async function init() {
 		loadingEl.hidden = false;
 		errorEl.hidden   = true;
-		tableWrap.hidden = true;
+		cfPanel.hidden   = true;
+		lcPanel.hidden   = true;
+		input.placeholder = PLACEHOLDER.cf;
 
-		let entries: ProblemEntry[];
 		try {
-			entries = await loadEntries();
+			[cfEntries, lcEntries] = await Promise.all([loadCF(), loadLC()]);
 		} catch (e) {
 			loadingEl.hidden = true;
 			errorEl.hidden   = false;
@@ -436,12 +386,12 @@ const repoUrl = REPO_URL;
 		}
 
 		loadingEl.hidden = true;
-		render(entries, '');
+		switchTab('cf');
 
 		let timer: ReturnType<typeof setTimeout> | null = null;
 		input.addEventListener('input', () => {
 			if (timer) clearTimeout(timer);
-			timer = setTimeout(() => render(entries, input.value), 150);
+			timer = setTimeout(rerender, 150);
 		});
 	}
 
