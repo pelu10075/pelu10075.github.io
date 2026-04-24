@@ -329,6 +329,22 @@ const contactLinksResolved = contactSection.links.map((link) => {
 							<span class="i18n i18n--en">{competitive.profileLinkLabel.en}</span>
 							<span class="i18n i18n--ko">{competitive.profileLinkLabel.ko}</span>
 						</a>
+						<a
+							href={codeforcesSolutionsSection.repoUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="cp-link"
+						>
+							<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+								<path d={ghIconPath} />
+							</svg>
+							<span class="i18n i18n--en">{codeforcesSolutionsSection.viewRepoLabel.en}</span>
+							<span class="i18n i18n--ko">{codeforcesSolutionsSection.viewRepoLabel.ko}</span>
+						</a>
+						<a href="/problems" class="cp-link">
+							<span class="i18n i18n--en">Search problems ↗</span>
+							<span class="i18n i18n--ko">문제 검색 ↗</span>
+						</a>
 					</div>
 				</div>
 				<div class="cp-badges-column reveal reveal-delay-2">
@@ -441,60 +457,6 @@ const contactLinksResolved = contactSection.links.map((link) => {
 				</div>
 			</div>
 
-			<!-- ── Workspace intro + folders ────────────────────── -->
-			<div class="cf-solutions-layout">
-				<div class="cf-solutions-intro reveal reveal-delay-1">
-					{
-						codeforcesSolutionsSection.paragraphsHtml.map((para) => (
-							<>
-								<p class="i18n i18n--en" set:html={para.en} />
-								<p class="i18n i18n--ko" set:html={para.ko} />
-							</>
-						))
-					}
-					<div class="cf-solutions-actions">
-						<a
-							href={codeforcesSolutionsSection.repoUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="cp-link"
-						>
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-								<path d={ghIconPath} />
-							</svg>
-							<span class="i18n i18n--en">{codeforcesSolutionsSection.viewRepoLabel.en}</span>
-							<span class="i18n i18n--ko">{codeforcesSolutionsSection.viewRepoLabel.ko}</span>
-						</a>
-						<a href="/problems" class="cp-link">
-							<span class="i18n i18n--en">Search problems ↗</span>
-							<span class="i18n i18n--ko">문제 검색 ↗</span>
-						</a>
-					</div>
-				</div>
-				<div class="cf-solutions-grid">
-					{
-						codeforcesSolutionsSection.folders.map((folder, i) => {
-							const treeUrl = `${codeforcesSolutionsSection.repoTreeBase}/${folder.path}`;
-							const delay = revealDelays[i % 4];
-							return (
-								<div class:list={['cf-folder-card', 'reveal', `reveal-delay-${delay}`]}>
-									<div class="cf-folder-path">{folder.path}/</div>
-									<h3 class="cf-folder-title">
-										<span class="i18n i18n--en">{folder.title.en}</span>
-										<span class="i18n i18n--ko">{folder.title.ko}</span>
-									</h3>
-									<p class="cf-folder-desc i18n i18n--en" set:html={folder.description.en} />
-									<p class="cf-folder-desc i18n i18n--ko" set:html={folder.description.ko} />
-									<a href={treeUrl} target="_blank" rel="noopener noreferrer" class="cf-folder-link">
-										<span class="i18n i18n--en">{codeforcesSolutionsSection.browseFolderLabel.en}</span>
-										<span class="i18n i18n--ko">{codeforcesSolutionsSection.browseFolderLabel.ko}</span>
-									</a>
-								</div>
-							);
-						})
-					}
-				</div>
-			</div>
 		</div>
 	</section>
 
@@ -1198,7 +1160,6 @@ const contactLinksResolved = contactSection.links.map((link) => {
 	}
 
 	.cf-solutions-layout {
-		margin-top: 3.5rem;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
 		gap: 2.75rem;
