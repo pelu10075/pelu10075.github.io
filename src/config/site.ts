@@ -256,14 +256,12 @@ export type CodeforcesSolutionsFolder = {
 };
 
 export const codeforcesSolutionsSection = {
-	sectionLabel: { en: 'Solutions Repo', ko: '문제 풀이 저장소' } satisfies LocaleText,
-	title: { en: 'Codeforces Workspace', ko: 'Codeforces 문제 풀이' } satisfies LocaleText,
+	sectionLabel: { en: 'Workspace', ko: '풀이 저장소' } satisfies LocaleText,
+	title: { en: 'Algorithm Workspace', ko: '알고리즘 풀이 저장소' } satisfies LocaleText,
 	paragraphsHtml: [
 		{
-			en: `A dedicated GitHub repo for <strong>Codeforces</strong> practice: <code>problems/</code> for single tasks,
-				<code>contests/</code> for full rounds (e.g. Div. 1+2)`,
-			ko: `<strong>Codeforces</strong> 연습용 GitHub 저장소입니다. 단일 문제는 <code>problems/</code>,
-				라운드 전체는 <code>contests/</code>(Div. 1+2 등)로 두었습니다.`,
+			en: `Dedicated repos for <strong>Codeforces</strong> (C++) and <strong>LeetCode</strong> (Python) practice. Browse solution folders below, or use the search page.`,
+			ko: `<strong>Codeforces</strong>(C++)와 <strong>LeetCode</strong>(Python) 풀이 저장소입니다. 아래에서 폴더를 탐색하거나 문제 검색 페이지를 이용하세요.`,
 		},
 	] satisfies LocaleText[],
 	repoUrl: 'https://github.com/pelu10075/codeforces',

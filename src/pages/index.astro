@@ -249,7 +249,7 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		</div>
 	</section>
 
-	<section id="skills">
+	<section id="skills" class="band">
 		<div class="section-inner">
 			<div class="section-label" data-num="02">
 				<span class="i18n i18n--en">{skillsSection.sectionLabel.en}</span>
@@ -279,9 +279,228 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		</div>
 	</section>
 
-	<section id="projects" class="band">
+	<section id="competitive" class="band">
 		<div class="section-inner">
 			<div class="section-label" data-num="03">
+				<span class="i18n i18n--en">{competitive.sectionLabel.en}</span>
+				<span class="i18n i18n--ko">{competitive.sectionLabel.ko}</span>
+			</div>
+			<h2 class="section-title reveal">
+				<span class="i18n i18n--en">{competitive.title.en}</span>
+				<span class="i18n i18n--ko">{competitive.title.ko}</span>
+			</h2>
+
+			<!-- ── Stats cards ──────────────────────────────────── -->
+			<div class="cp-layout">
+				<div class="cp-text reveal reveal-delay-1">
+					{
+						competitive.paragraphsHtml.map((para) => (
+							<>
+								<p class="i18n i18n--en" set:html={para.en} />
+								<p class="i18n i18n--ko" set:html={para.ko} />
+							</>
+						))
+					}
+					<div class="cp-actions cp-actions-row">
+						<a
+							href={competitive.codeforces.profileUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="cp-link"
+						>
+							<span class="i18n i18n--en">{competitive.codeforces.linkLabel.en}</span>
+							<span class="i18n i18n--ko">{competitive.codeforces.linkLabel.ko}</span>
+						</a>
+						<a
+							href={competitive.badge.profileUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="cp-link"
+						>
+							<span class="i18n i18n--en">{competitive.profileLinkLabel.en}</span>
+							<span class="i18n i18n--ko">{competitive.profileLinkLabel.ko}</span>
+						</a>
+					</div>
+				</div>
+				<div class="cp-badges-column reveal reveal-delay-2">
+					<div class="cf-card">
+						<div class="cf-card-title">Codeforces</div>
+						<div class="cf-handle">{integrations.codeforcesHandle}</div>
+						{
+							cfUser ? (
+								<dl class="cf-stats">
+									<div class="cf-stat">
+										<dt>
+											<span class="i18n i18n--en">{competitive.codeforces.labels.rating.en}</span>
+											<span class="i18n i18n--ko">{competitive.codeforces.labels.rating.ko}</span>
+										</dt>
+										<dd>
+											{cfUser.rating != null ? cfUser.rating : (
+												<>
+													<span class="i18n i18n--en">{competitive.codeforces.labels.unrated.en}</span>
+													<span class="i18n i18n--ko">{competitive.codeforces.labels.unrated.ko}</span>
+												</>
+											)}
+										</dd>
+									</div>
+									<div class="cf-stat">
+										<dt>
+											<span class="i18n i18n--en">{competitive.codeforces.labels.maxRating.en}</span>
+											<span class="i18n i18n--ko">{competitive.codeforces.labels.maxRating.ko}</span>
+										</dt>
+										<dd>{cfUser.maxRating ?? '—'}</dd>
+									</div>
+									<div class="cf-stat">
+										<dt>
+											<span class="i18n i18n--en">{competitive.codeforces.labels.rank.en}</span>
+											<span class="i18n i18n--ko">{competitive.codeforces.labels.rank.ko}</span>
+										</dt>
+										<dd>{cfUser.rank ?? cfUser.maxRank ?? '—'}</dd>
+									</div>
+								</dl>
+							) : (
+								<>
+									<p class="cf-unavailable i18n i18n--en">Could not load Codeforces profile.</p>
+									<p class="cf-unavailable i18n i18n--ko">Codeforces 프로필을 불러오지 못했습니다.</p>
+								</>
+							)
+						}
+						<a
+							href={competitive.codeforces.profileUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="cp-link cf-card-link"
+						>
+							codeforces.com/profile/{integrations.codeforcesHandle}
+						</a>
+					</div>
+					<div class="cf-card">
+						<div class="cf-card-title">LeetCode</div>
+						<div class="cf-handle">edward_10</div>
+						{
+							lcUser ? (
+								<dl class="cf-stats">
+									<div class="cf-stat">
+										<dt><span class="i18n i18n--en">{competitive.leetcode.labels.total.en}</span><span class="i18n i18n--ko">{competitive.leetcode.labels.total.ko}</span></dt>
+										<dd>{lcUser.totalSolved}</dd>
+									</div>
+									<div class="cf-stat">
+										<dt style="color:#00b8a3">{competitive.leetcode.labels.easy.en}</dt>
+										<dd style="color:#00b8a3">{lcUser.easySolved}</dd>
+									</div>
+									<div class="cf-stat">
+										<dt style="color:#ffc01e">{competitive.leetcode.labels.medium.en}</dt>
+										<dd style="color:#ffc01e">{lcUser.mediumSolved}</dd>
+									</div>
+									<div class="cf-stat">
+										<dt style="color:#ff375f">{competitive.leetcode.labels.hard.en}</dt>
+										<dd style="color:#ff375f">{lcUser.hardSolved}</dd>
+									</div>
+								</dl>
+							) : (
+								<>
+									<p class="cf-unavailable i18n i18n--en">Could not load LeetCode profile.</p>
+									<p class="cf-unavailable i18n i18n--ko">LeetCode 프로필을 불러오지 못했습니다.</p>
+								</>
+							)
+						}
+						<a
+							href={competitive.leetcode.profileUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="cp-link cf-card-link"
+						>
+							leetcode.com/edward_10
+						</a>
+					</div>
+					<div class="cp-badge-wrap">
+						<img
+							src={competitive.badge.imageUrl}
+							alt={competitive.badge.alt}
+							width="320"
+							height="160"
+							loading="lazy"
+						/>
+						<div class="cp-badge-foot">
+							<a
+								href={competitive.badge.profileUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="cp-link"
+							>
+								{competitive.badge.handle}
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ── Workspace divider ────────────────────────────── -->
+			<div class="cp-workspace-divider reveal">
+				<span class="i18n i18n--en">{codeforcesSolutionsSection.title.en}</span>
+				<span class="i18n i18n--ko">{codeforcesSolutionsSection.title.ko}</span>
+			</div>
+
+			<!-- ── Workspace intro + folders ────────────────────── -->
+			<div class="cf-solutions-layout">
+				<div class="cf-solutions-intro reveal reveal-delay-1">
+					{
+						codeforcesSolutionsSection.paragraphsHtml.map((para) => (
+							<>
+								<p class="i18n i18n--en" set:html={para.en} />
+								<p class="i18n i18n--ko" set:html={para.ko} />
+							</>
+						))
+					}
+					<div class="cf-solutions-actions">
+						<a
+							href={codeforcesSolutionsSection.repoUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="cp-link"
+						>
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+								<path d={ghIconPath} />
+							</svg>
+							<span class="i18n i18n--en">{codeforcesSolutionsSection.viewRepoLabel.en}</span>
+							<span class="i18n i18n--ko">{codeforcesSolutionsSection.viewRepoLabel.ko}</span>
+						</a>
+						<a href="/problems" class="cp-link">
+							<span class="i18n i18n--en">Search problems ↗</span>
+							<span class="i18n i18n--ko">문제 검색 ↗</span>
+						</a>
+					</div>
+				</div>
+				<div class="cf-solutions-grid">
+					{
+						codeforcesSolutionsSection.folders.map((folder, i) => {
+							const treeUrl = `${codeforcesSolutionsSection.repoTreeBase}/${folder.path}`;
+							const delay = revealDelays[i % 4];
+							return (
+								<div class:list={['cf-folder-card', 'reveal', `reveal-delay-${delay}`]}>
+									<div class="cf-folder-path">{folder.path}/</div>
+									<h3 class="cf-folder-title">
+										<span class="i18n i18n--en">{folder.title.en}</span>
+										<span class="i18n i18n--ko">{folder.title.ko}</span>
+									</h3>
+									<p class="cf-folder-desc i18n i18n--en" set:html={folder.description.en} />
+									<p class="cf-folder-desc i18n i18n--ko" set:html={folder.description.ko} />
+									<a href={treeUrl} target="_blank" rel="noopener noreferrer" class="cf-folder-link">
+										<span class="i18n i18n--en">{codeforcesSolutionsSection.browseFolderLabel.en}</span>
+										<span class="i18n i18n--ko">{codeforcesSolutionsSection.browseFolderLabel.ko}</span>
+									</a>
+								</div>
+							);
+						})
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="projects" class="band">
+		<div class="section-inner">
+			<div class="section-label" data-num="04">
 				<span class="i18n i18n--en">{projectsSection.sectionLabel.en}</span>
 				<span class="i18n i18n--ko">{projectsSection.sectionLabel.ko}</span>
 			</div>
@@ -378,7 +597,7 @@ const contactLinksResolved = contactSection.links.map((link) => {
 
 	<section id="activity" class="band">
 		<div class="section-inner">
-			<div class="section-label" data-num="04">
+			<div class="section-label" data-num="05">
 				<span class="i18n i18n--en">{activitySection.sectionLabel.en}</span>
 				<span class="i18n i18n--ko">{activitySection.sectionLabel.ko}</span>
 			</div>
@@ -411,234 +630,9 @@ const contactLinksResolved = contactSection.links.map((link) => {
 		</div>
 	</section>
 
-	<section id="competitive">
-		<div class="section-inner">
-			<div class="section-label" data-num="05">
-				<span class="i18n i18n--en">{competitive.sectionLabel.en}</span>
-				<span class="i18n i18n--ko">{competitive.sectionLabel.ko}</span>
-			</div>
-			<h2 class="section-title reveal">
-				<span class="i18n i18n--en">{competitive.title.en}</span>
-				<span class="i18n i18n--ko">{competitive.title.ko}</span>
-			</h2>
-			<div class="cp-layout">
-				<div class="cp-text reveal reveal-delay-1">
-					{
-						competitive.paragraphsHtml.map((para) => (
-							<>
-								<p class="i18n i18n--en" set:html={para.en} />
-								<p class="i18n i18n--ko" set:html={para.ko} />
-							</>
-						))
-					}
-					<div class="cp-actions cp-actions-row">
-						<a
-							href={competitive.codeforces.profileUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="cp-link"
-						>
-							<span class="i18n i18n--en">{competitive.codeforces.linkLabel.en}</span>
-							<span class="i18n i18n--ko">{competitive.codeforces.linkLabel.ko}</span>
-						</a>
-						<a
-							href={competitive.badge.profileUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="cp-link"
-						>
-							<span class="i18n i18n--en">{competitive.profileLinkLabel.en}</span>
-							<span class="i18n i18n--ko">{competitive.profileLinkLabel.ko}</span>
-						</a>
-					</div>
-				</div>
-				<div class="cp-badges-column reveal reveal-delay-2">
-					<div class="cf-card">
-						<div class="cf-card-title">Codeforces</div>
-						<div class="cf-handle">{integrations.codeforcesHandle}</div>
-						{
-							cfUser ? (
-								<dl class="cf-stats">
-									<div class="cf-stat">
-										<dt>
-											<span class="i18n i18n--en">{competitive.codeforces.labels.rating.en}</span>
-											<span class="i18n i18n--ko">{competitive.codeforces.labels.rating.ko}</span>
-										</dt>
-										<dd>
-											{cfUser.rating != null ? cfUser.rating : (
-												<>
-													<span class="i18n i18n--en">{competitive.codeforces.labels.unrated.en}</span>
-													<span class="i18n i18n--ko">{competitive.codeforces.labels.unrated.ko}</span>
-												</>
-											)}
-										</dd>
-									</div>
-									<div class="cf-stat">
-										<dt>
-											<span class="i18n i18n--en">{competitive.codeforces.labels.maxRating.en}</span>
-											<span class="i18n i18n--ko">{competitive.codeforces.labels.maxRating.ko}</span>
-										</dt>
-										<dd>{cfUser.maxRating ?? '—'}</dd>
-									</div>
-									<div class="cf-stat">
-										<dt>
-											<span class="i18n i18n--en">{competitive.codeforces.labels.rank.en}</span>
-											<span class="i18n i18n--ko">{competitive.codeforces.labels.rank.ko}</span>
-										</dt>
-										<dd>{cfUser.rank ?? cfUser.maxRank ?? '—'}</dd>
-									</div>
-								</dl>
-							) : (
-								<>
-									<p class="cf-unavailable i18n i18n--en">Could not load Codeforces profile.</p>
-									<p class="cf-unavailable i18n i18n--ko">Codeforces 프로필을 불러오지 못했습니다.</p>
-								</>
-							)
-						}
-						<a
-							href={competitive.codeforces.profileUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="cp-link cf-card-link"
-						>
-							codeforces.com/profile/{integrations.codeforcesHandle}
-						</a>
-					</div>
-				<!-- LeetCode card -->
-				<div class="cf-card">
-					<div class="cf-card-title">LeetCode</div>
-					<div class="cf-handle">edward_10</div>
-					{
-						lcUser ? (
-							<dl class="cf-stats">
-								<div class="cf-stat">
-									<dt><span class="i18n i18n--en">{competitive.leetcode.labels.total.en}</span><span class="i18n i18n--ko">{competitive.leetcode.labels.total.ko}</span></dt>
-									<dd>{lcUser.totalSolved}</dd>
-								</div>
-								<div class="cf-stat">
-									<dt style="color:#00b8a3">{competitive.leetcode.labels.easy.en}</dt>
-									<dd style="color:#00b8a3">{lcUser.easySolved}</dd>
-								</div>
-								<div class="cf-stat">
-									<dt style="color:#ffc01e">{competitive.leetcode.labels.medium.en}</dt>
-									<dd style="color:#ffc01e">{lcUser.mediumSolved}</dd>
-								</div>
-								<div class="cf-stat">
-									<dt style="color:#ff375f">{competitive.leetcode.labels.hard.en}</dt>
-									<dd style="color:#ff375f">{lcUser.hardSolved}</dd>
-								</div>
-							</dl>
-						) : (
-							<>
-								<p class="cf-unavailable i18n i18n--en">Could not load LeetCode profile.</p>
-								<p class="cf-unavailable i18n i18n--ko">LeetCode 프로필을 불러오지 못했습니다.</p>
-							</>
-						)
-					}
-					<a
-						href={competitive.leetcode.profileUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						class="cp-link cf-card-link"
-					>
-						leetcode.com/edward_10
-					</a>
-				</div>
-
-				<div class="cp-badge-wrap">
-					<img
-						src={competitive.badge.imageUrl}
-						alt={competitive.badge.alt}
-						width="320"
-						height="160"
-						loading="lazy"
-					/>
-					<div class="cp-badge-foot">
-						<a
-							href={competitive.badge.profileUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="cp-link"
-						>
-							{competitive.badge.handle}
-						</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<section id="cf-solutions" class="band">
-		<div class="section-inner">
-			<div class="section-label" data-num="06">
-				<span class="i18n i18n--en">{codeforcesSolutionsSection.sectionLabel.en}</span>
-				<span class="i18n i18n--ko">{codeforcesSolutionsSection.sectionLabel.ko}</span>
-			</div>
-			<h2 class="section-title reveal">
-				<span class="i18n i18n--en">{codeforcesSolutionsSection.title.en}</span>
-				<span class="i18n i18n--ko">{codeforcesSolutionsSection.title.ko}</span>
-			</h2>
-			<div class="cf-solutions-layout">
-				<div class="cf-solutions-intro reveal reveal-delay-1">
-					{
-						codeforcesSolutionsSection.paragraphsHtml.map((para) => (
-							<>
-								<p class="i18n i18n--en" set:html={para.en} />
-								<p class="i18n i18n--ko" set:html={para.ko} />
-							</>
-						))
-					}
-					<div class="cf-solutions-actions">
-						<a
-							href={codeforcesSolutionsSection.repoUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="cp-link"
-						>
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-								<path d={ghIconPath} />
-							</svg>
-							<span class="i18n i18n--en">{codeforcesSolutionsSection.viewRepoLabel.en}</span>
-							<span class="i18n i18n--ko">{codeforcesSolutionsSection.viewRepoLabel.ko}</span>
-						</a>
-						<a href="/problems" class="cp-link">
-							<span class="i18n i18n--en">Search problems ↗</span>
-							<span class="i18n i18n--ko">문제 검색 ↗</span>
-						</a>
-					</div>
-				</div>
-				<div class="cf-solutions-grid">
-					{
-						codeforcesSolutionsSection.folders.map((folder, i) => {
-							const treeUrl = `${codeforcesSolutionsSection.repoTreeBase}/${folder.path}`;
-							const delay = revealDelays[i % 4];
-							return (
-								<div class:list={['cf-folder-card', 'reveal', `reveal-delay-${delay}`]}>
-									<div class="cf-folder-path">{folder.path}/</div>
-									<h3 class="cf-folder-title">
-										<span class="i18n i18n--en">{folder.title.en}</span>
-										<span class="i18n i18n--ko">{folder.title.ko}</span>
-									</h3>
-									<p class="cf-folder-desc i18n i18n--en" set:html={folder.description.en} />
-									<p class="cf-folder-desc i18n i18n--ko" set:html={folder.description.ko} />
-									<a href={treeUrl} target="_blank" rel="noopener noreferrer" class="cf-folder-link">
-										<span class="i18n i18n--en">{codeforcesSolutionsSection.browseFolderLabel.en}</span>
-										<span class="i18n i18n--ko">{codeforcesSolutionsSection.browseFolderLabel.ko}</span>
-									</a>
-								</div>
-							);
-						})
-					}
-				</div>
-			</div>
-
-		</div>
-	</section>
-
 	<section id="blog" class="band blog-band">
 		<div class="section-inner">
-			<div class="section-label" data-num="07">
+			<div class="section-label" data-num="06">
 				<span class="i18n i18n--en">{blogSection.sectionLabel.en}</span>
 				<span class="i18n i18n--ko">{blogSection.sectionLabel.ko}</span>
 			</div>
@@ -680,7 +674,7 @@ const contactLinksResolved = contactSection.links.map((link) => {
 
 	<section id="contact" class="band">
 		<div class="section-inner">
-			<div class="section-label" data-num="08">
+			<div class="section-label" data-num="07">
 				<span class="i18n i18n--en">{contactSection.sectionLabel.en}</span>
 				<span class="i18n i18n--ko">{contactSection.sectionLabel.ko}</span>
 			</div>
@@ -1199,6 +1193,25 @@ const contactLinksResolved = contactSection.links.map((link) => {
 
 	.activity-link {
 		margin-top: 0.75rem;
+	}
+
+	.cp-workspace-divider {
+		margin: 4rem 0 2.5rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--text-dim);
+	}
+	.cp-workspace-divider::before,
+	.cp-workspace-divider::after {
+		content: '';
+		flex: 1;
+		height: 1px;
+		background: var(--border);
 	}
 
 	.cf-solutions-layout {

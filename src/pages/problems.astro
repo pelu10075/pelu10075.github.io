@@ -140,6 +140,9 @@ const lcRepoUrl = LC_REPO_URL;
 </BaseLayout>
 
 <style is:global>
+	/* hidden attribute always wins */
+	[hidden] { display: none !important; }
+
 	/* ── Variables ───────────────────────────────────────────── */
 	:root {
 		--prb-mono:       'Space Mono', monospace;
@@ -446,9 +449,7 @@ const lcRepoUrl = LC_REPO_URL;
 			? `<div class="prb-tags">${p.tags.map((t) => `<span class="prb-tag">${t}</span>`).join('')}</div>`
 			: '<span style="color:#333">—</span>';
 
-		const fileHtml = p.filePath
-			? `<button class="prb-view-btn" data-lc-file="${p.filePath}" data-lc-id="${p.id}">${p.filePath}</button>`
-			: '<span style="color:#333">—</span>';
+		const fileHtml = `<button class="prb-view-btn" data-lc-file="${p.filePath}" data-lc-id="${p.id}">${p.filePath}</button>`;
 
 		tr.innerHTML = `
 			<td><span class="prb-id prb-id--solved">${p.id}</span></td>
@@ -569,11 +570,22 @@ const lcRepoUrl = LC_REPO_URL;
 
 	async function showRawFile(rawUrl: string, filename: string) {
 		modalFname.textContent = filename;
-		modalLoad.hidden = false;
-		modalPre.hidden  = true;
+		modalLoad.hidden  = false;
+		modalPre.hidden   = true;
 		modalErrEl.hidden = true;
 		try {
 			const res = await fetch(rawUrl);
+			if (res.status === 404) {
+				// 파일이 아직 레포에 없는 경우
+				modalLoad.hidden  = true;
+				modalErrEl.hidden = false;
+				const isKo = document.documentElement.lang === 'ko'
+					|| navigator.language.startsWith('ko');
+				modalErrEl.innerHTML = isKo
+					? '<span>아직 풀이 파일이 없습니다.</span>'
+					: '<span>Solution file not found in repo yet.</span>';
+				return;
+			}
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 			modalCode.textContent = await res.text();
 			modalLoad.hidden = true;
