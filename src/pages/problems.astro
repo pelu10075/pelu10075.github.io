@@ -418,14 +418,17 @@ const blobBase = BLOB_BASE;
 	function renderProblemRow(p: ProblemEntry, showRound = true): HTMLTableRowElement {
 		const tr = document.createElement('tr');
 		const color = difficultyColor(p.difficulty);
-		const noteUrl = `${BLOB_BASE}/${p.filePath.split('/').slice(-3).join('/')}`
-			.replace('raw.githubusercontent.com', 'github.com')
-			.replace(`/${import.meta.env.PUBLIC_BRANCH ?? 'main'}/`, '/blob/main/');
 
-		// Compute blob URL from raw URL
-		const blobUrl = p.filePath
-			.replace('raw.githubusercontent.com', 'github.com')
-			.replace(/\/main\//, '/blob/main/');
+		// 코드 파일 링크 우선, 없으면 note.md 폴더 링크
+		const fileUrl = p.codeFilePath
+			? `${BLOB_BASE}/${p.codeFilePath}`
+			: p.filePath.replace('raw.githubusercontent.com', 'github.com').replace(/\/main\//, '/blob/main/');
+		const fileName = p.codeFilePath
+			? p.codeFilePath.split('/').pop()!
+			: 'note.md';
+
+		// 제목 링크: 코드 파일이 있으면 코드 파일로, 없으면 note.md
+		const titleUrl = fileUrl;
 
 		const tags = p.tags.length
 			? `<div class="prb-tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join('')}</div>`
@@ -437,12 +440,12 @@ const blobBase = BLOB_BASE;
 		tr.innerHTML = `
 			<td><span class="prb-id">${p.id}</span></td>
 			<td class="prb-title-cell">
-				<a href="${blobUrl}" target="_blank" rel="noopener noreferrer">${p.title || p.id}</a>
+				<a href="${titleUrl}" target="_blank" rel="noopener noreferrer">${p.title || p.id}</a>
 			</td>
 			<td>${tags}</td>
 			<td>${diff}</td>
 			${showRound ? `<td class="prb-round">${p.round_name || '—'}</td>` : ''}
-			<td><a href="${blobUrl}" target="_blank" rel="noopener noreferrer" class="prb-file-link">note.md</a></td>
+			<td><a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="prb-file-link">${fileName}</a></td>
 		`;
 		return tr;
 	}

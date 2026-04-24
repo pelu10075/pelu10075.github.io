@@ -27,7 +27,8 @@ export type ProblemEntry = {
 	type: 'problem';
 	tags: string[];
 	difficulty: number;
-	filePath: string; // raw GitHub URL (note.md)
+	filePath: string;     // raw GitHub URL (note.md)
+	codeFilePath?: string; // repo-relative path of the actual solution file, e.g. "problems/2220A/2220A.cpp"
 };
 
 export type ContestEntry = {
@@ -100,6 +101,21 @@ export async function loadEntries(): Promise<Entry[]> {
 		)
 		.map((n) => n.path);
 
+	// problems/{id}/ 폴더 내 첫 번째 코드 파일 경로 맵 (note.md 제외)
+	const CODE_EXTS = new Set(['py','cpp','cc','cxx','c','java','kt','js','ts','go','rs','rb','cs','swift','php','hs','d']);
+	const codeFileMap = new Map<string, string>(); // "problems/{id}" → path
+	for (const n of tree) {
+		if (n.type !== 'blob') continue;
+		const m = n.path.match(/^(problems\/[^/]+)\/([^/]+)$/);
+		if (!m) continue;
+		const folder = m[1];
+		const filename = m[2];
+		if (filename === 'note.md') continue;
+		const ext = filename.split('.').pop()?.toLowerCase() ?? '';
+		if (!CODE_EXTS.has(ext)) continue;
+		if (!codeFileMap.has(folder)) codeFileMap.set(folder, n.path);
+	}
+
 	// 3. 병렬 fetch (Promise.allSettled — 실패해도 계속)
 	const settled = await Promise.allSettled(
 		notePaths.map((p) => fetch(`${RAW_BASE}/${p}`).then((r) => ({ path: p, text: r.text() }))),
@@ -120,15 +136,17 @@ export async function loadEntries(): Promise<Entry[]> {
 		if (!fm) continue;
 
 		if (fm.type === 'problem' && fm.id) {
+			const folder = path.split('/').slice(0, 2).join('/'); // "problems/{id}"
 			entries.push({
-				type:       'problem',
-				id:         String(fm.id),
-				title:      String(fm.title ?? ''),
-				round:      Number(fm.round ?? 0),
-				round_name: String(fm.round_name ?? ''),
-				tags:       Array.isArray(fm.tags) ? (fm.tags as string[]) : [],
-				difficulty: Number(fm.difficulty ?? 0),
-				filePath:   `${RAW_BASE}/${path}`,
+				type:         'problem',
+				id:           String(fm.id),
+				title:        String(fm.title ?? ''),
+				round:        Number(fm.round ?? 0),
+				round_name:   String(fm.round_name ?? ''),
+				tags:         Array.isArray(fm.tags) ? (fm.tags as string[]) : [],
+				difficulty:   Number(fm.difficulty ?? 0),
+				filePath:     `${RAW_BASE}/${path}`,
+				codeFilePath: codeFileMap.get(folder),
 			});
 		} else if (fm.type === 'contest') {
 			const parts = path.split('/');
